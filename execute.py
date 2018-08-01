@@ -2,6 +2,11 @@ import rospy
 from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Joy
 import numpy as np
+import threading
+
+box_lock = threading.RLock()
+curr_msg_axes = [0.0, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
+curr_msg_buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 class_dict = {"background":0, "path_marker":1, "start_gate":2, 
             "channel":3, "claw":4, "die1":5, 'die2':6, 'die5':7, 'die6':8,
@@ -21,28 +26,39 @@ boxes = []
 print(completed)
 
 #set boxes
-def bbox_callback(msg):
+def bbox_callback(msg, args):
     print('called back')
+    l = args
+    #lock boxes so we can't read from a partially filled array
+    l.acquire()
+    boxes = []
     num_boxes = int(msg.data[0])
     for i in range (num_boxes):
         boxes.append(msg.data[7 * i + 1: 7 * i + 7])
+    l.release()
     print(boxes)
 
 
 # returns list representing bounding box of highest probability of given class
 # returns None if no box of class is found
-def get_box_of_class(boxes, class_num):
+def get_box_of_class(boxes, class_num, l):
     found = None
     max_prob = 0.0
+    l.acquire()
     for box in boxes:
         if box[1] == class_num and box[2] > max_prob:
             found = box
             max_prob = box[2]
-    
-    return found
+    l.release()
+
+    #ignore ghosts
+    if max_prob > 0.1:
+        return found
+    else:
+        return None
 
 # track, move toward, and pass through the gate
-def track_gate():
+def track_gate(curr_box):
     box = get_box_of_class
     while(box):
         center = getCenter
@@ -57,22 +73,27 @@ def track_gate():
 
 #search for the gate if it isn't initially visible
 def search(object):
-    pass
+    new_msg.axes()
 
 def getCenter(box):
     return (box[4] - box[2], box[5] - box[3])
 
+def start():
+    while(curr_box)
+    curr_box = get_box_of_class(boxes, class_dict['start_gate'], box_lock)
+    if curr_box:
+        track_gate(curr_box)
+    else:
+        search(class_dict['start_gate'])
+
 def main():
     rospy.init_node('subdriver', anonymous=True)
     rospy.Publisher('movement_commands', Float32MultiArray, queue_size=2)
-    rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
+    rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback, box_lock)
     #add killswitch check here
 
-    curr_box = get_box_of_class(boxes, class_dict['start_gate'])
-    if curr_box:
-        track_gate()
-    else:
-        search(class_dict['start_gate'])
+    start()
+    rospy.spin()
 
 
 if __name__ == '__main__':
