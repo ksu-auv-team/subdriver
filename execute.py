@@ -2,6 +2,7 @@ import rospy
 from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Joy
 import numpy as np
+import time
 
 class_dict = {"background":0, "path_marker":1, "start_gate":2, 
             "channel":3, "claw":4, "die1":5, 'die2':6, 'die5':7, 'die6':8,
@@ -45,18 +46,32 @@ def get_box_of_class(boxes, class_num):
 def track_gate():
     box = get_box_of_class
     while(box):
-        center = getCenter
+        center = getCenter()
         msg = Float32MultiArray
-        # if center[0] < .45:
-        #     # msg.data = [commands['left'], ]
-        # elif center[0] > .45:
-        
-        # elif getCenter[1] < .45:
-        
-        # elif getCenter[1] > .45:
+        if center[0] < .45:
+            msg.data = [axes_dict['leftright'], .4]
+        elif center[0] > .45:
+            msg.data = [axes_dict['leftright'], -.4]
+        elif center[1] < .45:
+            msg.data = [axes_dict['updown'], .4]
+        elif center[1] > .45:
+            msg.data = [axes_dict['updown'], -.4]
 
 #search for the gate if it isn't initially visible
 def search(object):
+    #move forward for like 2 seconds
+    curr_box = get_box_of_class(boxes, class_dict['start_gate'])
+    msg.data = Float32MultiArray
+    startTime = time.time()
+    currentTime = time.time()
+    while(currentTime-startTime < 2):
+        if curr_box:
+            break
+        else:
+            msg.data = [axes_dict['frontback'], .4]
+            currentTime = time.time()
+    while(!curr_box):
+        msg.data = [axes_dict['rt'], .4]
     pass
 
 def getCenter(box):
