@@ -3,6 +3,7 @@ from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Joy
 import numpy as np
 import threading
+import time
 
 box_lock = threading.RLock()
 curr_msg_axes = [0.0, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
@@ -59,21 +60,45 @@ def get_box_of_class(boxes, class_num, l):
 
 # track, move toward, and pass through the gate
 def track_gate(curr_box):
-    box = get_box_of_class
-    while(box):
-        center = getCenter
-        msg = Float32MultiArray
-        # if center[0] < .45:
-        #     # msg.data = [commands['left'], ]
-        # elif center[0] > .45:
-        
-        # elif getCenter[1] < .45:
-        
-        # elif getCenter[1] > .45:
+    is_close = False
+    while(curr_box):
+        msg = Joy()
+        center = getCenter()
+
+        if center[0] < -.45:
+            msg.axes[axes_dict['leftright']] = 0.4
+        elif center[0] > .45:
+            msg.axes[[axes_dict['leftright']] = 0.4
+
+        if center[1] < -.45:
+            msg.axes[axes_dict['updown']] = -0.4
+        elif center[1] > .45:
+            msg.axes[axes_dict['updown']] = 0.4
+        curr_box = get_box_of_class(2) #check this later
+
+        if sqrt(((curr_box[2] + curr_box[4]) ** 2) + ((curr_box[3] + curr_box[5]) ** 2))
+
+    if 
+
+    
+    publisher.pub()
 
 #search for the gate if it isn't initially visible
 def search(object):
-    new_msg.axes()
+    #move forward for like 2 seconds
+    curr_box = get_box_of_class(boxes, class_dict['start_gate'])
+    msg.data = Float32MultiArray
+    startTime = time.time()
+    currentTime = time.time()
+    while(currentTime-startTime < 2):
+        if curr_box:
+            break
+        else:
+            msg.data = [axes_dict['frontback'], .4]
+            currentTime = time.time()
+    while(not curr_box):
+        msg.data = [axes_dict['rt'], .4]
+    pass
 
 def getCenter(box):
     return (box[4] - box[2], box[5] - box[3])
