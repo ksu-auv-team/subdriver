@@ -129,11 +129,11 @@ def track(boxes):
             msg.axes[axes_dict['vertical']] = -0.3
         else:
             if not use_hold_depth:
-                msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
+                msg.axes[axes_dict['vertical']] = -.55 #replace with hold_depth later
             else:
                 msg.axes[axes_dict['vertical']] = hold_depth(current_depth) #replace with hold_depth later
         
-        if distance(box[2], box[3], box[4], box[5]) > 0.67:
+        if distance(box[2], box[3], box[4], box[5]) > 0.5:
             is_close = True
 
     elif time.time() - last_seen > 2:
@@ -201,13 +201,13 @@ def search_forward(boxes):
     msg.axes[axes_dict['frontback']] = .4
     if get_box_of_class(boxes, current_target):
         current_state = track
-    elif (time.time() - start_time) > 4: #move forward for 3 secs
+    elif (time.time() - start_time) > 7: #move forward for 3 secs
         target_depth = get_depth()
         start_time = time.time()
         current_state = search_left
 
     if not use_hold_depth:
-        msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = -.55 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
     return msg
@@ -243,7 +243,7 @@ def search_right(boxes):
     msg.axes[axes_dict['rotate']] = .2
     if get_box_of_class(boxes, current_target):
             current_state = track
-    elif(time.time() - start_time) > 2: #rotate for 4 secs
+    elif(time.time() - start_time) > 4: #rotate for 4 secs
         target_depth = get_depth()
         start_time = time.time()
         current_state = search_recenter
