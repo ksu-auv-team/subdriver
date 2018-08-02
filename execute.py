@@ -117,35 +117,36 @@ def track(boxes):
     if box and box[1] > .3:
         last_seen = time.time()
         center = getCenter(box)
-        
+        msg.axes[axes_dict['frontback']] = 0.4
         if center[0] < .45:
             msg.axes[axes_dict['leftright']] = 0.2
         elif center[0] > .55:
             msg.axes[axes_dict['leftright']] = -0.2
 
         if center[1] < .45:
-            msg.axes[axes_dict['vertical']] = -0.6
+            msg.axes[axes_dict['vertical']] = -0,7
         elif center[1] > .55:
-            msg.axes[axes_dict['vertical']] = 0.1
+            msg.axes[axes_dict['vertical']] = -0.3
         else:
             if not use_hold_depth:
-                msg.axes[axes_dict['vertical']] = -.425 #replace with hold_depth later
+                msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
             else:
                 msg.axes[axes_dict['vertical']] = hold_depth(current_depth) #replace with hold_depth later
         
         if distance(box[2], box[3], box[4], box[5]) > 0.67:
             is_close = True
         
-    elif time.time() - last_seen > 2
+    elif time.time() - last_seen > 2:
         if is_close:
             target_depth = get_depth()
             start_time = time.time()
             current_state = ramming_speed
         else:
-            if 
             target_depth = get_depth()
             start_time = time.time()
             current_state = search_forward
+    msg.axes[axes_dict['frontback']] = .4
+    msg.axes[axes_dict['vertical']] = -.45
     return msg
 
 def ramming_speed(boxes):
@@ -199,13 +200,13 @@ def search_forward(boxes):
     msg.axes[axes_dict['frontback']] = .2
     if get_box_of_class(boxes, current_target):
             current_state = track
-    elif (time.time() - start_time) > 4: #move forward for 3 secs
-        target_depth = get_depth()
-        start_time = time.time()
-        current_state = search_left
+   # elif (time.time() - start_time) > 4: #move forward for 3 secs
+    #    target_depth = get_depth()
+     #   start_time = time.time()
+      #  current_state = search_left
 
     if not use_hold_depth:
-        msg.axes[axes_dict['vertical']] = -.425 #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
     return msg
@@ -241,7 +242,7 @@ def search_right(boxes):
     msg.axes[axes_dict['rotate']] = .2
     if get_box_of_class(boxes, current_target):
             current_state = track
-    elif(time.time() - start_time) > 4: #rotate for 4 secs
+    elif(time.time() - start_time) > 3: #rotate for 4 secs
         target_depth = get_depth()
         start_time = time.time()
         current_state = search_recenter
@@ -283,7 +284,7 @@ def start(boxes):
     curr_msg = init_msg()
     curr_msg.axes[axes_dict['vertical']] = -1
     curr_msg.axes[axes_dict['frontback']] = 1
-    if time.time() > (start_time + 5):
+    if time.time() > (start_time + 10):
         if get_box_of_class(boxes, class_dict['start_gate']):
             current_target = class_dict['start_gate']
             current_state = track
@@ -315,11 +316,11 @@ def bbox_callback(msg):
     #     pub.publish(msg)
 
     #publish
-    .publish(output)
+    pub.publish(output)
 
 
 #start execution here
-# rospy.sleep(20)
+#rospy.sleep(20)
 current_state = start
 start_time = time.time()
 
