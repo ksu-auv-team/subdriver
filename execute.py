@@ -24,8 +24,8 @@ current_target = None
 is_close = False
 last_seen = time.time()
 
-def_msg_axes = [0.0, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
-def_msg_buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+def_msg_axes = (0.0, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
+def_msg_buttons = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
 class_dict = {"background":0, "path_marker":1, "start_gate":2, 
             "channel":3, "claw":4, "die1":5, 'die2':6, 'die5':7, 'die6':8,
@@ -52,8 +52,8 @@ def getCenter(box):
 
 def init_msg():
     msg = Joy()
-    msg.axes = def_msg_axes
-    msg.buttons = def_msg_buttons
+    msg.axes = list(def_msg_axes)
+    msg.buttons = list(def_msg_buttons)
     return msg
 
 def distance(x1, y1, x2, y2):
@@ -135,7 +135,7 @@ def track(boxes):
         
         if distance(box[2], box[3], box[4], box[5]) > 0.67:
             is_close = True
-        
+
     elif time.time() - last_seen > 2:
         if is_close:
             target_depth = get_depth()
