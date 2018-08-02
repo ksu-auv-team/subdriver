@@ -114,7 +114,7 @@ def track(boxes):
 
     msg = init_msg()
     box = get_box_of_class(boxes, current_target)
-    if box:
+    if box and box[1] > .3:
         last_seen = time.time()
         center = getCenter(box)
         
@@ -136,7 +136,7 @@ def track(boxes):
         if distance(box[2], box[3], box[4], box[5]) > 0.67:
             is_close = True
         
-    elif
+    elif time.time() - last_seen > 2
         if is_close:
             target_depth = get_depth()
             start_time = time.time()
