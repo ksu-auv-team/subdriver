@@ -75,21 +75,21 @@ def track_gate(curr_box):
         center = getCenter(curr_box)
 
 
-        msg.axes[axes_dict['updown']] = -0.3
+        msg.axes[axes_dict['updown']] = -0.425
 
-        if center[0] < -.45:
+        if center[0] < 45:
             msg.axes[axes_dict['leftright']] = 0.4
-        elif center[0] > .45:
+        elif center[0] > .55:
             msg.axes[axes_dict['leftright']] = 0.4
 
-        if center[1] < -.45:
+        if center[1] < .45:
             msg.axes[axes_dict['updown']] = -0.6
-        elif center[1] > .45:
+        elif center[1] > .55:
             msg.axes[axes_dict['updown']] = 0.1
         
         curr_box = get_box_of_class(2, box_lock) #check this later
 
-        if math.sqrt(((curr_box[2] + curr_box[4]) ** 2) + ((curr_box[3] + curr_box[5]) ** 2)):
+        if math.sqrt(((curr_box[2] + curr_box[4]) ** 2) + ((curr_box[3] + curr_box[5]) ** 2)) > 0.67:
             is_close = True
         
         pub.publish(msg)
@@ -97,14 +97,23 @@ def track_gate(curr_box):
 
     if is_close:
         ramming_speed(10)
+        msg = init_msg
+        msg.axes[axes_dict['vertical']] = 1
+        pub.publish(msg)
+        rospy.sleep(1)
+        msg = init_msg
+        pub.publish(msg)
     else:
         search_gate()
     pub.publish(msg)
 
 def ramming_speed(duration):
     msg = init_msg()
-    msg.axes['frontback'] = 0.4
-    msg.axes['vertical'] = -0.5
+    msg.axes[axes_dict['frontback']] = 0.4
+    msg.axes[axes_dict['vertical']] = -0.425
+    for i in range(int(duration)):
+        pub.publish(msg)
+        rospy.sleep(1)
     completed['start_gate_passed'] = True
     #later
 
@@ -115,7 +124,8 @@ def search_gate():
     curr_box = get_box_of_class(class_dict['start_gate'], box_lock)
     startTime = time.time()
     currentTime = time.time()
-    while(currentTime-startTime < 2):
+    msg.axes[axes_dict['vertical']] = -.425
+    while(currentTime-startTime < 5):
         currentTime = time.time()
         curr_box = get_box_of_class(class_dict['start_gate'], box_lock)
         if curr_box:
@@ -136,21 +146,24 @@ def search_gate():
         rospy.sleep(2.0)
         if get_box_of_class(class_dict['start_gate'], box_lock):
             break
-        msg.axes[axes_dict['rotate']] = 0.1
+        msg.axes[axes_dict['rotate']] = -0.2
         pub.publish(msg)
         rospy.sleep(1.0)
         curr_box = get_box_of_class(class_dict['start_gate'], box_lock)
-        msg.axes = def_msg_axes
+        msg = init_msg()
         pub.publish(msg)
 
 def getCenter(box):
     return (box[4] - box[2], box[5] - box[3])
 
 def start():
-    #test 
     curr_msg = init_msg()
     curr_msg.axes[axes_dict['vertical']] = -1
+    curr_msg.axes[axes_dict['frontback']] = 1
+    pub.publish(curr_msg)
     rospy.sleep(5)
+    curr_msg = init_msg()
+    pub.publish(curr_msg)
     curr_box = get_box_of_class(class_dict['start_gate'], box_lock)
     if curr_box:
         track_gate(curr_box)
@@ -160,6 +173,7 @@ def start():
 def main():
     rospy.init_node('subdriver', anonymous=True)
     #add killswitch check here
+    rospy.sleep(20)
 
     start()
     rospy.spin()
