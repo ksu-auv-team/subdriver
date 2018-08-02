@@ -77,7 +77,7 @@ def track_gate(curr_box):
 
         msg.axes[axes_dict['updown']] = -0.425
 
-        if center[0] < 45:
+        if center[0] < .45:
             msg.axes[axes_dict['leftright']] = 0.4
         elif center[0] > .55:
             msg.axes[axes_dict['leftright']] = 0.4
@@ -97,7 +97,7 @@ def track_gate(curr_box):
 
     if is_close:
         ramming_speed(10)
-        msg = init_msg
+        msg = init_msg()
         msg.axes[axes_dict['vertical']] = 1
         pub.publish(msg)
         rospy.sleep(1)
