@@ -17,6 +17,8 @@ completed = dict.fromkeys(['start_gate_found', 'start_gate_passed', 'dice_found'
 
 current_target = None
 
+is_close = False
+
 def_msg_axes = [0.0, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
 def_msg_buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -34,6 +36,8 @@ buttons_dict = {'a' : 0, 'b' : 1, 'x' : 2, 'y' : 3, 'lb' : 4, 'rb' : 5, 'back' :
 # create dict of statuses and whether they've been completed
 # that is, track what we've done
 
+def getCenter(box):
+    return (box[4] - box[2], box[5] - box[3])
 
 def init_msg():
     msg = Joy()
@@ -67,16 +71,20 @@ def get_box_of_class(boxes, class_num):
 
 
 # track, move toward, and pass through the gate
-def track(curr_box):
-    completed['start_gate_found'] = True
+def track(boxes):
+
+    global current_state
+    global current_target
+    global start_time
+    global is_close
+    completed['start_gate_found'] = True #change later, once we have more tasks
     is_close = False
-    while(curr_box):
-        msg = init_msg()
-        center = getCenter(curr_box)
 
-
-        msg.axes[axes_dict['updown']] = -0.425
-
+    msg = init_msg()
+    box = get_box_of_class(boxes, current_target)
+    if box:
+        center = getCenter(box)
+        
         if center[0] < .45:
             msg.axes[axes_dict['leftright']] = 0.4
         elif center[0] > .55:
@@ -86,36 +94,55 @@ def track(curr_box):
             msg.axes[axes_dict['updown']] = -0.6
         elif center[1] > .55:
             msg.axes[axes_dict['updown']] = 0.1
+        else:
+            msg.axes[axes_dict['updown']] = -0.425 #replace w/ hold_depth later
         
-        curr_box = get_box_of_class(['start_gate']) #check this later
-
-        if math.sqrt(((curr_box[2] + curr_box[4]) ** 2) + ((curr_box[3] + curr_box[5]) ** 2)) > 0.67:
+        if distance(box[2], box[3], box[4], box[5]) > 0.67:
             is_close = True
         
-        pub.publish(msg)
-
-
-    if is_close:
-        ramming_speed(10)
-        msg = init_msg()
-        msg.axes[axes_dict['vertical']] = 1
-        pub.publish(msg)
-        rospy.sleep(1)
-        msg = init_msg
-        pub.publish(msg)
+    elif is_close:
+        start_time = time.time()
+        current_state = ramming_speed
     else:
-        search_gate()
+        start_time = time.time()
+        current_state = search_forward
     pub.publish(msg)
 
 def ramming_speed(duration):
+    global current_state
+    global current_target
+    global start_time
+
     msg = init_msg()
     msg.axes[axes_dict['frontback']] = 0.4
     msg.axes[axes_dict['vertical']] = -0.425
-    for i in range(int(duration)):
-        pub.publish(msg)
-        rospy.sleep(1)
-    completed['start_gate_passed'] = True
-    #later
+
+    if time.time() - start_time > duration:
+        print("headed home motherfuckers")
+        current_target = None
+        completed['start_gate_passed'] = True
+        current_state = surface
+        msg = init_msg()
+        start_time = time.time()
+
+    pub.publish(msg)
+
+def surface(boxes):
+    global current_state
+    global current_target
+    global start_time
+
+    msg = init_msg()
+
+    if (time.time() - start_time) < 2:
+        msg.axes[axes_dict['vertical']] = .3
+    
+    else:
+        rospy.spin() #wait for shutdown
+
+    pub.publish(msg)
+
+    
 
 #search for the gate if it isn't initially visible
 def search_forward(boxes):
@@ -127,7 +154,7 @@ def search_forward(boxes):
     msg.axes[axes_dict['vertical']] = -.425 #replace with hold_depth later
     if get_box_of_class(boxes, current_target):
             current_state = track
-    elif(time.time() - start_time < 3): #move forward for 3 secs
+    elif (time.time() - start_time) < 4: #move forward for 3 secs
         start_time = time.time()
         current_state = search_left
     return msg
@@ -142,7 +169,7 @@ def search_left(boxes):
     msg.axes[axes_dict['vertical']] = -.425 #replace with hold_depth later
     if get_box_of_class(boxes, current_target):
             current_state = track
-    elif(time.time() - start_time < 2): #rotate for 2 secs
+    elif(time.time() - start_time) < 2: #rotate for 2 secs
         start_time = time.time()
         current_state = search_right
     return msg
@@ -156,7 +183,7 @@ def search_right(boxes):
     msg.axes[axes_dict['vertical']] = -.425 #replace with hold_depth later
     if get_box_of_class(boxes, current_target):
             current_state = track
-    elif(time.time() - start_time < 4): #rotate for 4 secs
+    elif(time.time() - start_time) < 4: #rotate for 4 secs
         start_time = time.time()
         current_state = search_recenter
     return msg
@@ -170,13 +197,11 @@ def search_recenter(boxes): #rotates back to the left
     msg.axes[axes_dict['vertical']] = -.425 #replace with hold_depth later
     if get_box_of_class(boxes, current_target):
             current_state = track
-    elif(time.time() - start_time < 2): #rotate for 2 secs
+    elif(time.time() - start_time) < 2: #rotate for 2 secs
         start_time = time.time()
         current_state = search_forward
     return msg
 
-def getCenter(box):
-    return (box[4] - box[2], box[5] - box[3])
 
 def start(boxes):
     global current_target
