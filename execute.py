@@ -88,11 +88,11 @@ def get_box_of_class(boxes, class_num):
     for box in boxes:
         if box[0] == class_num and box[1] > max_prob:
             found = box
-            max_prob = box[1]
+            max_prob = box[1] 
     print('class:\t' + str(box[0]))
 
     #ignore ghosts
-    if max_prob > 0.2:
+    if max_prob > 0.4:
         return found
     else:
         return None
@@ -124,7 +124,7 @@ def track(boxes):
             msg.axes[axes_dict['leftright']] = -0.2
 
         if center[1] < .45:
-            msg.axes[axes_dict['vertical']] = -0,7
+            msg.axes[axes_dict['vertical']] = -0.7
         elif center[1] > .55:
             msg.axes[axes_dict['vertical']] = -0.3
         else:
@@ -162,6 +162,7 @@ def ramming_speed(boxes):
         print("headed home motherfuckers")
         current_target = None
         completed['start_gate_passed'] = True
+        
         current_state = surface
         msg = init_msg()
         start_time = time.time()
@@ -197,13 +198,13 @@ def search_forward(boxes):
     global start_time
     global target_depth
     msg = init_msg()
-    msg.axes[axes_dict['frontback']] = .2
+    msg.axes[axes_dict['frontback']] = .4
     if get_box_of_class(boxes, current_target):
-            current_state = track
-   # elif (time.time() - start_time) > 4: #move forward for 3 secs
-    #    target_depth = get_depth()
-     #   start_time = time.time()
-      #  current_state = search_left
+        current_state = track
+    elif (time.time() - start_time) > 4: #move forward for 3 secs
+        target_depth = get_depth()
+        start_time = time.time()
+        current_state = search_left
 
     if not use_hold_depth:
         msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
@@ -242,13 +243,13 @@ def search_right(boxes):
     msg.axes[axes_dict['rotate']] = .2
     if get_box_of_class(boxes, current_target):
             current_state = track
-    elif(time.time() - start_time) > 3: #rotate for 4 secs
+    elif(time.time() - start_time) > 2: #rotate for 4 secs
         target_depth = get_depth()
         start_time = time.time()
         current_state = search_recenter
 
     if not use_hold_depth:
-        msg.axes[axes_dict['vertical']] = -.425 #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = -.44 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
 
@@ -264,7 +265,7 @@ def search_recenter(boxes): #rotates back to the left
     msg = init_msg()
     msg.axes[axes_dict['rotate']] = -.2
     if not use_hold_depth:
-        msg.axes[axes_dict['vertical']] = -.425 #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = -.44 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth)
     if get_box_of_class(boxes, current_target):
