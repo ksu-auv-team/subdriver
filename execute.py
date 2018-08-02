@@ -6,7 +6,7 @@ import numpy as np
 import time
 import math
 
-use_hold_depth = True
+use_hold_depth = False
 target_depth = 0
 
 # box_callback uses completed to track what's done and states to list the possible states
@@ -22,6 +22,7 @@ completed = dict.fromkeys(['start_gate_found', 'start_gate_passed', 'dice_found'
 current_target = None
 
 is_close = False
+last_seen = time.time()
 
 def_msg_axes = [0.0, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
 def_msg_buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -106,6 +107,7 @@ def track(boxes):
     global start_time
     global is_close
     global target_depth
+    global last_seen
     current_depth = get_depth
     completed['start_gate_found'] = True #change later, once we have more tasks
     is_close = False
@@ -113,6 +115,7 @@ def track(boxes):
     msg = init_msg()
     box = get_box_of_class(boxes, current_target)
     if box:
+        last_seen = time.time()
         center = getCenter(box)
         
         if center[0] < .45:
@@ -133,14 +136,16 @@ def track(boxes):
         if distance(box[2], box[3], box[4], box[5]) > 0.67:
             is_close = True
         
-    elif is_close:
-        target_depth = get_depth()
-        start_time = time.time()
-        current_state = ramming_speed
-    else:
-        target_depth = get_depth()
-        start_time = time.time()
-        current_state = search_forward
+    elif
+        if is_close:
+            target_depth = get_depth()
+            start_time = time.time()
+            current_state = ramming_speed
+        else:
+            if 
+            target_depth = get_depth()
+            start_time = time.time()
+            current_state = search_forward
     return msg
 
 def ramming_speed(boxes):
@@ -194,7 +199,7 @@ def search_forward(boxes):
     msg.axes[axes_dict['frontback']] = .2
     if get_box_of_class(boxes, current_target):
             current_state = track
-    elif (time.time() - start_time) < 4: #move forward for 3 secs
+    elif (time.time() - start_time) > 4: #move forward for 3 secs
         target_depth = get_depth()
         start_time = time.time()
         current_state = search_left
@@ -215,7 +220,7 @@ def search_left(boxes):
     msg.axes[axes_dict['rotate']] = -.2
     if get_box_of_class(boxes, current_target):
             current_state = track
-    elif(time.time() - start_time) < 2: #rotate for 2 secs
+    elif(time.time() - start_time) > 2: #rotate for 2 secs
         target_depth = get_depth()
         start_time = time.time()
         current_state = search_right
@@ -236,7 +241,7 @@ def search_right(boxes):
     msg.axes[axes_dict['rotate']] = .2
     if get_box_of_class(boxes, current_target):
             current_state = track
-    elif(time.time() - start_time) < 4: #rotate for 4 secs
+    elif(time.time() - start_time) > 4: #rotate for 4 secs
         target_depth = get_depth()
         start_time = time.time()
         current_state = search_recenter
@@ -263,7 +268,7 @@ def search_recenter(boxes): #rotates back to the left
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth)
     if get_box_of_class(boxes, current_target):
             current_state = track
-    elif(time.time() - start_time) < 2: #rotate for 2 secs
+    elif(time.time() - start_time) > 2: #rotate for 2 secs
         start_time = time.time()
         target_depth = get_depth()
         current_state = search_forward
@@ -292,23 +297,25 @@ def start(boxes):
 #set boxes
 def bbox_callback(msg):
     #get multidimensional list of boxes
-    #boxes = []
-    #num_boxes = int(msg.data[0])
-    #for i in range (num_boxes):
-    #    boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
-    #    boxes[i][0] -= 1 #compensate for network weirdness
-    #print(boxes)
+    boxes = []
+    num_boxes = int(msg.data[0])
+    for i in range (num_boxes):
+       boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
+       boxes[i][0] -= 1 #compensate for network weirdness
+    print(boxes)
+# 
+    # get function
+    print(current_state)
+    output = current_state(boxes)
 
-    #get function
-    #output = current_state(boxes)
-    target_depth = get_depth()
-    while not rospy.is_shutdown():
-        msg = init_msg()
-        msg.axes[axes_dict['vertical']] = hold_depth(target_depth)
-        pub.publish(msg)
+    # target_depth = get_depth()
+    # while not rospy.is_shutdown():
+    #     msg = init_msg()
+    #     msg.axes[axes_dict['vertical']] = hold_depth(target_depth)
+    #     pub.publish(msg)
 
     #publish
-    #.publish(output)
+    .publish(output)
 
 
 #start execution here
