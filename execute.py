@@ -34,7 +34,7 @@ class_dict = {"background":0, "path_marker":1, "start_gate":2,
             'roulette_wheel':9, 'red_wheel_side':10, 'black_wheel_side':11,
             'slot_machine':12, 'slot_handle':13, 'r_slot_target':14, 'y_slot_target':15,
             'r_ball_tray':16, 'g_ball_tray':17, 'floating_area':18, 'r_funnel':19,
-            'y_funnel':20, 'g_chip_dispenser':21, 'g_chip_plate':22, 'dieX':23}
+            'y_funnel':20, 'g_chip_dispenser':21, 'g_chip_plate':22, 'dieX':23, 'g_funnel':24}
 
 axes_dict = {'rotate': 0, 'vertical' : 1, 'lt' : 2, 'leftright' : 3, 'frontback' : 4, 'rt' : 5, 'dpad_h' : 6, 'dpad_v' : 7}
 buttons_dict = {'a' : 0, 'b' : 1, 'x' : 2, 'y' : 3, 'lb' : 4, 'rb' : 5, 'back' : 6, 'start' : 7, 'xbox' : 8, 'lstickpress' : 9, 'rstickpress' : 10}
@@ -133,7 +133,7 @@ def track(boxes):
             msg.axes[axes_dict['vertical']] = -0.3
         else:
             if not use_hold_depth:
-                msg.axes[axes_dict['vertical']] = -.55 #replace with hold_depth later
+                msg.axes[axes_dict['vertical']] = -.52 #replace with hold_depth later
             else:
                 msg.axes[axes_dict['vertical']] = hold_depth(current_depth) #replace with hold_depth later
         
@@ -149,8 +149,9 @@ def track(boxes):
             target_depth = get_depth()
             start_time = time.time()
             current_state = search_forward
+        msg.axes[axes_dict['vertical']] = -.46
+
     msg.axes[axes_dict['frontback']] = .4
-    msg.axes[axes_dict['vertical']] = -.45
     return msg
 
 def ramming_speed(boxes):
@@ -172,7 +173,7 @@ def ramming_speed(boxes):
         start_time = time.time()
 
     if not use_hold_depth:
-        msg.axes[axes_dict['vertical']] = -.425 #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
 
@@ -211,7 +212,7 @@ def search_forward(boxes):
         current_state = search_left
 
     if not use_hold_depth:
-        msg.axes[axes_dict['vertical']] = -.55 #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = -.5 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
     return msg
@@ -231,7 +232,7 @@ def search_left(boxes):
         start_time = time.time()
         current_state = search_right
     if not use_hold_depth:
-        msg.axes[axes_dict['vertical']] = -.425 #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = -.46 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
     
@@ -253,7 +254,7 @@ def search_right(boxes):
         current_state = search_recenter
 
     if not use_hold_depth:
-        msg.axes[axes_dict['vertical']] = -.44 #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = -.46 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
 
@@ -269,7 +270,7 @@ def search_recenter(boxes): #rotates back to the left
     msg = init_msg()
     msg.axes[axes_dict['rotate']] = -.2
     if not use_hold_depth:
-        msg.axes[axes_dict['vertical']] = -.44 #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = -.46 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth)
     if get_box_of_class(boxes, current_target):
