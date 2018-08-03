@@ -5,6 +5,8 @@ from sensor_msgs.msg import FluidPressure
 import numpy as np
 import time
 import math
+import pymavlink
+
 
 use_hold_depth = False
 target_depth = 0
@@ -42,6 +44,8 @@ current_pressure = 0
 thrust_base = -0.425 #roughly steady
 thrust_mod = -0.2 #times difference in depth
 surface_pressure = (101325) #1 atm
+
+#psensor = 
 
 
 # create dict of statuses and whether they've been completed
@@ -310,10 +314,10 @@ def bbox_callback(msg):
     print(current_state)
     output = current_state(boxes)
 
-    # target_depth = get_depth()
-    # while not rospy.is_shutdown():
+    # target_depth = get_depth()main
+    # while not rospy.is_shutdowmain
     #     msg = init_msg()
-    #     msg.axes[axes_dict['vertical']] = hold_depth(target_depth)
+    #     msg.axes[axes_dict['vemain
     #     pub.publish(msg)
 
     #publish
