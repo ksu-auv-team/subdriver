@@ -2,14 +2,16 @@ import rospy
 from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Joy
 from sensor_msgs.msg import FluidPressure
+from mavros_msgs.msg import VFR_HUD
 import numpy as np
 import time
 import math
 import pymavlink
 
 
-use_hold_depth = False
+use_hold_depth = True
 target_depth = 0
+search_frames_seen = 0
 
 # box_callback uses completed to track what's done and states to list the possible states
 # each state function takes the list of boxes, calculates what the current motor output should be
@@ -22,6 +24,7 @@ last_state = None
 completed = dict.fromkeys(['start_gate_found', 'start_gate_passed', 'dice_found', 'dice_hit'], False)
 
 current_target = None
+searches_run = 0
 
 is_close = False
 last_seen = time.time()
@@ -39,11 +42,9 @@ class_dict = {"background":0, "path_marker":1, "start_gate":2,
 axes_dict = {'rotate': 0, 'vertical' : 1, 'lt' : 2, 'leftright' : 3, 'frontback' : 4, 'rt' : 5, 'dpad_h' : 6, 'dpad_v' : 7}
 buttons_dict = {'a' : 0, 'b' : 1, 'x' : 2, 'y' : 3, 'lb' : 4, 'rb' : 5, 'back' : 6, 'start' : 7, 'xbox' : 8, 'lstickpress' : 9, 'rstickpress' : 10}
 
-
-current_pressure = 0
-thrust_base = -0.425 #roughly steady
-thrust_mod = -0.2 #times difference in depth
-surface_pressure = (101325) #1 atm
+altitude = 0
+thrust_base = -0.45 #roughly steady
+thrust_mod = -0.1 #times difference in depth
 
 #psensor = 
 
@@ -52,6 +53,7 @@ surface_pressure = (101325) #1 atm
 # that is, track what we've done
 
 def getCenter(box):
+    #currently biased down for start gate
     return (box[4] - box[2], box[5] - box[3])
 
 def init_msg():
@@ -69,16 +71,14 @@ def set_axis(msg, axis, val):
 
 #depth functions
 def depth_callback(msg): #(msg)
-    global current_pressure
-    current_pressure = msg.fluid_pressure
+    global altitude
+    altitude = msg.altitude
 
 def get_depth():
-    return (current_pressure - surface_pressure) * 1.019744/10000
+    return altitude - init_depth
 
-def hold_depth(depth):
-    current_depth = (current_pressure - surface_pressure) * 1.019744/10000
-    print('Depth: {}\tPressure: {} Pa'.format(depth, current_pressure))
-    depthdiff= depth-current_depth
+def hold_depth(target):
+    depthdiff= get_depth()-target
     thrust_change = depthdiff * thrust_mod
     thrust = thrust_base + thrust_change
     return thrust
@@ -93,10 +93,10 @@ def get_box_of_class(boxes, class_num):
         if box[0] == class_num and box[1] > max_prob:
             found = box
             max_prob = box[1] 
-    print('class:\t' + str(box[0]))
+    print('class: ' + str(box[0]) + '\tconf: ' + str(box[1]))
 
     #ignore ghosts
-    if max_prob > 0.4:
+    if max_prob > 0.40:
         return found
     else:
         return None
@@ -112,7 +112,7 @@ def track(boxes):
     global is_close
     global target_depth
     global last_seen
-    current_depth = get_depth
+    target_depth = get_depth()
     completed['start_gate_found'] = True #change later, once we have more tasks
     is_close = False
 
@@ -133,9 +133,9 @@ def track(boxes):
             msg.axes[axes_dict['vertical']] = -0.3
         else:
             if not use_hold_depth:
-                msg.axes[axes_dict['vertical']] = -.52 #replace with hold_depth later
+                msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
             else:
-                msg.axes[axes_dict['vertical']] = hold_depth(current_depth) #replace with hold_depth later
+                msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
         
         if distance(box[2], box[3], box[4], box[5]) > 0.5:
             is_close = True
@@ -149,7 +149,10 @@ def track(boxes):
             target_depth = get_depth()
             start_time = time.time()
             current_state = search_forward
-        msg.axes[axes_dict['vertical']] = -.46
+        if not use_hold_depth:
+            msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
+        else:
+            msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
 
     msg.axes[axes_dict['frontback']] = .4
     return msg
@@ -159,12 +162,11 @@ def ramming_speed(boxes):
     global current_target
     global start_time
     global target_depth
-
+    target_depth = get_depth()
     msg = init_msg()
     msg.axes[axes_dict['frontback']] = 0.2
 
-    if (time.time() - start_time) > 10:
-        print("headed home motherfuckers")
+    if (time.time() - start_time) > 20:
         current_target = None
         completed['start_gate_passed'] = True
         
@@ -194,7 +196,85 @@ def surface(boxes):
 
     return msg
 
+def search_pat_forward(boxes):
+    global current_state
+    global start_time
+    global target_depth
+    msg = init_msg()
+    msg.axes[axes_dict['frontback']] = .4
+    if (time.time() - start_time) > 5: #move forward for 3 secs
+        target_depth = get_depth()
+        start_time = time.time()
+        current_state = search_pat_left
+
+    if not use_hold_depth:
+        msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
+    else:
+        msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
+    return msg
+
+def search_pat_left(boxes):
+    global current_state
+    global start_time
+    global target_depth
+    msg = init_msg()
+    msg.axes[axes_dict['rotate']] = -.2
+    if(time.time() - start_time) > 2: #rotate for 2 secs
+        target_depth = get_depth()
+        start_time = time.time()
+        current_state = search_pat_right
+    if not use_hold_depth:
+        msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
+    else:
+        msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
     
+    return msg
+
+def search_pat_right(boxes):
+    global current_state
+    global current_target
+    global start_time
+    global target_depth
+
+    msg = init_msg()
+    msg.axes[axes_dict['rotate']] = .2
+    if(time.time() - start_time) > 4: #rotate for 4 secs
+        target_depth = get_depth()
+        start_time = time.time()
+        current_state = search_pat_recenter
+
+    if not use_hold_depth:
+        msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
+    else:
+        msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
+
+
+    return msg
+
+def search_pat_recenter(boxes): #rotates back to the left
+    global current_state
+    global current_target
+    global start_time
+    global target_depth
+    global searches_run
+
+    msg = init_msg()
+    msg.axes[axes_dict['rotate']] = -.2
+    if not use_hold_depth:
+        msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
+    else:
+        msg.axes[axes_dict['vertical']] = hold_depth(target_depth)
+    if get_box_of_class(boxes, current_target):
+            current_state = track
+    elif(time.time() - start_time) > 2: #rotate for 2 secs
+        start_time = time.time()
+        target_depth = get_depth()
+        if searches_run < 2:
+            current_state = ramming_speed
+        else:
+            current_state = search_forward
+            searches_run += 1
+    return msg
 
 #search for the gate if it isn't initially visible
 def search_forward(boxes):
@@ -202,17 +282,24 @@ def search_forward(boxes):
     global current_target
     global start_time
     global target_depth
+    global search_frames_seen
     msg = init_msg()
     msg.axes[axes_dict['frontback']] = .4
     if get_box_of_class(boxes, current_target):
-        current_state = track
-    elif (time.time() - start_time) > 7: #move forward for 3 secs
+        if search_frames_seen <= 2:
+            search_frames_seen += 1
+        else:
+            target_depth = get_depth()
+            current_state = track
+    elif (time.time() - start_time) > 5: #move forward for 3 secs
         target_depth = get_depth()
         start_time = time.time()
         current_state = search_left
-
+        search_frames_seen = 0
+    else:
+        search_frames_seen = 0
     if not use_hold_depth:
-        msg.axes[axes_dict['vertical']] = -.5 #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
     return msg
@@ -223,16 +310,24 @@ def search_left(boxes):
     global current_target
     global start_time
     global target_depth
+    global search_frames_seen
     msg = init_msg()
     msg.axes[axes_dict['rotate']] = -.2
     if get_box_of_class(boxes, current_target):
+        if search_frames_seen <= 2:
+            search_frames_seen += 1
+        else:
+            target_depth = get_depth()
             current_state = track
     elif(time.time() - start_time) > 2: #rotate for 2 secs
         target_depth = get_depth()
         start_time = time.time()
         current_state = search_right
+        search_frames_seen = 0
+    else:
+        search_frames_seen = 0
     if not use_hold_depth:
-        msg.axes[axes_dict['vertical']] = -.46 #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
     
@@ -243,18 +338,26 @@ def search_right(boxes):
     global current_target
     global start_time
     global target_depth
+    global search_frames_seen
 
     msg = init_msg()
     msg.axes[axes_dict['rotate']] = .2
     if get_box_of_class(boxes, current_target):
+        if search_frames_seen <= 2:
+            search_frames_seen += 1
+        else:
+            target_depth = get_depth()
             current_state = track
     elif(time.time() - start_time) > 4: #rotate for 4 secs
         target_depth = get_depth()
         start_time = time.time()
         current_state = search_recenter
+        search_frames_seen = 0
+    else:
+        search_frames_seen = 0
 
     if not use_hold_depth:
-        msg.axes[axes_dict['vertical']] = -.46 #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
 
@@ -266,19 +369,27 @@ def search_recenter(boxes): #rotates back to the left
     global current_target
     global start_time
     global target_depth
+    global search_frames_seen
 
     msg = init_msg()
     msg.axes[axes_dict['rotate']] = -.2
     if not use_hold_depth:
-        msg.axes[axes_dict['vertical']] = -.46 #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth)
     if get_box_of_class(boxes, current_target):
+        if search_frames_seen <= 2:
+            search_frames_seen += 1
+        else:
+            target_depth = get_depth()
             current_state = track
     elif(time.time() - start_time) > 2: #rotate for 2 secs
         start_time = time.time()
         target_depth = get_depth()
         current_state = search_forward
+        search_frames_seen = 0
+    else:
+        search_frames_seen = 0
     return msg
 
 
@@ -290,7 +401,7 @@ def start(boxes):
     curr_msg = init_msg()
     curr_msg.axes[axes_dict['vertical']] = -1
     curr_msg.axes[axes_dict['frontback']] = 1
-    if time.time() > (start_time + 10):
+    if time.time() > (start_time + 15):
         if get_box_of_class(boxes, class_dict['start_gate']):
             current_target = class_dict['start_gate']
             current_state = track
@@ -308,7 +419,6 @@ def bbox_callback(msg):
     num_boxes = int(msg.data[0])
     for i in range (num_boxes):
        boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
-       boxes[i][0] -= 1 #compensate for network weirdness
     print(boxes)
 # 
     # get function
@@ -332,8 +442,10 @@ start_time = time.time()
 
 rospy.init_node('subdriver', anonymous=True)
 pub = rospy.Publisher('joy', Joy, queue_size=2)
-ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
-depth_sub = rospy.Subscriber('/mavros/imu/static_pressure', FluidPressure, depth_callback)
+depth_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, depth_callback)
+rospy.sleep(.5)
+init_depth = altitude
 
+ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
 
 rospy.spin()
