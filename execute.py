@@ -26,7 +26,7 @@ completed = dict.fromkeys(['start_gate_found', 'start_gate_passed', 'dice_found'
 current_target = None
 searches_run = 0
 
-is_close = False
+is_close = 0
 last_seen = time.time()
 
 def_msg_axes = (0.0, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
@@ -77,8 +77,8 @@ def depth_callback(msg): #(msg)
 def get_depth():
     return altitude - init_depth
 
-def hold_depth(target):
-    depthdiff= get_depth()-target
+def hold_depth():
+    depthdiff= get_depth()-target_depth
     thrust_change = depthdiff * thrust_mod
     thrust = thrust_base + thrust_change
     return thrust
@@ -105,7 +105,6 @@ def get_box_of_class(boxes, class_num):
 
 # track, move toward, and pass through the gate
 def track(boxes):
-
     global current_state
     global current_target
     global start_time
@@ -119,6 +118,7 @@ def track(boxes):
     msg = init_msg()
     box = get_box_of_class(boxes, current_target)
     if box and box[1] > .3:
+        completed['start_gate_found'] = True
         last_seen = time.time()
         center = getCenter(box)
         msg.axes[axes_dict['frontback']] = 0.4
@@ -138,10 +138,11 @@ def track(boxes):
                 msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
         
         if distance(box[2], box[3], box[4], box[5]) > 0.5:
-            is_close = True
+            is_close += 1
 
     elif time.time() - last_seen > 2:
-        if is_close:
+        if is_close > 3:
+            is_close = 0
             target_depth = get_depth()
             start_time = time.time()
             current_state = ramming_speed
@@ -166,13 +167,20 @@ def ramming_speed(boxes):
     msg = init_msg()
     msg.axes[axes_dict['frontback']] = 0.2
 
-    if (time.time() - start_time) > 20:
+    if (time.time() - start_time) > 10:
+        print("headed to the land of dice, motherfuckers")
         current_target = None
-        completed['start_gate_passed'] = True
-        
-        current_state = surface
-        msg = init_msg()
-        start_time = time.time()
+        if not completed['start_gate_passed']:
+            completed['start_gate_passed'] = True
+            
+            current_state = find_dice
+            msg = init_msg()
+            start_time = time.time()
+        elif not completed['dice_hit']:
+            completed['dice_hit'] = True
+            current_state = surface
+            msg = init_msg()
+            start_time = time.time()
 
     if not use_hold_depth:
         msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
@@ -247,8 +255,6 @@ def search_pat_right(boxes):
         msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
         msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
-
-
     return msg
 
 def search_pat_recenter(boxes): #rotates back to the left
@@ -274,6 +280,77 @@ def search_pat_recenter(boxes): #rotates back to the left
         else:
             current_state = search_forward
             searches_run += 1
+            
+def find_dice(boxes):
+    # basically a copy of track
+    # ram into a bunch of dice then surface
+    global current_state
+    global current_target
+    global start_time
+    global target_depth
+    global is_close
+    global target_depth
+    global last_seen
+
+    # find all boxlike things:
+    boxes = []
+    for box_name in ['die1', 'die2', 'die5', 'die6','dieX']:
+        box = get_box_of_class(boxes, class_dict[box_name])
+        if box is not None:
+            boxes.append(box)
+    if len(boxes) > 0:
+        box = max(boxes, key=lambda x: distance(x[2], x[3], x[4], x[5])) # find closest (largest) die
+    else:
+        box = None
+
+    if box and box[1] > .3:
+        completed['dice_found'] = True
+        is_close += 1
+        last_seen = time.time()
+        center = getCenter(box)
+        msg.axes[axes_dict['frontback']] = 0.4
+
+        # proportional control:
+        lr_err = center[0] - 0.5
+        lr_signal = (-lr_err + 0) * 2 # signal inverted to match joystick
+        msg.axes[axes_dict['leftright']] = max(min(lr_signal, 1), -1)
+
+        # if center[0] < .45:
+        #     msg.axes[axes_dict['leftright']] = 0.2
+        # elif center[0] > .55:
+        #     msg.axes[axes_dict['leftright']] = -0.2
+
+        vert_err = center[1] - 0.5
+        vert_signal = (-vert_err + -.45) * 2 # signal inverted because image coordinates
+        msg.axes[axes_dict['vertical']] = max(min(vert_signal, 1), -1)
+
+        # if center[1] < .45:
+        #     msg.axes[axes_dict['vertical']] = -0.7
+        # elif center[1] > .55:
+        #     msg.axes[axes_dict['vertical']] = -0.3
+        # else:
+        #     if not use_hold_depth:
+        #         msg.axes[axes_dict['vertical']] = -.55 #replace with hold_depth later
+        #     else:
+        #         msg.axes[axes_dict['vertical']] = hold_depth(current_depth) #replace with hold_depth later
+    else:
+        if not use_hold_depth:
+            msg.axes[axes_dict['vertical']] = -.55 #replace with hold_depth later
+        else:
+            msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
+
+    if completed['dice_found'] = True and (time.time() - last_seen) < 10 and is_close >= 10:
+        completed['dice_hit'] = True
+        target_depth = get_depth()
+        start_time = time.time()
+        current_state = surface
+
+    # random < (tangent of 10 degrees)*2:
+    #    move left at 1/2 the speed of moving forward
+    if random.random() < (0.1763269807*2) and not completed['dice_found']:
+        msg.axes[axes_dict['leftright']] = .2 # this is left
+
+    msg.axes[axes_dict['frontback']] = .4
     return msg
 
 #search for the gate if it isn't initially visible
