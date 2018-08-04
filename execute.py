@@ -7,6 +7,7 @@ import numpy as np
 import time
 import math
 import pymavlink
+import random
 
 
 use_hold_depth = True
@@ -78,6 +79,7 @@ def get_depth():
     return altitude - init_depth
 
 def hold_depth():
+    global target_depth
     depthdiff= get_depth()-target_depth
     thrust_change = depthdiff * thrust_mod
     thrust = thrust_base + thrust_change
@@ -135,7 +137,7 @@ def track(boxes):
             if not use_hold_depth:
                 msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
             else:
-                msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
+                msg.axes[axes_dict['vertical']] = hold_depth() #replace with hold_depth later
         
         if distance(box[2], box[3], box[4], box[5]) > 0.5:
             is_close += 1
@@ -153,7 +155,7 @@ def track(boxes):
         if not use_hold_depth:
             msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
         else:
-            msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
+            msg.axes[axes_dict['vertical']] = hold_depth() #replace with hold_depth later
 
     msg.axes[axes_dict['frontback']] = .4
     return msg
@@ -185,7 +187,7 @@ def ramming_speed(boxes):
     if not use_hold_depth:
         msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
-        msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = hold_depth() #replace with hold_depth later
 
     return msg
 
@@ -218,7 +220,7 @@ def search_pat_forward(boxes):
     if not use_hold_depth:
         msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
-        msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = hold_depth() #replace with hold_depth later
     return msg
 
 def search_pat_left(boxes):
@@ -234,7 +236,7 @@ def search_pat_left(boxes):
     if not use_hold_depth:
         msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
-        msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = hold_depth() #replace with hold_depth later
     
     return msg
 
@@ -254,7 +256,7 @@ def search_pat_right(boxes):
     if not use_hold_depth:
         msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
-        msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = hold_depth() #replace with hold_depth later
     return msg
 
 def search_pat_recenter(boxes): #rotates back to the left
@@ -269,7 +271,7 @@ def search_pat_recenter(boxes): #rotates back to the left
     if not use_hold_depth:
         msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
-        msg.axes[axes_dict['vertical']] = hold_depth(target_depth)
+        msg.axes[axes_dict['vertical']] = hold_depth()
     if get_box_of_class(boxes, current_target):
             current_state = track
     elif(time.time() - start_time) > 2: #rotate for 2 secs
@@ -292,6 +294,7 @@ def find_dice(boxes):
     global target_depth
     global last_seen
 
+    msg = init_msg()
     # find all boxlike things:
     boxes = []
     for box_name in ['die1', 'die2', 'die5', 'die6','dieX']:
@@ -337,9 +340,9 @@ def find_dice(boxes):
         if not use_hold_depth:
             msg.axes[axes_dict['vertical']] = -.55 #replace with hold_depth later
         else:
-            msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
+            msg.axes[axes_dict['vertical']] = hold_depth() #replace with hold_depth later
 
-    if completed['dice_found'] = True and (time.time() - last_seen) < 10 and is_close >= 10:
+    if completed['dice_found'] and ((time.time() - last_seen) < 10) and (is_close >= 10):
         completed['dice_hit'] = True
         target_depth = get_depth()
         start_time = time.time()
@@ -378,7 +381,7 @@ def search_forward(boxes):
     if not use_hold_depth:
         msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
-        msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = hold_depth() #replace with hold_depth later
     return msg
 
 #search for the gate if it isn't initially visible
@@ -406,7 +409,7 @@ def search_left(boxes):
     if not use_hold_depth:
         msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
-        msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = hold_depth() #replace with hold_depth later
     
     return msg
 
@@ -436,7 +439,7 @@ def search_right(boxes):
     if not use_hold_depth:
         msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
-        msg.axes[axes_dict['vertical']] = hold_depth(target_depth) #replace with hold_depth later
+        msg.axes[axes_dict['vertical']] = hold_depth() #replace with hold_depth later
 
 
     return msg
@@ -453,7 +456,7 @@ def search_recenter(boxes): #rotates back to the left
     if not use_hold_depth:
         msg.axes[axes_dict['vertical']] = -.45 #replace with hold_depth later
     else:
-        msg.axes[axes_dict['vertical']] = hold_depth(target_depth)
+        msg.axes[axes_dict['vertical']] = hold_depth()
     if get_box_of_class(boxes, current_target):
         if search_frames_seen <= 2:
             search_frames_seen += 1
