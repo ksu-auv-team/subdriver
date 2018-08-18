@@ -114,7 +114,9 @@ def track(boxes):
     global is_close
     global target_depth
     global last_seen
+    target_depth = get_depth()
     completed['start_gate_found'] = True #change later, once we have more tasks
+    is_close = False
 
     msg = init_msg()
     box = get_box_of_class(boxes, current_target)
@@ -129,10 +131,7 @@ def track(boxes):
             msg.axes[axes_dict['rotate']] = -0.1
 
         if center[1] < .45:
-            if get_depth() > 1:
-           	    msg.axes[axes_dict['vertical']] = -0.3
-            else: 
-                msg.axes[axes_dict['vertical']] = depth_const
+            msg.axes[axes_dict['vertical']] = -0.3
         elif center[1] > .55:
             msg.axes[axes_dict['vertical']] = -0.7
         else:
@@ -173,12 +172,17 @@ def ramming_speed(boxes):
     if (time.time() - start_time) > 10:
         print("headed to the land of dice, motherfuckers")
         current_target = None
-
-        completed['start_gate_passed'] = True
-        
-        current_state = find_dice
-        msg = init_msg()
-        start_time = time.time()
+        if not completed['start_gate_passed']:
+            completed['start_gate_passed'] = True
+            
+            current_state = find_dice
+            msg = init_msg()
+            start_time = time.time()
+        elif not completed['dice_hit']:
+            completed['dice_hit'] = True
+            current_state = surface
+            msg = init_msg()
+            start_time = time.time()
 
     if not use_hold_depth:
         msg.axes[axes_dict['vertical']] = depth_const #replace with hold_depth later
@@ -234,13 +238,13 @@ def find_dice(boxes):
 
         # proportional control:
         lr_err = center[0] - 0.5
-        lr_signal = (-lr_err + 0) * .52 # signal inverted to match joystick
+        lr_signal = (-lr_err + 0) * 2 # signal inverted to match joystick
         msg.axes[axes_dict['leftright']] = max(min(lr_signal, 1), -1)
 
-        # if center[0] < .45:
-        #     msg.axes[axes_dict['rotate']] = 0.1
-        # elif center[0] > .55:
-        #     msg.axes[axes_dict['rotate']] = -0.1
+        if center[0] < .45:
+            msg.axes[axes_dict['rotate']] = 0.1
+        elif center[0] > .55:
+            msg.axes[axes_dict['leftright']] = -0.1
 
         vert_err = center[1] - 0.5
         vert_signal = (-vert_err + -.45) * 2 # signal inverted because image coordinates
