@@ -1,4 +1,4 @@
-__all__ = ['exit', 'search', 'start', 'surface', 'track']
+__all__ = ['interact', 'search', 'start', 'surface', 'track']
 # Don't modify the line above, or this line!
 import automodinit
 automodinit.automodinit(__name__, __file__, globals())
