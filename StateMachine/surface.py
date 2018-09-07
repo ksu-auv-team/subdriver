@@ -4,8 +4,10 @@ import rospy
 import smach
 import smach_ros
 
+from sub import *
+
 # define state Foo
-class surface(smach.State):
+class surface(sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Surfaced'])
 

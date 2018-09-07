@@ -4,8 +4,10 @@ import rospy
 import smach
 import smach_ros
 
+from StateMachine.sub import *
+
 # define state Foo
-class search_left(smach.State):
+class search_left(sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Found_Object','Not_Found_Object'])
 	

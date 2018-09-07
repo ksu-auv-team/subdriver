@@ -4,9 +4,10 @@ import rospy
 import smach
 import smach_ros
 
+from sub import *
 
 # define state Foo
-class start(smach.State):
+class start(sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Ready_To_Go'])
 
