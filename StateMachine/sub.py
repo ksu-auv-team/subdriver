@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import rospy
 import smach
 import smach_ros
@@ -11,6 +10,7 @@ from mavros_msgs.msg import VFR_HUD
 import numpy as np
 import pymavlink
 
+import gbl
 
 # define state Foo
 class sub(smach.State):
@@ -18,7 +18,7 @@ class sub(smach.State):
         smach.State.__init__(self, outcomes=['Finished_Run'])
 
     def init_state(self):
-    	self.state_start_time = rospy.get_time()
+    	self.current_state_start_time = rospy.get_time()
     	self.log()
 
     def execute(self, userdata):
@@ -34,7 +34,7 @@ class sub(smach.State):
     	pass    	    	
 
     def depth_callback(msg): 
-    	altitude = msg.altitude
+    	glb.altitude = msg.altitude
 
     def init_joy_msg(self):
     	msg = Joy()
@@ -59,10 +59,10 @@ class sub(smach.State):
 
     def bbox_callback(msg):
     	#get multidimensional list of boxes
-    	self.boxes = []
+    	gbl.boxes = []
     	num_boxes = int(msg.data[0])
     	for i in range (num_boxes):
-       		boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
+       		gbl.boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
     	#print(boxes)
 
     	# get function
@@ -78,14 +78,7 @@ class sub(smach.State):
     	#publish
     	#joy_pub.publish(output) 
 
-
-
-
-    boxes = []
-    current_target = None
-
-    run_start_time = None
-    state_start_time = None
+    current_state_start_time = None
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
     ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
@@ -103,5 +96,3 @@ class sub(smach.State):
             'slot_machine':12, 'slot_handle':13, 'r_slot_target':14, 'y_slot_target':15,
             'r_ball_tray':16, 'g_ball_tray':17, 'floating_area':18, 'r_funnel':19,
             'y_funnel':20, 'g_chip_dispenser':21, 'g_chip_plate':22, 'dieX':23, 'g_funnel':24}
-
-    altitude = None

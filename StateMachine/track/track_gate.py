@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 
-import rospy
-import smach
-import smach_ros
-
 from StateMachine.sub import *
 
 # define state Foo

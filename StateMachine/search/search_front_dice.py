@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 
-import rospy
-import smach
-import smach_ros
-
 from search_front import *
 
 # define state Foo
