@@ -20,13 +20,10 @@ class start(sub):
 
     	self.joy_pub.publish(curr_msg)
 
-    	if rospy.get_time() > (gbl.run_start_time + 15):
-        	if self.get_box_of_class(gbl.boxes, self.class_dict['start_gate']):
-        		return 'Found_Gate' # Transitions to TRACK_GATE
-        	else:
-        		return 'Not_Found_Gate' # Transitions to SEARCH_LEFT_GATE
-
         return 'Not_Found_Gate' # Debug Purpuses Only!
 
-    def log(self):
-    	rospy.loginfo('Executing state START')
+        rospy.sleep(15.0)
+        if self.get_box_of_class(gbl.boxes, self.class_dict['start_gate']):
+            return 'Found_Gate' # Transitions to TRACK_GATE
+        else:
+            return 'Not_Found_Gate' # Transitions to SEARCH_FRONT_GATE

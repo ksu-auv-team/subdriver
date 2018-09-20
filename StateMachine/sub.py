@@ -42,21 +42,26 @@ class sub(smach.State):
     	msg.buttons = list(self.def_msg_buttons)
     	return msg
 
-	def get_box_of_class(boxes, class_num):
-		found = None
-    	max_prob = 0.0
-    	for box in boxes:
-        	if box[0] == class_num and box[1] > max_prob:
-        		found = box
-        		max_prob = box[1] 
-    	print('class: ' + str(box[0]) + '\tconf: ' + str(box[1]))
+    def get_box_of_class(self, boxes, class_num):
+        if boxes == []:
+            rospy.loginfo('No boxes in image at time: ' + str(rospy.get_time()))
+            return None
+
+        found = None
+        max_prob = 0.0
+        for box in boxes:
+            if box[0] == class_num and box[1] > max_prob:
+                found = box
+                max_prob = box[1] 
+        
+        print('class: ' + str(box[0]) + '\tconf: ' + str(box[1]))
 
     	#ignore ghosts
-    	if max_prob > 0.20:
-    		return found
-    	else:
-        	return None      	
-
+        if max_prob > 0.20:
+            return found
+        else:
+            return None
+            
     def bbox_callback(msg):
     	#get multidimensional list of boxes
     	gbl.boxes = []
