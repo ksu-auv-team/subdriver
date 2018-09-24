@@ -12,14 +12,23 @@ import pymavlink
 
 import gbl
 
+import sys, signal
+
+def signal_handler(signal, frame):
+    print("\nShutting Down Run...")
+    sys.exit(0)
+
 # define state Foo
 class sub(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Finished_Run'])
 
     def init_state(self):
-    	self.current_state_start_time = rospy.get_time()
-    	self.log()
+        #Upon adding the states to the state machine, they run the init_state,
+        #but we only want them to run it after we have actually started the run
+        if gbl.run_start_time:
+            self.current_state_start_time = rospy.get_time()
+            self.log()
 
     def execute(self, userdata):
     	pass
@@ -44,6 +53,7 @@ class sub(smach.State):
 
     def get_box_of_class(self, boxes, class_num):
         if boxes == []:
+            rospy.sleep(1)
             rospy.loginfo('No boxes in image at time: ' + str(rospy.get_time()))
             return None
 
@@ -61,7 +71,7 @@ class sub(smach.State):
             return found
         else:
             return None
-            
+
     def bbox_callback(msg):
     	#get multidimensional list of boxes
     	gbl.boxes = []
@@ -84,6 +94,10 @@ class sub(smach.State):
     	#joy_pub.publish(output) 
 
     current_state_start_time = None
+
+    signal.signal(signal.SIGINT, signal_handler)
+
+    search_frames_seen = 0
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
     ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
