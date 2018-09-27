@@ -28,6 +28,7 @@ class sub(smach.State):
         #but we only want them to run it after we have actually started the run
         if gbl.run_start_time:
             self.current_state_start_time = rospy.get_time()
+            self.current_state_start_altitude = gbl.altitude
             self.log()
 
     def execute(self, userdata):
@@ -37,10 +38,26 @@ class sub(smach.State):
     	pass
 
     def get_depth(self):
-    	pass
+    	return gbl.altitude - gbl.init_depth
 
-    def depth_hold(self):
-    	pass    	    	
+    def depth_hold(self, hold_alt):
+    	msg = self.init_joy_msg()
+
+        if gbl.altitude == None or hold_alt == None:
+            msg.axes[self.axes_dict['vertical']] = gbl.depth_const
+            rospy.logerr("While trying to hold altitude, altitude = None")
+
+        elif gbl.altitude - hold_alt > 0.25:
+            if self.get_depth() > 1:
+                msg.axes[self.axes_dict['vertical']] = gbl.depth_const + 0.2
+            else: 
+                msg.axes[self.axes_dict['vertical']] = gbl.depth_const
+        elif gbl.altitude - hold_alt < -0.25:
+            msg.axes[self.axes_dict['vertical']] = gbl.depth_const - 0.2
+        else:
+            msg.axes[self.axes_dict['vertical']] = gbl.depth_const
+
+        self.joy_pub.publish(msg)
 
     def depth_callback(msg): 
     	glb.altitude = msg.altitude
@@ -93,11 +110,21 @@ class sub(smach.State):
     	#publish
     	#joy_pub.publish(output) 
 
+    def getCenter(self, box):
+        return ((box[4] +  box[2]) / 2 ,box[5])
+
+    def getDistance(self, x1, y1, x2, y2):
+        return math.sqrt((x2-x1)**2 + (y2-y1)**2)
+
     current_state_start_time = None
+    current_state_start_altitude = None
 
     signal.signal(signal.SIGINT, signal_handler)
 
     search_frames_seen = 0
+    last_seen = None
+
+    is_close = False
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
     ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)

@@ -11,10 +11,12 @@ class search_recenter(sub):
     	self.init_state()
     	msg = self.init_joy_msg()
     	msg.axes[self.axes_dict['rotate']] = -.2
+        self.depth_hold(self.current_state_start_altitude)
 
-    	return 'Not_Found_Object' # Debug purposes only!
+    	return 'Found_Object' # Debug purposes only!
 
     	while(1):
+    		self.joy_pub.publish(msg)
     		if self.get_box_of_class(gbl.boxes, gbl.current_target):
     			if self.search_frames_seen <= 2:
     				self.search_frames_seen += 1

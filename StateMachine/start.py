@@ -13,6 +13,8 @@ class start(sub):
         self.init_state()
         rospy.loginfo("Run Start Time: " + str(gbl.run_start_time))
 
+        gbl.init_depth = gbl.altitude
+
     	curr_msg = self.init_joy_msg()
     	curr_msg.axes[self.axes_dict['vertical']] = -1
     	curr_msg.axes[self.axes_dict['frontback']] = 1
