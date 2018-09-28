@@ -37,18 +37,21 @@ class sub(smach.State):
     def log(self):
     	pass
 
-    def get_depth(self):
-    	return gbl.altitude - gbl.init_depth
-
+    def init_joy_msg(self):
+    	msg = Joy()
+    	msg.axes = list(self.def_msg_axes)
+    	msg.buttons = list(self.def_msg_buttons)
+    	return msg
+    
     def depth_hold(self, hold_alt):
-    	msg = self.init_joy_msg()
+        msg = self.init_joy_msg()
 
         if gbl.altitude == None or hold_alt == None:
             msg.axes[self.axes_dict['vertical']] = gbl.depth_const
             rospy.logerr("While trying to hold altitude, altitude = None")
 
         elif gbl.altitude - hold_alt > 0.25:
-            if self.get_depth() > 1:
+            if gbl.get_depth() > 1:
                 msg.axes[self.axes_dict['vertical']] = gbl.depth_const + 0.2
             else: 
                 msg.axes[self.axes_dict['vertical']] = gbl.depth_const
@@ -58,57 +61,6 @@ class sub(smach.State):
             msg.axes[self.axes_dict['vertical']] = gbl.depth_const
 
         self.joy_pub.publish(msg)
-
-    def depth_callback(msg): 
-    	glb.altitude = msg.altitude
-
-    def init_joy_msg(self):
-    	msg = Joy()
-    	msg.axes = list(self.def_msg_axes)
-    	msg.buttons = list(self.def_msg_buttons)
-    	return msg
-
-    def get_box_of_class(self, boxes, class_num):
-        if boxes == []:
-            rospy.sleep(1)
-            rospy.loginfo('No boxes in image at time: ' + str(rospy.get_time()))
-            return None
-
-        found = None
-        max_prob = 0.0
-        for box in boxes:
-            if box[0] == class_num and box[1] > max_prob:
-                found = box
-                max_prob = box[1] 
-        
-        print('class: ' + str(box[0]) + '\tconf: ' + str(box[1]))
-
-    	#ignore ghosts
-        if max_prob > 0.20:
-            return found
-        else:
-            return None
-
-    def bbox_callback(msg):
-    	#get multidimensional list of boxes
-    	gbl.boxes = []
-    	num_boxes = int(msg.data[0])
-    	for i in range (num_boxes):
-       		gbl.boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
-    	#print(boxes)
-
-    	# get function
-    	#print(current_state)
-    	#output = current_state(boxes)
-
-    	# target_depth = get_depth()main
-    	# while not rospy.is_shutdowmain
-    	#     msg = init_msg()
-    	#     msg.axes[axes_dict['vemain
-    	#     pub.publish(msg)
-
-    	#publish
-    	#joy_pub.publish(output) 
 
     def getCenter(self, box):
         return ((box[4] +  box[2]) / 2 ,box[5])
@@ -127,8 +79,6 @@ class sub(smach.State):
     is_close = False
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
-    ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
-    depth_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, depth_callback)
 
     def_msg_axes = (-0.01, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
     def_msg_buttons = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)

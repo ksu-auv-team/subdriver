@@ -14,7 +14,7 @@ class track_gate(sub):
 
     	while(1):
     		msg = self.init_joy_msg()
-    		box = self.get_box_of_class(gbl.boxes, gbl.current_target)
+    		box = gbl.get_box_of_class(gbl.boxes, gbl.current_target)
     		msg.axes[self.axes_dict['frontback']] = .4
     		self.joy_pub.publish(msg)
     		if (box != None) and box[1] > .3:
