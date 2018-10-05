@@ -9,6 +9,7 @@ init_depth = None
 depth_const = -0.5
 boxes = []
 current_target = None
+sleep_time = 0.05
 
 ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
 depth_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, depth_callback)
@@ -27,10 +28,10 @@ def bbox_callback(msg):
 
 #global functions
 
-def get_depth(self):
+def get_depth():
     	return altitude - init_depth
 
-def get_box_of_class(self, boxes, class_num):
+def get_box_of_class(boxes, class_num):
     if boxes == []:
         rospy.sleep(1)
         rospy.loginfo('No boxes in image at time: ' + str(rospy.get_time()))

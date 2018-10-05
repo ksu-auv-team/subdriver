@@ -2,6 +2,7 @@
 import rospy
 import smach
 import smach_ros
+import math
 
 from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Joy
@@ -43,24 +44,24 @@ class sub(smach.State):
     	msg.buttons = list(self.def_msg_buttons)
     	return msg
     
-    def depth_hold(self, hold_alt):
+    def depth_hold(self):
         msg = self.init_joy_msg()
 
-        if gbl.altitude == None or hold_alt == None:
-            msg.axes[self.axes_dict['vertical']] = gbl.depth_const
+        if gbl.altitude == None or self.current_state_start_altitude == None:
+            thrust = gbl.depth_const
             rospy.logerr("While trying to hold altitude, altitude = None")
 
-        elif gbl.altitude - hold_alt > 0.25:
+        elif gbl.altitude - self.current_state_start_altitude > 0.25:
             if gbl.get_depth() > 1:
-                msg.axes[self.axes_dict['vertical']] = gbl.depth_const + 0.2
+                thrust = gbl.depth_const + 0.2
             else: 
-                msg.axes[self.axes_dict['vertical']] = gbl.depth_const
-        elif gbl.altitude - hold_alt < -0.25:
-            msg.axes[self.axes_dict['vertical']] = gbl.depth_const - 0.2
+                thrust = gbl.depth_const
+        elif gbl.altitude - self.current_state_start_altitude < -0.25:
+            thrust = gbl.depth_const - 0.2
         else:
-            msg.axes[self.axes_dict['vertical']] = gbl.depth_const
+            thrust = gbl.depth_const
 
-        self.joy_pub.publish(msg)
+        return thrust
 
     def getCenter(self, box):
         return ((box[4] +  box[2]) / 2 ,box[5])

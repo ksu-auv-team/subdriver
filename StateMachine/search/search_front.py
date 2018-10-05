@@ -11,7 +11,7 @@ class search_front(sub):
     	self.init_state()
     	msg = self.init_joy_msg()
     	msg.axes[self.axes_dict['frontback']] = .4
-        self.depth_hold(self.current_state_start_altitude)
+        msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
     	#return 'Not_Found_Object' # Debug purposes only!
 
@@ -29,5 +29,7 @@ class search_front(sub):
 
             else:
     			self.search_frames_seen = 0
+			
+			rospy.sleep(gbl.sleep_time)
         
 
