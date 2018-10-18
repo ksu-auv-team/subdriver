@@ -1,35 +1,25 @@
 import rospy
 from std_msgs.msg import Float32MultiArray
-from mavros_msgs.msg import vfr_hud
+from mavros_msgs.msg import VFR_HUD
 
-#Global Variables:
-run_start_time = None
-altitude = None
-init_depth = None
-depth_const = -0.5
-boxes = []
-current_target = None
-sleep_time = 0.05
 
-ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
-depth_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, depth_callback)
 
 #callbacks
 def depth_callback(msg): 
     altitude = msg.altitude
 
 def bbox_callback(msg):
-    	#get multidimensional list of boxes
-    	boxes = []
-    	num_boxes = int(msg.data[0])
-    	for i in range (num_boxes):
-       		boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
-    	#print(boxes)
+        #get multidimensional list of boxes
+        boxes = []
+        num_boxes = int(msg.data[0])
+        for i in range (num_boxes):
+            boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
+        #print(boxes)
 
 #global functions
 
 def get_depth():
-    	return altitude - init_depth
+        return altitude - init_depth
 
 def get_box_of_class(boxes, class_num):
     if boxes == []:
@@ -52,6 +42,16 @@ def get_box_of_class(boxes, class_num):
     else:
         return None
 
+#Global Variables:
+run_start_time = None
+altitude = None
+init_depth = None
+depth_const = -0.5
+boxes = []
+current_target = None
+sleep_time = 0.05
 
 
+ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
+depth_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, depth_callback)
 
