@@ -2,7 +2,7 @@
 
 from search_front import *
 
-# define state Foo
+# define state search_front_dice
 class search_front_dice(search_front):
 	pass
 

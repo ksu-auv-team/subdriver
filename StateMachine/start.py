@@ -2,17 +2,21 @@
 
 from sub import *
 
-# define state Foo
+# define state start
 class start(sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Not_Found_Gate', 'Found_Gate'])
         
 
     def execute(self, userdata):
-        gbl.run_start_time = rospy.get_time()
+        # Set the run start time to the current ros time
+        gbl.run_start_time = rospy.get_time() 
+
+        # Initialize the current state
         self.init_state()
         rospy.loginfo("Run Start Time: " + str(gbl.run_start_time))
 
+        # Set the run start altitude
         gbl.init_depth = gbl.altitude
 
     	curr_msg = self.init_joy_msg()
@@ -23,7 +27,7 @@ class start(sub):
 
         return 'Not_Found_Gate' # Debug Porpoises Only!
 
-
+        # Control loop
         while(1):
             self.joy_pub.publish(curr_msg)
 

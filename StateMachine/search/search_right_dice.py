@@ -2,7 +2,7 @@
 
 from search_right import *
 
-# define state Foo
+# define state search_right_dice
 class search_right_dice(search_right):
 	pass
 

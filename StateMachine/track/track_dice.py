@@ -2,7 +2,7 @@
 
 from StateMachine.sub import *
 
-# define state Foo
+# define state track_dice
 class track_dice(sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Lost_Dice','Touched_Dice'])

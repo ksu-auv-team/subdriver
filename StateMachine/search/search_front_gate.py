@@ -2,7 +2,7 @@
 
 from search_front import *
 
-# define state Foo
+# define state search_front_gate
 class search_front_gate(search_front):
 	pass
 

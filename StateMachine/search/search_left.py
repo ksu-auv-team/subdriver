@@ -2,7 +2,7 @@
 
 from StateMachine.sub import *
 
-# define state Foo
+# define state search_left
 class search_left(sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Found_Object','Not_Found_Object'])

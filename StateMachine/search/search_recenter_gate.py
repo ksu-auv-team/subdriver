@@ -2,7 +2,7 @@
 
 from search_recenter import *
 
-# define state Foo
+# define state search_recenter_gate
 class search_recenter_gate(search_recenter):
 	pass
 

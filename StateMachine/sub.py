@@ -11,6 +11,7 @@ from mavros_msgs.msg import VFR_HUD
 import numpy as np
 import pymavlink
 
+# Global Vaiables
 import gbl
 
 import sys, signal
@@ -19,8 +20,12 @@ def signal_handler(signal, frame):
     print("\nShutting Down Run...")
     sys.exit(0)
 
-# define state Foo
+# This is our overall 'sub' state. It is the superclass that all the other states inherit from.
+# The idea here being that there are many things that all the states should be able to do, 
+# but we don't want to re-write them all.
 class sub(smach.State):
+    # Every state must be initiailized with an __init__ function that defines what the outcomes
+    # of the state can be. The outcomes determine what state is moved to next.
     def __init__(self):
         smach.State.__init__(self, outcomes=['Finished_Run'])
 
@@ -32,18 +37,29 @@ class sub(smach.State):
             self.current_state_start_altitude = gbl.altitude
             self.log()
 
+    # Every state requires an 'execute' function. This is the function that automatically
+    # gets called by SMACH when we transition into the new state. In each of the subclasses 
+    # that inherit from 'sub' we override the 'execute' function to do that state's speciffic job.
     def execute(self, userdata):
     	pass
 
+    # The log function is designed to be overridden in each subclass as a catch-all for when 
+    # you want to log things to ROS.
     def log(self):
     	pass
 
+    # This initializes a joystick message. We drive our sub by simulating joystick commands and sending
+    # them to the Pixhawk. This function will return to you an empty joystick message ready to be edited.
     def init_joy_msg(self):
     	msg = Joy()
     	msg.axes = list(self.def_msg_axes)
     	msg.buttons = list(self.def_msg_buttons)
     	return msg
     
+    # The depth_hold does what is says: holding the depth. It compares the current altitude 'gbl.altitude'
+    # to what the altitude was at the start of the current state. If it's higher or lower, it adjusts 
+    # 'thrust' which gets returned. The one thing to keep in mind here, is that depth_hold is not actually 
+    # commanding your sub anything, just returning the value to pack into your message to hold the current depth.
     def depth_hold(self):
         msg = self.init_joy_msg()
 
@@ -63,12 +79,15 @@ class sub(smach.State):
 
         return thrust
 
+    # Returns the center of a bounding box sent to it
     def getCenter(self, box):
         return ((box[4] +  box[2]) / 2 ,box[5])
 
+    # Returns the distance between two points sent
     def getDistance(self, x1, y1, x2, y2):
         return math.sqrt((x2-x1)**2 + (y2-y1)**2)
 
+    # These get set at the start of each state, allowing the user to call them as needed
     current_state_start_time = None
     current_state_start_altitude = None
 

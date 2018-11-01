@@ -2,7 +2,7 @@
 
 from StateMachine.sub import *
 
-# define state Foo
+# define state track_gate
 class track_gate(sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Lost_Gate','Entered_Gate'])
@@ -11,6 +11,7 @@ class track_gate(sub):
       self.init_state()
       self.last_seen = rospy.get_time()
 
+      #control loop
       while(1):
         msg = self.init_joy_msg()
         box = gbl.get_box_of_class(gbl.boxes, gbl.current_target)
