@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+'''
+sub.py implements a common base class for all states used in the SubDriver
+state machine.
+
+As currently implemented, the base class does implicitly depend on state data
+stored as global vars in gbl, and system data exposed through rospy API.
+'''
 import rospy
 import smach
 import smach_ros
@@ -16,51 +23,87 @@ import gbl
 
 import sys, signal
 
+
 def signal_handler(signal, frame):
+    ''' Handles interrupt signals from OS.
+
+    Args:
+      signal: signal received from system
+      frame: unused? assumed a state capture for diagnostic porpises.
+    '''
     print("\nShutting Down Run...")
     sys.exit(0)
 
-# This is our overall 'sub' state. It is the superclass that all the other states inherit from.
-# The idea here being that there are many things that all the states should be able to do, 
-# but we don't want to re-write them all.
+
 class sub(smach.State):
-    # Every state must be initiailized with an __init__ function that defines what the outcomes
-    # of the state can be. The outcomes determine what state is moved to next.
+    '''This is our overall 'sub' state. It is the superclass that all the other states inherit from.
+    The idea here being that there are many things that all the states should be able to do,
+    but we don't want to re-write them all.
+    '''
     def __init__(self):
+        '''Initializes a Sub.
+
+        Every state must be initiailized with an __init__ function that defines what the outcomes
+        of the state can be. The outcomes determine what state is moved to next.
+        '''
         smach.State.__init__(self, outcomes=['Finished_Run'])
 
     def init_state(self):
-        #Upon adding the states to the state machine, they run the init_state,
-        #but we only want them to run it after we have actually started the run
+        '''Initializes a Sub's state using global vars.
+        Upon adding the states to the state machine, they run the init_state,
+        but we only want them to run it after we have actually started the run.
+
+        Implicit args: gbl.run_start_time, used to check if run is actually started.
+                       gbl.altitude, current sub altitude(depth?) at start of state.
+                       (time), time as returned by rospy.get_time() at start of state.
+        '''
         if gbl.run_start_time:
             self.current_state_start_time = rospy.get_time()
             self.current_state_start_altitude = gbl.altitude
             self.log()
 
-    # Every state requires an 'execute' function. This is the function that automatically
-    # gets called by SMACH when we transition into the new state. In each of the subclasses 
-    # that inherit from 'sub' we override the 'execute' function to do that state's speciffic job.
+    
     def execute(self, userdata):
+      '''Executes the behavior defined for a given state.
+      Every state requires an 'execute' function. This is the function that automatically
+      gets called by SMACH when we transition into the new state. In each of the subclasses 
+      that inherit from 'sub' we override the 'execute' function to do that state's speciffic job.
+
+      Args:
+        userdata: dict, k-v mapping of data pertinent to state.
+      '''
     	pass
 
-    # The log function is designed to be overridden in each subclass as a catch-all for when 
-    # you want to log things to ROS.
     def log(self):
+      '''Logs to ROS.
+      The log function is designed to be overridden in each subclass as a catch-all for when
+      you want to log things to ROS.
+      '''
     	pass
 
-    # This initializes a joystick message. We drive our sub by simulating joystick commands and sending
-    # them to the Pixhawk. This function will return to you an empty joystick message ready to be edited.
     def init_joy_msg(self):
+      '''This initializes a joystick message. We drive our sub by simulating joystick commands and sending
+      them to the Pixhawk.
+
+      Returns:
+        empty joystick message ready for editing.
+      '''
     	msg = Joy()
     	msg.axes = list(self.def_msg_axes)
     	msg.buttons = list(self.def_msg_buttons)
     	return msg
     
-    # The depth_hold does what is says: holding the depth. It compares the current altitude 'gbl.altitude'
-    # to what the altitude was at the start of the current state. If it's higher or lower, it adjusts 
-    # 'thrust' which gets returned. The one thing to keep in mind here, is that depth_hold is not actually 
-    # commanding your sub anything, just returning the value to pack into your message to hold the current depth.
     def depth_hold(self):
+      '''Holds sub depth to value from 'gbl.altitude'.
+      
+      The depth_hold does what is says: holding the depth. It compares the current altitude 'gbl.altitude'
+      to what the altitude was at the start of the current state. If it's higher or lower, it adjusts 
+      'thrust' which gets returned. The one thing to keep in mind here, is that depth_hold is not actually 
+      commanding your sub anything, just returning the value to pack into your message to hold the current depth.
+      
+      Returns:
+        thrust, float(?) value for maintaining the depth to pass along to controller.
+      '''
         msg = self.init_joy_msg()
 
         if gbl.altitude == None or self.current_state_start_altitude == None:
@@ -79,12 +122,26 @@ class sub(smach.State):
 
         return thrust
 
-    # Returns the center of a bounding box sent to it
     def getCenter(self, box):
+        '''Gets the center point of a bounding box.
+
+        Args:
+          box: Box(type?), box whose center to calculate.
+        
+        Returns:
+          center of a bounding box sent to it
+        '''
         return ((box[4] +  box[2]) / 2 ,box[5])
 
-    # Returns the distance between two points sent
     def getDistance(self, x1, y1, x2, y2):
+      '''Gets distance between two points.
+
+      Args:
+        x1,y1,x2,y2: float, scalar coordinates for the two points.
+
+      Returns:
+        float, distance between the two points.
+      '''
         return math.sqrt((x2-x1)**2 + (y2-y1)**2)
 
     # These get set at the start of each state, allowing the user to call them as needed
