@@ -54,12 +54,12 @@ class sub(smach.State):
         but we only want them to run it after we have actually started the run.
 
         Implicit args: gbl.run_start_time, used to check if run is actually started.
-                       gbl.altitude, current sub altitude(depth?) at start of state.
+                       gbl.depth, current sub depth at start of state.
                        (time), time as returned by rospy.get_time() at start of state.
         '''
         if gbl.run_start_time:
             self.current_state_start_time = rospy.get_time()
-            self.current_state_start_altitude = gbl.altitude
+            self.current_state_start_depth = gbl.depth
             self.log()
 
     
@@ -72,14 +72,14 @@ class sub(smach.State):
       Args:
         userdata: dict, k-v mapping of data pertinent to state.
       '''
-    	pass
+      pass
 
     def log(self):
       '''Logs to ROS.
       The log function is designed to be overridden in each subclass as a catch-all for when
       you want to log things to ROS.
       '''
-    	pass
+      pass
 
     def init_joy_msg(self):
       '''This initializes a joystick message. We drive our sub by simulating joystick commands and sending
@@ -88,39 +88,39 @@ class sub(smach.State):
       Returns:
         empty joystick message ready for editing.
       '''
-    	msg = Joy()
-    	msg.axes = list(self.def_msg_axes)
-    	msg.buttons = list(self.def_msg_buttons)
-    	return msg
+      msg = Joy()
+      msg.axes = list(self.def_msg_axes)
+      msg.buttons = list(self.def_msg_buttons)
+      return msg
     
     def depth_hold(self):
-      '''Holds sub depth to value from 'gbl.altitude'.
+      '''Holds sub depth to value from 'gbl.depth'.
       
-      The depth_hold does what is says: holding the depth. It compares the current altitude 'gbl.altitude'
-      to what the altitude was at the start of the current state. If it's higher or lower, it adjusts 
+      The depth_hold does what is says: holding the depth. It compares the current depth 'gbl.depth'
+      to what the depth was at the start of the current state. If it's higher or lower, it adjusts 
       'thrust' which gets returned. The one thing to keep in mind here, is that depth_hold is not actually 
       commanding your sub anything, just returning the value to pack into your message to hold the current depth.
       
       Returns:
         thrust, float(?) value for maintaining the depth to pass along to controller.
       '''
-        msg = self.init_joy_msg()
+      msg = self.init_joy_msg()
 
-        if gbl.altitude == None or self.current_state_start_altitude == None:
-            thrust = gbl.depth_const
-            rospy.logerr("While trying to hold altitude, altitude = None")
+      if gbl.depth == None or self.current_state_start_depth == None:
+        thrust = gbl.depth_const
+        rospy.logerr("While trying to hold depth, depth = None")
 
-        elif gbl.altitude - self.current_state_start_altitude > 0.25:
-            if gbl.get_depth() > 1:
-                thrust = gbl.depth_const + 0.2
-            else: 
-                thrust = gbl.depth_const
-        elif gbl.altitude - self.current_state_start_altitude < -0.25:
-            thrust = gbl.depth_const - 0.2
-        else:
-            thrust = gbl.depth_const
+      elif gbl.depth - self.current_state_start_depth > 0.25:
+        if gbl.get_depth() > 1:
+          thrust = gbl.depth_const + 0.2
+        else: 
+          thrust = gbl.depth_const
+      elif gbl.depth - self.current_state_start_depth < -0.25:
+        thrust = gbl.depth_const - 0.2
+      else:
+        thrust = gbl.depth_const
 
-        return thrust
+      return thrust
 
     def getCenter(self, box):
         '''Gets the center point of a bounding box.
@@ -142,11 +142,11 @@ class sub(smach.State):
       Returns:
         float, distance between the two points.
       '''
-        return math.sqrt((x2-x1)**2 + (y2-y1)**2)
+      return math.sqrt((x2-x1)**2 + (y2-y1)**2)
 
     # These get set at the start of each state, allowing the user to call them as needed
     current_state_start_time = None
-    current_state_start_altitude = None
+    current_state_start_depth = None
 
     signal.signal(signal.SIGINT, signal_handler)
 
