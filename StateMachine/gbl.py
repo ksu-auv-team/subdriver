@@ -6,7 +6,7 @@ from mavros_msgs.msg import VFR_HUD
 
 #callbacks
 def depth_callback(msg): 
-    altitude = msg.altitude
+    depth = msg.altitude
 
 def bbox_callback(msg):
         #get multidimensional list of boxes
@@ -19,7 +19,7 @@ def bbox_callback(msg):
 #global functions
 
 def get_depth():
-        return altitude - init_depth
+        return depth - init_depth
 
 def get_box_of_class(boxes, class_num):
     if boxes == []:
@@ -44,7 +44,7 @@ def get_box_of_class(boxes, class_num):
 
 #Global Variables:
 run_start_time = None
-altitude = None
+depth = None
 init_depth = None
 depth_const = -0.5
 boxes = []
