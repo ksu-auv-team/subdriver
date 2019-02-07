@@ -8,7 +8,6 @@ stored as global vars in gbl, and system data exposed through rospy API.
 '''
 import rospy
 import smach
-import smach_ros
 import math
 
 from std_msgs.msg import Float32MultiArray
