@@ -2,7 +2,6 @@
 
 import rospy
 import smach
-import smach_ros
 
 #import literally all the states we will ever have:
 from StateMachine.interact.interact_gate import *
