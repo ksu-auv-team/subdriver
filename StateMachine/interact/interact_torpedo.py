@@ -5,11 +5,11 @@ from collections import namedtuple
 from StateMachine.sub import *
 
 
-class LaunchError(Error):
-    '''Indicates failure to launch.'''
+class LaunchError(Exception):
+    '''Base class for exceptions in this module. Indicates a failure to launch.'''
     pass
 
-class LauncherReadyError(Error):
+class LauncherReadyError(LaunchError):
     '''Indicates that launchers are failing to present as READY.'''
     pass
 
@@ -17,8 +17,8 @@ class LauncherReadyError(Error):
 #TODO(travis): Identify status messages to determine launcher state.
 
 #Kentucky offsets for y-z plane(parallel to target)
-Kentucky = NamedTuple('Kentucky',['windage','elevation'])
-Kentucky.__doc__ = '''Kentucky(Windage) offesets to apply just before launching torpedo.
+Kentucky = namedtuple('Kentucky',['windage','elevation'])
+'''Kentucky(Windage) offesets to apply just before launching torpedo.
 
 Defines offset in MoA (or just degrees, depending upon launcher accuracy and
 offset required) to compensate for launcher mounting position in relation
@@ -70,11 +70,11 @@ class interact_torpedo(sub):
         except LaunchError as e:
             #Issues with launchers themselves - failure to ready, failure to
             #fire, etc.
-            rospy.loginfo('INTERACT_TORPEDO - ' += e.message)
+            rospy.loginfo('INTERACT_TORPEDO - %s' % (e.message))
             return 'Torpedo_Failed'
         except Error as e:
             #Some other thing is broken, likely this very code.
-            rospy.logwarn('INTERACT_TORPEDO - ' += e.message)
+            rospy.logwarn('INTERACT_TORPEDO - %s' % (e.message))
             return 'Torpedo_Failed'
 
     def launch(self, launcher):
@@ -100,8 +100,8 @@ class interact_torpedo(sub):
           string, joystick button mapping for next ready launcher.
 
         Raises:
-          LauncherReadyError: if launcher status doesn't resolve to a READY state for
-          at least one launcher in given timeout.
+          LauncherReadyError: if launcher status doesn't resolve to a READY
+          state for at least one launcher in given timeout.
         '''
         #TODO(travis):implement conditionals based upon health reporting layer.
         return self.LAUNCHER_LEFT

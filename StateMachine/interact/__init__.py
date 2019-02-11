@@ -1,4 +1,4 @@
-__all__ = ['interact_dice', 'interact_gate']
+__all__ = ['interact_dice', 'interact_gate', 'interact_torpedo', 'interact_torpedo_test']
 # Don't modify the line above, or this line!
 import automodinit
 automodinit.automodinit(__name__, __file__, globals())
