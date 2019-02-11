@@ -127,7 +127,13 @@ class interact_torpedo(sub):
           float, range to target.
         '''
         tgt_range = 0.0
-        #TODO(travis): Determine ranging capabilities of sensor package.
+        #TODO(travis): Determine algorithm for extracting depth data from
+        #  sub_vision, specifically the zed/depth/* ros messages, given that
+        #  the messages are being pushed. Conceptually, the tagged image of the
+        #  target should also have supporting nformation from the ZED module on
+        #  depth based upon steroscopic vision camera. The trick is to get the
+        #  depth of the panel, not the center-point depth (well, maybe center,
+        #  depends on sub alignment, and how center is calculated.).
         return tgt_range
 
 
