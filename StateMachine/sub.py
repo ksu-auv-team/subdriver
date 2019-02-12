@@ -96,8 +96,8 @@ class sub(smach.State):
         empty joystick message ready for editing.
       '''
       msg = Joy()
-      msg.axes = list(self.def_msg_axes)
-      msg.buttons = list(self.def_msg_buttons)
+      msg.axes = self.Axes(*self.def_msg_axes)
+      msg.buttons = self.Buttons(*self.def_msg_buttons)
       return msg
     
     def depth_hold(self):
@@ -167,26 +167,6 @@ class sub(smach.State):
     is_close = False
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
-
-    Axes = namedtuple('Axes', ['rotate',
-                               'vertical',
-                               'lt',
-                               'leftright',
-                               'frontback',
-                               'rt',
-                               'dpad_h',
-                               'dpad_v'])
-    Buttons = namedtuple('Buttons', ['a',
-                                     'b',
-                                     'x',
-                                     'y',
-                                     'lb',
-                                     'rb',
-                                     'back',
-                                     'start',
-                                     'xbox',
-                                     'lstickpress',
-                                     'rstickpress'])
 
     def_msg_axes = (-0.01, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
     def_msg_buttons = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
