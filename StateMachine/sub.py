@@ -21,7 +21,6 @@ import pymavlink
 import gbl
 
 import sys, signal
-from collections import namedtuple
 
 def signal_handler(signal, frame):
     ''' Handles interrupt signals from OS.
@@ -96,8 +95,8 @@ class sub(smach.State):
         empty joystick message ready for editing.
       '''
       msg = Joy()
-      msg.axes = self.Axes(*self.def_msg_axes)
-      msg.buttons = self.Buttons(*self.def_msg_buttons)
+      msg.axes = list(self.def_msg_axes)
+      msg.buttons = list(self.def_msg_buttons)
       return msg
     
     def depth_hold(self):
