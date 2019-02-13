@@ -30,7 +30,7 @@ def signal_handler(signal, frame):
       signal: signal received from system
       frame: unused? assumed a state capture for diagnostic porpises.
     '''
-    print("\nShutting Down Run...")
+    rospy.loginfo("\nShutting Down Run...")
     sys.exit(0)
 
 

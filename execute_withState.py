@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
+import rospy
 import CreateStateMachine
 
 def init_execute():
-	print("Starting up state machine...")
+	rospy.loginfo("Starting up state machine...")
 	CreateStateMachine.createStateMachine()
 
 def main():
