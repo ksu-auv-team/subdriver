@@ -2,6 +2,7 @@ import rospy
 from std_msgs.msg import Float32MultiArray
 from mavros_msgs.msg import VFR_HUD
 
+from constants import JOY_MAP
 
 
 #callbacks
@@ -50,7 +51,6 @@ depth_const = -0.5
 boxes = []
 current_target = None
 sleep_time = 0.05
-
 
 ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
 depth_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, depth_callback)

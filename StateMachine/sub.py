@@ -12,6 +12,7 @@ import math
 
 from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Joy
+from sensor_msgs.msg import Health
 from sensor_msgs.msg import FluidPressure
 from mavros_msgs.msg import VFR_HUD
 import numpy as np
@@ -19,6 +20,7 @@ import pymavlink
 
 # Global Vaiables
 import gbl
+from constants import *
 
 import sys, signal
 
@@ -95,8 +97,8 @@ class sub(smach.State):
         empty joystick message ready for editing.
       '''
       msg = Joy()
-      msg.axes = list(self.def_msg_axes)
-      msg.buttons = list(self.def_msg_buttons)
+      msg.axes = list(DEFAULT_MSG_AXES)
+      msg.buttons = list(DEFAULT_MSG_BUTTONS)
       return msg
     
     def depth_hold(self):
@@ -153,6 +155,20 @@ class sub(smach.State):
       '''
       return math.sqrt((x2-x1)**2 + (y2-y1)**2)
 
+    def get_launcher(self):
+      '''Examines system health message to set active launcher. '''
+      if self.health.launcher_left_ready:
+        self.active_launcher = 'LAUNCHER_LEFT'
+        self.active_launcher_offset = LAUNCHER_LEFT_OFFSET
+        return
+      if self.health.launcher_right_ready:
+        self.active_launcher = 'LAUNCHER_RIGHT'
+        self.active_launcher_offset = LAUNCHER_LEFT_OFFSET
+        return
+      self.active_launcher = None
+      self.active_launcher_offset = None
+      return
+
     # These get set at the start of each state, allowing the user to call them
     # as needed
     current_state_start_time = None
@@ -164,56 +180,8 @@ class sub(smach.State):
     last_seen = None
 
     is_close = False
+    active_launcher = 'LAUNCHER_LEFT'
+    active_launcher_offset = LAUNCHER_LEFT_OFFSET
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
-
-    def_msg_axes = (-0.01, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
-    def_msg_buttons = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
-    axes_dict = {'rotate': 0,
-                 'vertical' : 1,
-                 'lt' : 2,
-                 'leftright' : 3,
-                 'frontback' : 4,
-                 'rt' : 5,
-                 'dpad_h' : 6,
-                 'dpad_v' : 7}
-
-    buttons_dict = {'a' : 0,
-                    'b' : 1,
-                    'x' : 2,
-                    'y' : 3,
-                    'lb' : 4,
-                    'rb' : 5,
-                    'back' : 6,
-                    'start' : 7,
-                    'xbox' : 8,
-                    'lstickpress' : 9,
-                    'rstickpress' : 10}
-
-    class_dict = {'background':0,
-                  'path_marker':1,
-                  'start_gate':2,
-                  'channel':3,
-                  'claw':4,
-                  'die1':5,
-                  'die2':6,
-                  'die5':7,
-                  'die6':8,
-                  'roulette_wheel':9,
-                  'red_wheel_side':10,
-                  'black_wheel_side':11,
-                  'slot_machine':12,
-                  'slot_handle':13,
-                  'r_slot_target':14,
-                  'y_slot_target':15,
-                  'r_ball_tray':16,
-                  'g_ball_tray':17,
-                  'floating_area':18,
-                  'r_funnel':19,
-                  'y_funnel':20,
-                  'g_chip_dispenser':21,
-                  'g_chip_plate':22,
-                  'dieX':23,
-                  'g_funnel':24}
-
+    health = rospy.Subscriber('health', Health, queue_size=1)

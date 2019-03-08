@@ -1,9 +1,11 @@
 #!/usr/bin/env python
+from StateMachine.constants import BUTTONS_ENUM, JOY_MAP
 
-from collections import namedtuple
+from StateMachine.sub import sub
+from StateMachine.sub import rospy
+from StateMachine.sub import smach
 
-from StateMachine.sub import *
-
+import math
 
 class LaunchError(Exception):
     '''Base class for exceptions in this module. Indicates a failure to launch.'''
@@ -12,34 +14,6 @@ class LaunchError(Exception):
 class LauncherReadyError(LaunchError):
     '''Indicates that launchers are failing to present as READY.'''
     pass
-
-
-#TODO(travis): Identify status messages to determine launcher state.
-
-#Kentucky offsets for y-z plane(parallel to target)
-Kentucky = namedtuple('Kentucky',['windage_offset',
-                                  'windage_angle',
-                                  'elevation_offset',
-                                  'elevation_angle'])
-'''Kentucky(Windage) offesets to apply just before launching torpedo.
-
-Defines offset in MoA (or just degrees, depending upon launcher accuracy and
-offset required) to compensate for launcher mounting position in relation
-to sub Line-of-Sight. Named after the practice in shooting sports where instead
-of adjusting the rifle's sights to align point-of-aim to point-of-strike, the
-shooter adjusts their point-of-aim to offset the deviation from zero. Not a dig
-at Mechanical's ability to get the launcher to shoot straight, or the torpedoes
-to fly(?) straight, but a provision for unforseen environmentals
-(cross-currents, shipping damage, etc.).
-
-windage_angle - launcher horizontal angle relative to central axis of aiming
-                line.
-windage_offset - offset left/right relative to target.
-elevation_angle - launcher vertical angle relative to central axis of aimimng
-                  line.
-elevation_offset - offset up/down relative to target.
-'''
-
 
 class interact_torpedo(sub):
     '''Executes interaction state for a task requiring launching torpedoes.
@@ -54,32 +28,22 @@ class interact_torpedo(sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['TORPEDO_SUCCESS',
                                              'TORPEDO_FAILURE'])
-        #Const references to launcher trigger button maps.
-        #TODO(travis):Actually map these to configured buttons.
-        self.LAUNCHER_LEFT = 'y'
-        self.LAUNCHER_RIGHT = 'x'
-        #Mapping for kentucky windages to apply to launchers.
-        self.windage_map = {
-                self.LAUNCHER_RIGHT: Kentucky(windage=0.0,elevation=0.0),
-                self.LAUNCHER_LEFT: Kentucky(windage=0.0,elevation=0.0),
-        }
-
 
     def execute(self, userdata):
         '''Executes the INTERACT_TORPEDO state's primariy action.'''
         rospy.loginfo('Executing state INTERACT_TORPEDO')
+        if not self.active_launcher:
+            rospy.loginfo('[INTERACT_TORPEDO] - %s' % ('No available launch tubes'))
+            return 'Torpedo_Failed'
         try:
-          tgt_range = self.get_range()
-          launcher = self.next_launcher()
-          self.apply_windage(launcher, tgt_range)
-          self.launch(launcher)
+          self.launch(self.active_launcher)
           return 'Torpedo_Launched'
         except LaunchError as e:
             #Issues with launchers themselves - failure to ready, failure to
             #fire, etc.
             rospy.loginfo('[INTERACT_TORPEDO] - %s' % (e.message))
             return 'Torpedo_Failed'
-        except Error as e:
+        except Exception as e:  
             #Some other thing is broken, likely this very code.
             rospy.logwarn('[INTERACT_TORPEDO] - %s' % (e.message))
             return 'Torpedo_Failed'
@@ -95,72 +59,15 @@ class interact_torpedo(sub):
         '''
         try:
             jmsg = self.init_joy_msg()
-            jmsg.buttons[self.buttons_dict[launcher]]=1
+            jmsg.buttons[BUTTONS_ENUM[JOY_MAP[launcher]]]=1
             self.joy_pub.publish(jmsg)
             rospy.sleep(1)
-            jmsg.buttons[self.buttons_dict[launcher]]=0
+            jmsg.buttons[BUTTONS_ENUM[JOY_MAP[launcher]]]=0
             self.joy_pub.publish(jmsg)
+            # Activates next tube
+            self.get_launcher()
         except Exception as e:
             raise LaunchError(e)
-
-        
-
-    def next_launcher(self):
-        '''Identifies the next launcher to fire, if more than one available.
-
-        Depends upon relayed status messages and checks for launchers with
-        READY status.
-
-        Returns:
-          string, joystick button mapping for next ready launcher.
-
-        Raises:
-          LauncherReadyError: if launcher status doesn't resolve to a READY
-          state for at least one launcher in given timeout.
-        '''
-        #TODO(travis):implement conditionals based upon health reporting layer.
-        # Also, this belongs in the state preceeding track_torpedo_target.
-        return self.LAUNCHER_LEFT
-
-    #This belongs in track_torpedo_target
-    def apply_windage(self, launcher, tgt_range):
-        '''Applies windage offset for given launcher.
-
-        Args:
-          launcher: string, reference to mapped windages.
-          tgt_range: float, distance to target.
-        '''
-        wdg = tgt_range*math.sin(self.windage_map[launcher].windage_angle)
-        wdg += self.windage_map[launcher].windage_offset
-        # Positive Elevation => shooting High => drop point of aim to correct.
-        elev = -tgt_range*math.sin(self.windage_map[launcher].elevation_angle)
-        elev += self.windage_map[launcher].elevation_offset
-        rospy.loginfo('[INTERACT_TORPEDO] applying point of aim offset:'
-                      ' windage %s, elevation %s' % (edg, elev))
-        #TODO(travis):Determine method for relaying point of aim adjustments
-        #             to movement package. 
-
-    #This also likely belongs in track_torpedo_target - it seems that the
-    # camera is the primary source of ranging data.
-    def get_range(self):
-        '''Determines range to target based upon infering from sensor input.
-       
-        Uses values from the sensor package such as box_size, etc. to range
-        the target.
-
-        Returns:
-          float, range to target.
-        '''
-        tgt_range = 0.0
-        #TODO(travis): Determine algorithm for extracting depth data from
-        #  sub_vision, specifically the zed/depth/* ros messages, given that
-        #  the messages are being pushed. Conceptually, the tagged image of the
-        #  target should also have supporting nformation from the ZED module on
-        #  depth based upon steroscopic vision camera. The trick is to get the
-        #  depth of the panel, not the center-point depth (well, maybe center,
-        #  depends on sub alignment, and how center is calculated.).
-        # NB: this probably belongs in track_torpedo_target.py, once it's created.
-        return tgt_range
 
 
 
