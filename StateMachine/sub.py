@@ -31,7 +31,7 @@ def signal_handler(signal, frame):
       signal: signal received from system
       frame: unused? assumed a state capture for diagnostic porpises.
     '''
-    print('\nShutting Down Run...')
+    rospy.loginfo("\nShutting Down Run...")
     sys.exit(0)
 
 
@@ -119,7 +119,7 @@ class sub(smach.State):
 
       if gbl.depth == None or self.current_state_start_depth == None:
         thrust = gbl.depth_const
-        rospy.logerr('While trying to hold depth, depth = None')
+        rospy.logerr("While trying to hold depth, depth = None")
 
       elif gbl.depth - self.current_state_start_depth > 0.25:
         if gbl.get_depth() > 1:

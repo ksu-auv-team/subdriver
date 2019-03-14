@@ -15,7 +15,7 @@ def bbox_callback(msg):
         num_boxes = int(msg.data[0])
         for i in range (num_boxes):
             boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
-        #print(boxes)
+        #rospy.loginfo(boxes)
 
 #global functions
 
@@ -35,7 +35,7 @@ def get_box_of_class(boxes, class_num):
             found = box
             max_prob = box[1] 
     
-    print('class: ' + str(box[0]) + '\tconf: ' + str(box[1]))
+    rospy.loginfo('class: %s\tconf: %s', box[0], box[1])
 
     #ignore ghosts
     if max_prob > 0.20:
