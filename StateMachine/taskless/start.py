@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from sub import *
+from StateMachine.sub import *
 
 # define state start
 class start(sub):

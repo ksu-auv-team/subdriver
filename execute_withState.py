@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
 import rospy
-import CreateStateMachine
+import StateMachine.StateMachines.CreateStateMachine as sm
 
-def init_execute():
-	rospy.loginfo("Starting up state machine...")
-	CreateStateMachine.createStateMachine()
+def full_state_machine():
+	rospy.loginfo("Running 'full_state_machine' ...")
+	sm.createStateMachine()
 
 def main():
-	init_execute()
+	full_state_machine()
 
 if __name__ == '__main__':
 	main()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from sub import *
+from StateMachine.sub import *
 
 # define state surface
 class surface(sub):
