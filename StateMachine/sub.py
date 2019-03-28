@@ -156,15 +156,24 @@ class sub(smach.State):
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
 
+    # default settings for each part of the joy message
+
+    #the -0.01 is to compensate for a slight drift to the side
+    #the -1.0 is to keep the left trigger held down, indicating that there's control
+    #the 1.0 is because the triggers/default to 1.0 when untouched instead of 0.0 like the others (there's only one direction for them to move)
     def_msg_axes = (-0.01, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
     def_msg_buttons = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
     axes_dict = {'rotate': 0, 'vertical' : 1, 'lt' : 2, 'leftright' : 3, 'frontback' : 4, 'rt' : 5, 'dpad_h' : 6, 'dpad_v' : 7}
     buttons_dict = {'a' : 0, 'b' : 1, 'x' : 2, 'y' : 3, 'lb' : 4, 'rb' : 5, 'back' : 6, 'start' : 7, 'xbox' : 8, 'lstickpress' : 9, 'rstickpress' : 10}
 
+
+    #AFAIK class_dict and balloon_class_dict are never actually used in subdriver. They're just here for reference.
     class_dict = {"background":0, "path_marker":1, "start_gate":2, 
             "channel":3, "claw":4, "die1":5, 'die2':6, 'die5':7, 'die6':8,
             'roulette_wheel':9, 'red_wheel_side':10, 'black_wheel_side':11,
             'slot_machine':12, 'slot_handle':13, 'r_slot_target':14, 'y_slot_target':15,
             'r_ball_tray':16, 'g_ball_tray':17, 'floating_area':18, 'r_funnel':19,
             'y_funnel':20, 'g_chip_dispenser':21, 'g_chip_plate':22, 'dieX':23, 'g_funnel':24}
+
+    balloon_class_dict = {'background':0, 'pink_balloon':1, 'red_balloon':2, 'orange_balloon':3, 'yellow_balloon':4, 'green_balloon':5}
