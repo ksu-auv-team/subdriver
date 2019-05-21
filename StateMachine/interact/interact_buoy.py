@@ -6,6 +6,12 @@ from StateMachine import controllers
 from controllers import PID
 
 # define state interact_dice
+# Needed information:   Distance from buoy, speed, face on buoy
+#Buoy will rotate 1-5 RPM
+#There is a two sided buoy with a Jiangshi on it. Do not target it
+# There is a three sided  buoy with Drauger, Vetalas, and Aswang on it.
+    # We choose which one we will target and we will get 600 pts for hitting the one we chose
+    # And 300 if we hit one of the other two.
 class interact_buoy(sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Clear_Of_Buoy'])
