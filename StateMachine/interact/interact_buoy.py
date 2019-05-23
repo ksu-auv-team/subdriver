@@ -9,12 +9,6 @@ from enum import Enum
 
 # define state interact_buoy
 
-# Needed information:
-    # Distance from buoy
-    # Rotation speed of buoy 
-    # Current face on buoy
-    # Order of faces (determined by which direction that the buoy is spinnning)
-
 # Known Information:
     # Buoy Dimensions:  24 in. wide by 48 in. tall
     # Buoy will rotate 1-5 RPM
@@ -22,7 +16,15 @@ from enum import Enum
     # There is a three sided  buoy with Drauger, Vetalas, and Aswang on it.
         # We choose which one we will target and we will get 600 pts for hitting the one we chose
         # And 300 pts if we hit one of the other two.
-    # Target: Since it is arbitrary, we will be targetting the Drauger
+    # Target Face of buoy: Since it is arbitrary, we will be targetting the Drauger
+
+# Calculated Information:
+    # Distance from buoy
+    # Rotation speed of buoy 
+    # Current face on buoy
+    # Order of faces (determined by which direction that the buoy is spinnning)
+
+
 
 
 
@@ -46,7 +48,7 @@ class interact_buoy(sub):
         
         
         
-        buoyRotationSpeed = self.determineRotationSpeed() # No idea what to do for this ******************************
+        buoyRotationSpeed = self.determineRotationSpeed()
         rospy.loginfo("Found Rotation Speed.")
 
         distanceFromBuoy = self.findDistanceFromBuoy()
@@ -57,7 +59,7 @@ class interact_buoy(sub):
         acceleration = accelerationAndTime[0]
         time = accelerationAndTime[1]
         startTime = rospy.Time.now()
-        # Move towards
+        # Move towards buoy
         rospy.loginfo("Moving forward")
         while rospy.get_time() < startTime + time:
             msg.axis[self.axis_dict['forward']]= acceleration
@@ -83,11 +85,13 @@ class interact_buoy(sub):
         # Find first face
         # Skip the first face found, because it could be found halfway through the time spent on that face.
         if(self.buoyIsLost()):
+            rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
             return -1
         startingFace = self.findFace()
         while(self.findFace() == startingFace):
             continue
         if(self.buoyIsLost()):
+            rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
             return -1
         firstFaceFoundTime = rospy.Time.now()
         
@@ -96,6 +100,7 @@ class interact_buoy(sub):
         while(self.findFace() == firstFace):
             continue
         if(self.buoyIsLost()):
+            rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
             return -1
         secondFaceFoundTime = rospy.Time.now()
         secondFace = self.findFace()
@@ -176,7 +181,7 @@ class interact_buoy(sub):
                 unit circle with borders between sections drawn at 0, 2π/3, and 4π/3 Radians
                 
             A Sinusodal function can be used to determine which third of the circle that
-                the buoy is on as follows:
+                will be visible as a funtion of time as follows:
                 
             First Third:
 	            −1/2<Cos(t)<1
@@ -237,14 +242,17 @@ class interact_buoy(sub):
                  return (acceleration, accelerationTime)
         return (-1, -1)
     def getThirdAtTime(self, period, startTime, currentTime):
-        cos = period * math.cos(currentTime-startTime)
-        sin = period * math.sin(currentTime-startTime)
-        if(-1/2 < cos and cos < 1): # 1st or 3rd third
-            if(sin>0):
+        # T = 2pi/w
+        # Formula for a sinusodal function: y = ASin(wt + phaseShift)
+        w = 2*math.pi/period
+        x =  math.cos(w(currentTime-startTime))
+        y = math.sin(w(currentTime-startTime))
+        if(-1/2 < x and x < 1): # 1st or 3rd third
+            if(y>0):
                 return 1
             else:
                 return 3
-        else:
+        else: # 2nd Third
             return 2
     def solveForAcceleration(self, distance, time):
         """ x = 1/2 at^2 ==> a = 2x/(t^2)"""
