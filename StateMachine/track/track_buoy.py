@@ -18,7 +18,7 @@ In this state, the sub will adjust its depth to match the 3 sided buoy and angle
         for i in range 0, len(boxes):
             if(gbl.boxes[i][0]==BOX.buoy):# is a target
                 box_num = i
-        if(box_num == -1): # If the buoy was not identified
+        if(box_num == -1): # If the buoy was not
             return "Lost_Buoy"
         box = boxes[box_num]
         # Line up with buoy
