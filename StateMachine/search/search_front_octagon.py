@@ -3,8 +3,14 @@
 from StateMachine.sub import *
 from search_front import *
 
+'''
+Implements search moving forward for the octagon/surfacing tasks
+Different from the other searches because it needs to look for
+multiple objects, the coffin and the octagon
+'''
+
 # define state search_front
-class search_front(sub):
+class search_front_octagon(sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Found_Object','Not_Found_Object'])
 
@@ -18,15 +24,16 @@ class search_front(sub):
 
     	while(1):
             self.joy_pub.publish(msg)
-            if gbl.get_box_of_class(gbl.boxes, gbl.current_target):
+            #will need to change this to multiple targets
+            if gbl.get_boxes_of_classes(gbl.boxes, [gbl.current_target]):
     			if self.search_frames_seen <= 2:
     				self.search_frames_seen += 1
     			else:
-    				return "Found_Object" # Transitions to TRACK_GATE
+    				return "Found_Object" # Transitions to track_octagon
 
             elif (rospy.get_time() - self.current_state_start_time) > 5:
     			self.search_frames_seen = 0
-    			return "Not_Found_Object" # Transitions to SEARCH_LEFT_GATE
+    			return "Not_Found_Object" # Transitions to search_left_octagon
 
             else:
     			self.search_frames_seen = 0
