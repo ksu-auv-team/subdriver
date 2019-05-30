@@ -24,8 +24,11 @@ from enum import Enum
     # Current face on buoy
     # Order of faces (determined by which direction that the buoy is spinnning)
 
+# Needed information:
 
-
+#Python execute_withState
+#logitec camera 720 x 1080p camera:
+    # Logitec web cam C930e
 
 
 class interact_buoy(sub):
@@ -147,7 +150,56 @@ class interact_buoy(sub):
         return True
     def findDistanceFromBuoy(self):
         """ Determine distance from buoy based on the height of the buoy,
-        It can not be determined from the width since it is spinning. """
+        It can not be determined from the width since it is spinning.
+        
+        # Known variables
+            - Actual height of buoy
+            - Percieved height of buoy via bounding box
+        Strategy:
+            Since the sub will presumably be viewing the buoy at center level, take the height of the buoy, 48 in., and
+            cut it in half to 24 in. so that we can do math dealing with a right triangle.
+            
+            We need two frames of reference for this to work so we will have to move the sub towards or away from the new buoy a known distance Δx.
+            The below pictures show the important information. All variables except for distance, d, are known. Unknown information other than d is not labled
+
+            Reality before moving:
+            (Pretend the hypotinuse is straight, it is not important for the problem)
+            |\____
+            |     \____
+     24 in. |          \____
+            |               \____
+            |________d___________\
+            
+            Image percieved by camera
+            
+            |\____
+            |     \____
+          h |          \____
+            |               \____
+            |____________________\
+        
+            Reality ater moving a known distance, Δx
+            
+            |\___
+            |    \___
+     24 in. |        \___
+                         \___
+            |______d+Δx_______\
+
+            Image percieved by camera after moving
+            |\___
+            |    \___
+         h' |        \___
+            |             \___
+            |_________________\
+
+            d/(d+Δx) =  h/(h')
+            d(h') = h(d+Δx)
+            d(h') = hd + hΔx
+            d(h') - hd = hΔx
+            d(h'- h) = hΔx
+            d = |hΔx/(h'-h)|
+         """
         cameraHeightConstant = -1 # Unknown as of now
         box = self.findBox()
         

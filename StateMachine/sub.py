@@ -62,7 +62,10 @@ class sub(smach.State):
             self.current_state_start_depth = gbl.depth
             self.log()
 
-    
+    def moveDistance(self, distance, direction):
+      """ Direcion will be something like: 'leftright', 'vertical', or 'rotate' 
+      This function will be fully implemented once data on acceleration is measured in pool tests """
+      pass    
     def execute(self, userdata):
       '''Executes the behavior defined for a given state.
       Every state requires an 'execute' function. This is the function that automatically
