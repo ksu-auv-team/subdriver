@@ -2,7 +2,6 @@
 
 import rospy
 import smach
-import smach_ros
 
 #import literally all the states we will ever have:
 from StateMachine.interact.interact_gate import *
@@ -26,8 +25,8 @@ from StateMachine.search.search_recenter_dice import *
 from StateMachine.track.track_gate import *
 from StateMachine.track.track_dice import *
 
-from StateMachine.start import *
-from StateMachine.surface import *
+from StateMachine.taskless.start import *
+from StateMachine.taskless.surface import *
 
 def createStateMachine():
     rospy.init_node('AUV_StateMachine')
