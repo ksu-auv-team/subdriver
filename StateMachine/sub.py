@@ -16,7 +16,6 @@ from sensor_msgs.msg import Joy
 from sensor_msgs.msg import FluidPressure
 from mavros_msgs.msg import VFR_HUD
 import numpy as np
-import pymavlink
 
 # Global Vaiables
 import gbl

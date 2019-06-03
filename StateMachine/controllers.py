@@ -1,1 +1,2 @@
-pass
+class PID:
+    pass

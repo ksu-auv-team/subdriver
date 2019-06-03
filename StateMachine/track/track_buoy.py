@@ -4,10 +4,11 @@ from StateMachine.sub import *
 
 # define state track_buoy
 class track_buoy(sub):
-""" This state starts with the sub having the buoy in sight.
-In this state, the sub will adjust its depth to match the 3 sided buoy and angle to face it. """
+    """ This state starts with the sub having the buoy in sight.
+    In this state, the sub will adjust its depth to match the 3 sided buoy and angle to face it. 
+    """
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Lost_Buoy','Facing_Buoy'])
+        smach.State.__init__(self, outcomes=['Lost_Buoy','Locked_Onto_Buoy'])
 
     def execute(self, userdata):
         rospy.loginfo('Executing state TRACK_BUOY')
@@ -24,10 +25,10 @@ In this state, the sub will adjust its depth to match the 3 sided buoy and angle
         self.matchBuoyLeftRight()
 
         # At this point, the sub is stationary and facing the Buoy
-        return 'Facing_Buoy'
+        return 'Locked_Onto_Buoy'
 
     def findBoxNumber(self):
-        for i in range 0, len(boxes):
+        for i in range (0, len(boxes)):
             if(gbl.boxes[i][0]==BOX.buoy):# is a target
                 return i
         return -1
@@ -45,7 +46,7 @@ In this state, the sub will adjust its depth to match the 3 sided buoy and angle
     def matchBuoyLeftRight(self):
         rospy.loginfo("Adjusting left to right")
         while(self.getCenter(boxes[self.findBoxNumber()])[0]!=0):
-            msg.axis[self.axis_dict['leftright']] = PID().update(self.getCenter(boxes[self.findBoxNumber())[0])
+            msg.axis[self.axis_dict['leftright']] = PID().update(self.getCenter(boxes[self.findBoxNumber()])[0])
             self.joy_pub.publish(msg)
             rospy.sleep(gbl.sleep_time)
         # Stop rotating

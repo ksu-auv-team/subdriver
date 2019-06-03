@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from StateMachine.gbl import boxes
 from StateMachine.sub import *
-#from StateMachine import controllers
 from StateMachine.controllers import PID
 import math
 from enum import Enum
@@ -148,64 +147,14 @@ class interact_buoy(sub):
                 return False
         return True
     def findDistanceFromBuoy(self):
-        """ Determine distance from buoy based on the height of the buoy,
-        It can not be determined from the width since it is spinning.
-        
-        # Known variables
-            - Actual height of buoy
-            - Percieved height of buoy via bounding box
-        Strategy:
-            Since the sub will presumably be viewing the buoy at center level, take the height of the buoy, 48 in., and
-            cut it in half to 24 in. so that we can do math dealing with a right triangle.
-            
-            We need two frames of reference for this to work so we will have to move the sub towards or away from the new buoy a known distance Δx.
-            The below pictures show the important information. All variables except for distance, d, are known. Unknown information other than d is not labled
-
-            Reality before moving:
-            (Pretend the hypotinuse is straight, it is not important for the problem)
-            |\____
-            |     \____
-     24 in. |          \____
-            |               \____
-            |________d___________\
-            
-            Image percieved by camera
-            
-            |\____
-            |     \____
-          h |          \____
-            |               \____
-            |____________________\
-        
-            Reality ater moving a known distance, Δx
-            
-            |\___
-            |    \___
-     24 in. |        \___
-                         \___
-            |______d+Δx_______\
-
-            Image percieved by camera after moving
-            |\___
-            |    \___
-         h' |        \___
-            |             \___
-            |_________________\
-
-            d/(d+Δx) =  h/(h')
-            d(h') = h(d+Δx)
-            d(h') = hd + hΔx
-            d(h') - hd = hΔx
-            d(h'- h) = hΔx
-            d = |hΔx/(h'-h)|
+        """ Easy Way:
+            Because the height of the buoy is known and will be constant in the competition and during tests,
+            In testing, we can set the distance from the buoy and the sub, then we can execute TRACK_BUOY 
+            which will line them up. Once they are lined up at a known distance, the height we can figure
+            out how the height in pixels relates to distance and solve for distance.
          """
-        cameraHeightConstant = -1 # Unknown as of now
-        box = self.findBox()
-        
-        height = boxes[box][4] - boxes[box][6]
-
-        return height * cameraHeightConstant
-    
+         pass
+           
     def nextFace(self, face):
         if(face == BuoyFaces.Drauger):
             if(self.rotationOrder == BuoyRotationOrder.DAV):
@@ -229,27 +178,20 @@ class interact_buoy(sub):
             The buoy is divided into 3 sections and the current 
                 face of the buoy can be measured as a function of time.
                 Because each face will be shown for 1 third of the time we can represent this on a 
-                unit circle with borders between sections drawn at 0, 2π/3, and 4π/3 Radians
+                unit circle with borders between sections drawn at 0, 2pi/3, and 4pi/3 Radians
                 
             A Sinusodal function can be used to determine which third of the circle that
                 will be visible as a funtion of time as follows:
-                
-            First Third:
-	            −1/2<Cos(t)<1
-                0 <Sin(t)<=1
-            Second Third:
-	            −1≤Cos(t)<−1/2
-                −√3/2<Sin(t)<√3/2
-            Third Third:
-	            −1/2<Cos(t)<1
-                −1≤Sin(t)<0
-            
+#####################################################################################################
+                ###### This section of the comments had to be removed due to it causing errors.
+                ###### Please check commit history or do the math yourself.
+#####################################################################################################
             Calculating optimal Velocity:
                 T = Period
                 t = current time
                 Use TCos(t) and TSin(t) to determine which face it is on.
-                - Δx=1/2 at^2
-                - a = 2Δx/(t^2)
+                - delta x=1/2 at^2
+                - a = 2delta x/(t^2)
                 
 
 
