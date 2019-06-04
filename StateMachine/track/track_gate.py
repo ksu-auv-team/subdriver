@@ -48,7 +48,8 @@ class track_gate(sub):
             return "Entered_Gate" # Transitions to INTERACT_GATE
           else:
             rospy.logwarn("Lost tracking the gate for more than 2 seconds")
-            return "Entered_Gate" # DEBUG Purposes Only!
+            if(gbl.debug):
+              return "Entered_Gate" # DEBUG Purposes Only!
             return "Lost_Gate" # Transitions to SEARCH_FRONT_GATE
 
         self.joy_pub.publish(msg)

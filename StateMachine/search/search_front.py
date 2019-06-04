@@ -13,8 +13,6 @@ class search_front(sub):
     	msg.axes[self.axes_dict['frontback']] = .4
         msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
-    	#return 'Not_Found_Object' # Debug purposes only!
-
     	while(1):
             self.joy_pub.publish(msg)
             if gbl.get_box_of_class(gbl.boxes, gbl.current_target):

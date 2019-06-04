@@ -22,7 +22,7 @@ class interact_gate(sub):
 
         gbl.current_target = None
 
-        return 'Through_Gate'
+        return 'Through_Gate' # Transitions to SEARCH_FRONT_DICE
 
 
     def log(self):
