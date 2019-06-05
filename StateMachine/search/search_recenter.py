@@ -14,7 +14,7 @@ class search_recenter(sub):
     	msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
     	if(gbl.debug):
-			return "Not_Fount_Object" # DEBUG purposes only
+			return "Found_Object" # DEBUG purposes only
 
     	while(1):
     		self.joy_pub.publish(msg)
