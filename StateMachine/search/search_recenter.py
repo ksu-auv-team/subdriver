@@ -11,10 +11,10 @@ class search_recenter(sub):
     	self.init_state()
     	msg = self.init_joy_msg()
     	msg.axes[self.axes_dict['rotate']] = -.2
-        msg.axes[self.axes_dict['vertical']] = self.depth_hold()
+    	msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
-		if(gbl.debug):
-    		return 'Found_Object' # Debug purposes only!
+    	if(gbl.debug):
+			return "Not_Fount_Object" # DEBUG purposes only
 
     	while(1):
     		self.joy_pub.publish(msg)
