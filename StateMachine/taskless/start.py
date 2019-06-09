@@ -25,7 +25,8 @@ class start(sub):
 
         gbl.current_target = self.class_dict['start_gate']
 
-        return 'Not_Found_Gate' # Debug Porpoises Only!
+        if(gbl.debug):
+            return 'Not_Found_Gate' # Debug Porpoises Only!    
 
         # Control loop
         while(1):

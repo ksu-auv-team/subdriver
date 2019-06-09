@@ -50,6 +50,7 @@ depth_const = -0.5
 boxes = []
 current_target = None
 sleep_time = 0.05
+debug = False
 
 
 ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
