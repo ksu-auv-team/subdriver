@@ -52,23 +52,24 @@ class interact_buoy(sub):
         buoyRotationSpeed = self.determineRotationSpeed()
         rospy.loginfo("Found Rotation Speed.")
 
-        distanceFromBuoy = self.findDistanceFromBuoy()
-        rospy.loginfo("Found distance from Buoy.")
-        
-        accelerationAndTime = self.calculateAccelerationAndTime(distanceFromBuoy, buoyRotationSpeed)
-        rospy.loginfo("Calculated movespeed and movement time.")
-        acceleration = accelerationAndTime[0]
-        time = accelerationAndTime[1]
-        startTime = rospy.Time.now()
+        # T = rotations/minute * 2pi rad/1 rotation * 60 seconds/1 minute
+        period = buoyRotationSpeed * 2 * math.pi * 60
+
         # Move towards buoy
-        rospy.loginfo("Moving forward")
-        while rospy.get_time() < startTime + time:
-            msg.axis[self.axis_dict['forward']]= acceleration
+        rospy.loginfo("Preparing to move forward.")
+        while findFace()!=BuoyFaces.Drauger:
+            rospy.sleep(period/6)
+            startTime=rospy.Time.now()
+            rospy.loginfo("Moving forward for 10 seconds")
+        while rospy.Time.now()<startTime+10000: # Move for 10 seconds
+            msg.axis[self.axis_dict['forward']] = 1
             self.joy_pub.publish(msg)
             rospy.sleep(gbl.sleep_time)
-
+        msg.axis[self.axis_dict['forward']] = 0
+        rospy.loginfo("Done moving")
         gbl.current_target = None
         return 'Clear_Of_Buoy'
+
     def findBox(self):
         for i in range(0, len(boxes)):
             if(boxes[i][1] == BuoyFaces.Drauger or boxes[i][1] == BuoyFaces.Aswang or boxes[i][1] == BuoyFaces.Vetalas):
@@ -146,14 +147,6 @@ class interact_buoy(sub):
             if(self.findFace()>=0):
                 return False
         return True
-    def findDistanceFromBuoy(self):
-        """ Easy Way:
-            Because the height of the buoy is known and will be constant in the competition and during tests,
-            In testing, we can set the distance from the buoy and the sub, then we can execute TRACK_BUOY 
-            which will line them up. Once they are lined up at a known distance, the height we can figure
-            out how the height in pixels relates to distance and solve for distance.
-         """
-         pass
            
     def nextFace(self, face):
         if(face == BuoyFaces.Drauger):
@@ -171,69 +164,7 @@ class interact_buoy(sub):
                 return BuoyFaces.Drauger
             else:
                 return BuoyFaces.Aswang
-    def calculateAccelerationAndTime(self, distance, rotationSpeed):
-        """ Given the distance from the buoy and the rotation speed of the buoy in RPM
-        
-        Stratagy:
-            The buoy is divided into 3 sections and the current 
-                face of the buoy can be measured as a function of time.
-                Because each face will be shown for 1 third of the time we can represent this on a 
-                unit circle with borders between sections drawn at 0, 2pi/3, and 4pi/3 Radians
-                
-            A Sinusodal function can be used to determine which third of the circle that
-                will be visible as a funtion of time as follows:
-#####################################################################################################
-                ###### This section of the comments had to be removed due to it causing errors.
-                ###### Please check commit history or do the math yourself.
-#####################################################################################################
-            Calculating optimal Velocity:
-                T = Period
-                t = current time
-                Use TCos(t) and TSin(t) to determine which face it is on.
-                - delta x=1/2 at^2
-                - a = 2delta x/(t^2)
-                
 
-
-
-        # Math for calculating period from rotation speed       # Physics
-        revolutions/min * 1/60 = revolutions/second = w/(2Pi) = f
-        T = 1/f ==> Period = 1/(rotationSpeed * 1/60) = 60/rotationSpeed
-        """
-        T = 60/rotationSpeed
-        collisionWindow = T/3 # The time we will have to hit the buoy face once it shows.
-        # Wait until the next face is visible
-        startingFace = self.findFace()
-        if(startingFace<0): # Currently inbetween faces
-            if(self.buoyIsLost()):
-                return (-1, -1)
-        else: # Currently on a face
-            currentFace = self.findFace()
-            while(self.findFace() == currentFace):
-                continue
-            # Now it is in between faces
-            if(self.buoyIsLost()):
-                return (-1, -1)
-        # Now it is the beginning of the nextFace
-        face = self.findFace()
-        targetThird = -1
-        if(face==self.targetFace): # Target is the currentFace
-            targetThird = 1
-        elif(face == self.nextFace(self.targetFace)):
-            targetThird = 3
-        elif(self.nextFace(face) == self.targetFace):
-            targetThird = 2
-        else:
-            return -1
-        startTime = rospy.Time.now()
-        acceleration = -1
-        accelerationTime = -1
-        for i in range(1, 50):
-             if(self.getThirdAtTime(T, startTime, T*i/3) == targetThird and self.solveForAcceleration(distance, T*i/3)<self.maxAcceleration):
-                 acceleration = self.solveForAcceleration(distance, T*i/3)
-                 accelerationTime = T*i/3
-                 return (acceleration, accelerationTime)
-        return (-1, -1)
     def getThirdAtTime(self, period, startTime, currentTime):
         # T = 2pi/w
         # Formula for a sinusodal function: y = ASin(wt + phaseShift)
@@ -247,9 +178,7 @@ class interact_buoy(sub):
                 return 3
         else: # 2nd Third
             return 2
-    def solveForAcceleration(self, distance, time):
-        """ x = 1/2 at^2 ==> a = 2x/(t^2)"""
-        return 2 * distance/(time ** 2)
+
 
 class BuoyFaces(Enum): # Numbers will need to be changed to a proper class_id
     Drauger = 0

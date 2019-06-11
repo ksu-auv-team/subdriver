@@ -17,15 +17,16 @@ class track_buoy(sub):
         msg = self.init_joy_msg()
         box_num = self.findBoxNumber()
         if(box_num == -1): # If the buoy was not
-            return "Lost_Buoy"
+            return "Lost_buoy"
         # Line up with buoy
             # Since the buoy is spinning, there might be a problem lining up with it. Not sure what to do if that is the case
             # The below code assumes it is able to identify the spinning buoy the entire time.
         self.matchBuoyDepth()
         self.matchBuoyLeftRight()
+        self.moveCloseToBuoy()
 
         # At this point, the sub is stationary and facing the Buoy
-        return 'Locked_Onto_Buoy'
+        return 'Locked_Onto_buoy'
 
     def findBoxNumber(self):
         for i in range (0, len(boxes)):
@@ -52,5 +53,13 @@ class track_buoy(sub):
         # Stop rotating
         msg.axis[self.axis_dict['leftright']] = 0
         self.joy_pub.publish(msg)
+    
+    def moveCloseToBuoy(self):
+        rospy.loginfo("Moving close to buoy")# While the image width of buoy is less than 0.75
+        while((self.boxes[self.findBoxNumber()][5] - self.boxes[self.findBoxNumber()][3]) < 0.75):
+            msg.axis[self.axis_dict['forward']] = 0.3
+            rospy.sleep(gbl.sleep_time)
+        msg.axis[self.axis_dict['forward']] = 0
+        rospy.loginfo("Done adjusting distance")
 
         
