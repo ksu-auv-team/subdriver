@@ -8,7 +8,7 @@ class track_buoy(sub):
     In this state, the sub will adjust its depth to match the 3 sided buoy and angle to face it. 
     """
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Lost_Buoy','Locked_Onto_Buoy'])
+        smach.State.__init__(self, outcomes=['Lost_buoy','Locked_Onto_buoy'])
 
     def execute(self, userdata):
         rospy.loginfo('Executing state TRACK_BUOY')
@@ -29,15 +29,15 @@ class track_buoy(sub):
         return 'Locked_Onto_buoy'
 
     def findBoxNumber(self):
-        for i in range (0, len(boxes)):
-            if(gbl.boxes[i][0]==BOX.buoy):# is a target
+        for i in range (0, len(gbl.boxes)):
+            if(gbl.gbl.boxes[i][0]==BOX.buoy):# is a target
                 return i
         return -1
 
     def matchBuoyDepth(self):
         rospy.loginfo("Adjusting depth")
-        while(self.getCenter(boxes[self.findBoxNumber()])[1]!=0):
-            msg.axis[self.axis_dict['vertical']] = PID().update(self.getCenter(boxes[self.findBoxNumber()])[1])
+        while(self.getCenter(gbl.boxes[self.findBoxNumber()])[1]!=0):
+            msg.axis[self.axis_dict['vertical']] = PID().update(self.getCenter(gbl.boxes[self.findBoxNumber()])[1])
             self.joy_pub.publish(msg)
             rospy.sleep(gbl.sleep_time)
         # Stabilize
@@ -46,8 +46,8 @@ class track_buoy(sub):
 
     def matchBuoyLeftRight(self):
         rospy.loginfo("Adjusting left to right")
-        while(self.getCenter(boxes[self.findBoxNumber()])[0]!=0):
-            msg.axis[self.axis_dict['leftright']] = PID().update(self.getCenter(boxes[self.findBoxNumber()])[0])
+        while(self.getCenter(gbl.boxes[self.findBoxNumber()])[0]!=0):
+            msg.axis[self.axis_dict['leftright']] = PID().update(self.getCenter(gbl.boxes[self.findBoxNumber()])[0])
             self.joy_pub.publish(msg)
             rospy.sleep(gbl.sleep_time)
         # Stop rotating
@@ -56,7 +56,7 @@ class track_buoy(sub):
     
     def moveCloseToBuoy(self):
         rospy.loginfo("Moving close to buoy")# While the image width of buoy is less than 0.75
-        while((self.boxes[self.findBoxNumber()][5] - self.boxes[self.findBoxNumber()][3]) < 0.75):
+        while((self.gbl.boxes[self.findBoxNumber()][5] - self.gbl.boxes[self.findBoxNumber()][3]) < 0.75):
             msg.axis[self.axis_dict['forward']] = 0.3
             rospy.sleep(gbl.sleep_time)
         msg.axis[self.axis_dict['forward']] = 0

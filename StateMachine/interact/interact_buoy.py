@@ -34,7 +34,7 @@ class interact_buoy(sub):
     
 
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Lost_Buoy', 'Clear_Of_Buoy'])
+        smach.State.__init__(self, outcomes=['Clear_Of_Buoy'])
         self.rotationOrder = -1
         self.targetFace = BuoyFaces.Drauger
         self.maxAcceleration = 20
