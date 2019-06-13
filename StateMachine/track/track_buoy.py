@@ -21,9 +21,10 @@ class track_buoy(sub):
         # Line up with buoy
             # Since the buoy is spinning, there might be a problem lining up with it. Not sure what to do if that is the case
             # The below code assumes it is able to identify the spinning buoy the entire time.
-        self.matchBuoyDepth()
-        self.matchBuoyLeftRight()
-        self.moveCloseToBuoy()
+        while((self.getCenter(gbl.boxes[self.findBoxNumber()])[1]!=0)or (self.getCenter(gbl.boxes[self.findBoxNumber()])[0]!=0) or ((gbl.boxes[self.findBoxNumber()][5] - gbl.boxes[self.findBoxNumber()][3]) < 0.75)):
+            self.matchBuoyDepth()
+            self.matchBuoyLeftRight()
+            self.moveCloseToBuoy()
 
         # At this point, the sub is stationary and facing the Buoy
         return 'Locked_Onto_buoy'
@@ -35,30 +36,28 @@ class track_buoy(sub):
         return -1
 
     def matchBuoyDepth(self):
-        rospy.loginfo("Adjusting depth")
-        while(self.getCenter(gbl.boxes[self.findBoxNumber()])[1]!=0):
-            msg.axis[self.axis_dict['vertical']] = PID().update(self.getCenter(gbl.boxes[self.findBoxNumber()])[1])
-            self.joy_pub.publish(msg)
-            rospy.sleep(gbl.sleep_time)
+        rospy.loginfo("matchBuoyDepth: Adjusting depth")
+        
+        msg.axis[self.axis_dict['vertical']] = PID().update(self.getCenter(gbl.boxes[self.findBoxNumber()])[1])
+        self.joy_pub.publish(msg)
+        rospy.sleep(gbl.sleep_time)
         # Stabilize
         msg.axis[self.axis_dict['vertical']] = self.depth_hold
         self.joy_pub.publish(msg)
 
     def matchBuoyLeftRight(self):
-        rospy.loginfo("Adjusting left to right")
-        while(self.getCenter(gbl.boxes[self.findBoxNumber()])[0]!=0):
-            msg.axis[self.axis_dict['leftright']] = PID().update(self.getCenter(gbl.boxes[self.findBoxNumber()])[0])
-            self.joy_pub.publish(msg)
-            rospy.sleep(gbl.sleep_time)
+        rospy.loginfo("matchBuoyLeftRight: Adjusting left to right")
+        msg.axis[self.axis_dict['leftright']] = PID().update(self.getCenter(gbl.boxes[self.findBoxNumber()])[0])
+        self.joy_pub.publish(msg)
+        rospy.sleep(gbl.sleep_time)
         # Stop rotating
         msg.axis[self.axis_dict['leftright']] = 0
         self.joy_pub.publish(msg)
     
     def moveCloseToBuoy(self):
-        rospy.loginfo("Moving close to buoy")# While the image width of buoy is less than 0.75
-        while((self.gbl.boxes[self.findBoxNumber()][5] - self.gbl.boxes[self.findBoxNumber()][3]) < 0.75):
-            msg.axis[self.axis_dict['forward']] = 0.3
-            rospy.sleep(gbl.sleep_time)
+        rospy.loginfo("moveCloseToBuoy: Moving close to buoy")# While the image width of buoy is less than 0.75
+        msg.axis[self.axis_dict['forward']] = 0.3
+        rospy.sleep(gbl.sleep_time)
         msg.axis[self.axis_dict['forward']] = 0
         rospy.loginfo("Done adjusting distance")
 

@@ -61,10 +61,12 @@ class interact_buoy(sub):
             rospy.sleep(period/6)
             startTime=rospy.Time.now()
             rospy.loginfo("Moving forward for 10 seconds")
+        
         while rospy.Time.now()<startTime+10000: # Move for 10 seconds
             msg.axis[self.axis_dict['forward']] = 1
             self.joy_pub.publish(msg)
             rospy.sleep(gbl.sleep_time)
+        
         msg.axis[self.axis_dict['forward']] = 0
         rospy.loginfo("Done moving")
         gbl.current_target = None
@@ -90,44 +92,58 @@ class interact_buoy(sub):
             rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
             return -1
         startingFace = self.findFace()
+        
         while(self.findFace() == startingFace):
             continue
+        
         if(self.buoyIsLost()):
             rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
             return -1
+        
         firstFaceFoundTime = rospy.Time.now()
         
         firstFace = self.findFace()
         # Find second face
         while(self.findFace() == firstFace):
             continue
+        
         if(self.buoyIsLost()):
             rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
             return -1
         secondFaceFoundTime = rospy.Time.now()
         secondFace = self.findFace()
+        
         if(firstFace == secondFace):
             return -1
         # Determine Order
-        if(firstFace == BuoyFaces.Drauger):
+        
+        if(firstFace == BuoyFaces.Drauger): #Drauger
+            
             if(secondFace == BuoyFaces.Aswang):
                 self.rotationOrder = BuoyRotationOrder.DAV
                 return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
+        
             elif(secondFace == BuoyFaces.Vetalas):
                 self.rotationOrder = BuoyRotationOrder.VAD
                 return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
+        
             else:
                 return -1
-        elif(firstFace == BuoyFaces.Aswang):
+        
+        elif(firstFace == BuoyFaces.Aswang): #Aswang
+            
             if(secondFace == BuoyFaces.Drauger):
                 self.rotationOrder = BuoyRotationOrder.VAD
                 return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
+            
             elif(secondFace == BuoyFaces.Vetalas):
                 self.rotationOrder = BuoyRotationOrder.DAV
                 return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
+            
             else:
                 return -1
-        elif(firstFace == BuoyFaces.Vetalas):
+        
+        elif(firstFace == BuoyFaces.Vetalas): #Vetalas
             if(secondFace == BuoyFaces.Aswang):
                 self.rotationOrder = BuoyRotationOrder.VAD
                 return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
@@ -154,11 +170,13 @@ class interact_buoy(sub):
                 return BuoyFaces.Aswang
             else:
                 return BuoyFaces.Vetalas
+        
         elif(face == BuoyFaces.Aswang):
             if(self.rotationOrder == BuoyRotationOrder.DAV):
                 return BuoyFaces.Vetalas
             else:
                 return BuoyFaces.Drauger
+        
         elif(face == BuoyFaces.Vetalas):
             if(self.rotationOrder == BuoyRotationOrder.DAV):
                 return BuoyFaces.Drauger
