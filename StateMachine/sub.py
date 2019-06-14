@@ -159,8 +159,8 @@ class sub(smach.State):
     # default settings for each part of the joy message
 
     #the -0.01 is to compensate for a slight drift to the side
-    #the -1.0 is to keep the left trigger held down, indicating that there's control
-    #the 1.0 is because the triggers/default to 1.0 when untouched instead of 0.0 like the others (there's only one direction for them to move)
+    #the -1.0 is to keep the left trigger held down, indicating that there's control (dead man's switch)
+    #the 1.0 is because the triggers default to 1.0 when untouched instead of 0.0 like the others (there's only one direction for them to move)
     def_msg_axes = (-0.01, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
     def_msg_buttons = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 

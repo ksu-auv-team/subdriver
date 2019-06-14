@@ -5,11 +5,11 @@ from StateMachine.sub import *
 '''
     interact_octagon is the state for interacting with the 
     octagon/coffin/sunlight/surfacing task. It assumes that the sub
-    is close to the coffin/octagon and between them in depth when the
-    state starts.
+    is close to the coffin/octagon (close enough that they can't be detected
+    from the front camera) and between them in depth when the state starts.
 
-    It works by centering the coffin in the bottom camera, stopping
-    completely, then moving up while keeping the coffin centered
+    It works by slowly moving forward until the coffin is centered in the bottom camera,
+    stopping, and then moving up while keeping the coffin centered
     until it goes out of view (if it does). If the coffin does go out of
     view, the sub will go straight up until surfaced.
 
@@ -34,9 +34,16 @@ class interact_octagon(sub):
 
         msg = self.init_joy_msg()
 
-        msg.axes[self.axes_dict['frontback']] = 0.1
+        #default to no movement
         msg.axes[self.axes_dict['vertical']] = self.depth_hold()
-
+        
+        #check whether the coffin is visible
+        if (not gbl.get_box_of_class(gbl.bottom_boxes, gbl.classes['coffin']):
+            #if it isn't, move slowly forward until we can see it
+            #maybe add a small search pattern here?
+            msg.axes[self.axes_dict['frontback']] = 0.1
+        else:
+            
         #start by slowly creeping forward until the coffin is visible
 
         #once the coffin is visible, center the sub over it

@@ -21,15 +21,18 @@ Variables:
         Constant motor thrust down that will maintain roughly the same depth.
         This is only an approximation; it's much better to use the depth sensor.
     
-    boxes = []
+    boxes
         List of bounding boxes from the neural network.
-        Updated by bbox_callback().
+        Updated by bbox_callback()
+
+    bottom_boxes
+        List of bounding boxes from bottom camera identified by the neural network.
     
     current_target = None
         The object currently being targeted.
 
     sleep_time = 0.05
-        Amount of time to sleep before checking boxes again.
+        Constant amount of time to sleep before checking boxes again.
         Used to keep loops from constantly running unnecessarily.
 
     ssd_sub
@@ -53,19 +56,34 @@ def depth_callback(msg):
     depth = msg.altitude
 
 '''
-ROS callback run every time a frame is recieved from the neural network. Breaks
+ROS callback run every time a front camera frame is received from the neural network. Breaks
 the message data into 
 
 Parameters:
     msg - Float32MultiArray message from ROS
 '''
 def bbox_callback(msg):
-        #get multidimensional list of boxes
-        boxes = []
-        num_boxes = int(msg.data[0])
-        for i in range (num_boxes):
-            boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
-        #rospy.loginfo(boxes)
+    #get multidimensional list of boxes
+    boxes = []
+    num_boxes = int(msg.data[0])
+    for i in range (num_boxes):
+        boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
+    #rospy.loginfo(boxes)
+
+'''
+ROS callback run every time a bottom camera frame is received from the neural network. Breaks
+the message data into 
+
+Parameters:
+    msg - Float32MultiArray message from ROS
+'''
+def bottom_box_callback(msg):
+    #get multidimensional list of boxes
+    bottom_boxes = []
+    num_boxes = int(msg.data[0])
+    for i in range (num_boxes):
+        bottom_boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
+    #rospy.loginfo(boxes)
 
 #global functions
 '''
@@ -150,10 +168,8 @@ depth = None
 init_depth = None
 depth_const = -0.5
 boxes = []
+bottom_boxes = []
 current_target = None
 sleep_time = 0.05
-
-
 ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
 depth_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, depth_callback)
-
