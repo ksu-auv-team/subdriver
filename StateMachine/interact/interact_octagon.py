@@ -42,9 +42,6 @@ class interact_octagon(sub):
             #if it isn't, move slowly forward until we can see it
             #maybe add a small search pattern here?
             msg.axes[self.axes_dict['frontback']] = 0.1
-        else:
-            
-        #start by slowly creeping forward until the coffin is visible
 
         #once the coffin is visible, center the sub over it
 
