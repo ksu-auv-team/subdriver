@@ -19,9 +19,9 @@ class start(sub):
         # Set the run start depth
         gbl.init_depth = gbl.depth
 
-    	curr_msg = self.init_joy_msg()
-    	curr_msg.axes[self.axes_dict['vertical']] = -1
-    	curr_msg.axes[self.axes_dict['frontback']] = 1
+        curr_msg = self.init_joy_msg()
+        curr_msg.axes[self.axes_dict['vertical']] = -1
+        curr_msg.axes[self.axes_dict['frontback']] = 1
 
         gbl.current_target = self.class_dict['start_gate']
 
@@ -33,7 +33,7 @@ class start(sub):
             self.joy_pub.publish(curr_msg)
 
             if rospy.get_time() > (gbl.run_start_time + 15):
-                if self.get_box_of_class(gbl.boxes, self.class_dict['start_gate']):
+                if gbl.get_box_of_class(gbl.boxes, self.class_dict['start_gate']):
                     return 'Found_Gate' # Transitions to TRACK_GATE
                 else:
                     return 'Not_Found_Gate' # Transitions to SEARCH_FRONT_GATE

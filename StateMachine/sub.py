@@ -18,7 +18,7 @@ import numpy as np
 import pymavlink
 
 # Global Vaiables
-import gbl
+from StateMachine import gbl
 
 import sys, signal
 

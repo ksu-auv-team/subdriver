@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from search_recenter import *
+from StateMachine.search.search_recenter import *
 
 # define state search_recenter_dice
 class search_recenter_dice(search_recenter):
