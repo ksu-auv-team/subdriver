@@ -73,11 +73,13 @@ class interact_buoy(sub):
         return 'Clear_Of_Buoy'
 
     def findBox(self):
+        # Returns the index in gbl.boxes that the buoy is in
         for i in range(0, len(boxes)):
             if(boxes[i][1] == BuoyFaces.Drauger or boxes[i][1] == BuoyFaces.Aswang or boxes[i][1] == BuoyFaces.Vetalas):
                 return i[1]
         return -1 # Face was not found
     def findFace(self):
+        # returns the face of the buoy that is currently visible
         box = self.findBox()
         if(box<0):
             return -1
@@ -115,7 +117,7 @@ class interact_buoy(sub):
         
         if(firstFace == secondFace):
             return -1
-        # Determine Order
+        # Determine Order by waiting for a face to appear, then waiting until the next face appears
         
         if(firstFace == BuoyFaces.Drauger): #Drauger
             
@@ -166,7 +168,7 @@ class interact_buoy(sub):
         return True
            
     def nextFace(self, face):
-        # returns what face will be next in the rotation order
+        # Given a buoy face, method will return the next face in the order
         if(face == BuoyFaces.Drauger):
             if(self.rotationOrder == BuoyRotationOrder.DAV):
                 return BuoyFaces.Aswang
