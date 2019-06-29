@@ -156,6 +156,7 @@ class interact_buoy(sub):
             return -1
 
     def buoyIsLost(self):
+        # Waits a while until it sees the buoy. Returns true if buoy is lost.
         """ Wait up to 30 seconds to see if the buoy any of the monsters on the 3 sided buoy are 
         found. If none are found, then the buoy is assumed to be lost. """
         start = rospy.Time.now()
@@ -165,6 +166,7 @@ class interact_buoy(sub):
         return True
            
     def nextFace(self, face):
+        # returns what face will be next in the rotation order
         if(face == BuoyFaces.Drauger):
             if(self.rotationOrder == BuoyRotationOrder.DAV):
                 return BuoyFaces.Aswang
@@ -184,6 +186,8 @@ class interact_buoy(sub):
                 return BuoyFaces.Aswang
 
     def getThirdAtTime(self, period, startTime, currentTime):
+        # Finds out what face will be showing at a certain time
+        # The reason for a startime parameter is because the state does not start at time 0.
         # T = 2pi/w
         # Formula for a sinusodal function: y = ASin(wt + phaseShift)
         w = 2*math.pi/period

@@ -49,9 +49,9 @@ def createStateMachine():
 
         smach.StateMachine.add('INTERACT_GATE', interact_gate(), transitions={'Through_Gate':'SEARCH_FRONT_BUOY'})
 
-        smach.StateMachine.add('SEARCH_FRONT_BUOY', search_front_buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_LEFT_buoy'})
+        smach.StateMachine.add('SEARCH_FRONT_BUOY', search_front_buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_LEFT_BUOY'})
         smach.StateMachine.add('SEARCH_LEFT_BUOY', search_left_buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_RIGHT_BUOY'})
-        smach.StateMachine.add('SEARCH_RIGHT_BUOY', search_right_buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_RECENTER_buoy'})
+        smach.StateMachine.add('SEARCH_RIGHT_BUOY', search_right_buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_RECENTER_BUOY'})
         smach.StateMachine.add('SEARCH_RECENTER_BUOY', search_recenter_buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_FRONT_BUOY'})
 
         smach.StateMachine.add('TRACK_BUOY', track_buoy(), transitions={'Lost_buoy':'SEARCH_FRONT_BUOY','Locked_Onto_buoy':'INTERACT_BUOY'})
