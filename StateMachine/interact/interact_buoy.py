@@ -17,7 +17,7 @@ from enum import Enum
     # Target Face of buoy: Since it is arbitrary, we will be targetting the Drauger
 
 # Calculated Information:
-    # Distance from buoy
+    # When to move forward
     # Rotation speed of buoy 
     # Current face on buoy
     # Order of faces (determined by which direction that the buoy is spinnning)
