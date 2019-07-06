@@ -61,7 +61,7 @@ class sub(smach.State):
             self.current_state_start_depth = gbl.depth
             self.log()
 
-    
+
     def execute(self, userdata):
       '''Executes the behavior defined for a given state.
       Every state requires an 'execute' function. This is the function that automatically
@@ -110,7 +110,7 @@ class sub(smach.State):
         rospy.logerr("While trying to hold depth, depth = None")
 
       elif gbl.depth - self.current_state_start_depth > 0.25:
-        if gbl.get_depth() > 1:
+        if self.get_depth() > 1:
           thrust = gbl.depth_const + 0.2
         else: 
           thrust = gbl.depth_const
@@ -130,7 +130,7 @@ class sub(smach.State):
         Returns:
           center of a bounding box sent to it
         '''
-        return ((box[4] +  box[2]) / 2 ,box[5])
+        return ((box[4] + box[2]) / 2 ,box[5])
 
     def getDistance(self, x1, y1, x2, y2):
       '''Gets distance between two points.
@@ -146,7 +146,8 @@ class sub(smach.State):
     # ROS callbacks
     def depth_callback(self, msg): 
         gbl.depth = msg.altitude
-    
+
+    #TODO: Update this to read in the new Tensorflow message structure
     def bbox_callback(self, msg):
             #get multidimensional list of boxes
             gbl.boxes = []
@@ -154,31 +155,32 @@ class sub(smach.State):
             for i in range (num_boxes):
                 gbl.boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
             #rospy.loginfo(boxes)
-    
+
     def get_depth(self):
             return gbl.depth - gbl.init_depth
-    
+
+    #TODO: update this to read in by the new message structure
     def get_box_of_class(self, boxes, class_num):
         if gbl.boxes == []:
             rospy.sleep(1)
             rospy.loginfo('No boxes in image at time: ' + str(rospy.get_time()))
             return None
-    
+
         found = None
         max_prob = 0.0
         for box in gbl.boxes:
             if box[0] == class_num and box[1] > max_prob:
                 found = box
                 max_prob = box[1] 
-        
+
         rospy.loginfo('class: %s\tconf: %s', box[0], box[1])
-    
+
         #ignore ghosts
         if max_prob > 0.20:
             return found
         else:
             return None
-    
+
     # These get set at the start of each state, allowing the user to call them as needed
     current_state_start_time = None
     current_state_start_depth = None
