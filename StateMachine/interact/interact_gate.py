@@ -14,15 +14,15 @@ class interact_gate(sub):
         msg.axes[self.axes_dict['frontback']] = 0.7
         msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
-        rospy.loginfo("Charging forward for 10 seconds")
+        rospy.loginfo("Charging forward for 5 seconds")
         
-        while rospy.get_time() > (gbl.run_start_time + 15):
+        while rospy.get_time() < (self.current_state_start_time + 5):
             self.joy_pub.publish(msg)
             rospy.sleep(gbl.sleep_time)
 
-        gbl.current_target = None
+        gbl.current_target = self.class_dict['pole']
 
-        return 'Through_Gate' # Transitions to SEARCH_FRONT_DICE
+        return 'Through_Gate' # Transitions to SEARCH_FRONT_POLE
 
 
     def log(self):

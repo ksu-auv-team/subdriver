@@ -5,24 +5,28 @@ from StateMachine.sub import *
 # define state interact_pole
 class interact_pole(sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Around_Pole'])
+        smach.State.__init__(self, outcomes=['Around_Pole','Lost_Pole'])
 
     def execute(self, userdata):
         self.init_state()
 
         msg = self.init_joy_msg()
-        msg.axes[self.axes_dict['frontback']] = 0.7
         msg.axes[self.axes_dict['vertical']] = self.depth_hold()
-
-        rospy.loginfo("Charging forward for 10 seconds")
         
-        while rospy.get_time() > (gbl.run_start_time + 15):
-            self.joy_pub.publish(msg)
-            rospy.sleep(gbl.sleep_time)
+        num_turns = 0
+        pole_on_right = False
+        pole_on_left = False
+        while num_turns < 3:
+            while (not pole_on_right):
+                msg.axes[self.axes_dict['leftright']] = -0.1
 
-        gbl.current_target = None
+            while (not pole_on_left):
+                msg.axes[self.axes_dict['rotate']] = 0.05
 
-        return 'Around_Pole' # Transitions to SEARCH_FRONT_DICE
+
+        gbl.current_target = self.class_dict['start_gate']
+
+        return 'Around_Pole' # Transitions to SEARCH_FRONT_GATE
 
 
     def log(self):

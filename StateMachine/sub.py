@@ -207,10 +207,6 @@ class sub(smach.State):
 
     #AFAIK class_dict and balloon_class_dict are never actually used in subdriver. They're just here for reference.
     class_dict = {"background":0, "path_marker":1, "start_gate":2, 
-            "channel":3, "claw":4, "die1":5, 'die2':6, 'die5':7, 'die6':8,
-            'roulette_wheel':9, 'red_wheel_side':10, 'black_wheel_side':11,
-            'slot_machine':12, 'slot_handle':13, 'r_slot_target':14, 'y_slot_target':15,
-            'r_ball_tray':16, 'g_ball_tray':17, 'floating_area':18, 'r_funnel':19,
-            'y_funnel':20, 'g_chip_dispenser':21, 'g_chip_plate':22, 'dieX':23, 'g_funnel':24}
+            "pole":3}
 
     balloon_class_dict = {'background':0, 'pink_balloon':1, 'red_balloon':2, 'orange_balloon':3, 'yellow_balloon':4, 'green_balloon':5}
