@@ -1,1 +1,1 @@
-__all__ = ['BaseStateMachine']
+__all__ = ['BaseStateMachine','PrequalifyMachine']
