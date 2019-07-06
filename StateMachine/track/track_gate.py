@@ -14,7 +14,7 @@ class track_gate(sub):
       #control loop
       while(1):
         msg = self.init_joy_msg()
-        box = gbl.get_box_of_class(gbl.boxes, gbl.current_target)
+        box = self.get_box_of_class(gbl.boxes, gbl.current_target)
         msg.axes[self.axes_dict['vertical']] = gbl.depth_const
 
         if (box != None) and box[1] > .3:  # If the box is good

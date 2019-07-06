@@ -143,6 +143,42 @@ class sub(smach.State):
       '''
       return math.sqrt((x2-x1)**2 + (y2-y1)**2)
 
+    # ROS callbacks
+    def depth_callback(self, msg): 
+        gbl.depth = msg.altitude
+    
+    def bbox_callback(self, msg):
+            #get multidimensional list of boxes
+            gbl.boxes = []
+            num_boxes = int(msg.data[0])
+            for i in range (num_boxes):
+                gbl.boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
+            #rospy.loginfo(boxes)
+    
+    def get_depth(self):
+            return gbl.depth - gbl.init_depth
+    
+    def get_box_of_class(self, boxes, class_num):
+        if gbl.boxes == []:
+            rospy.sleep(1)
+            rospy.loginfo('No boxes in image at time: ' + str(rospy.get_time()))
+            return None
+    
+        found = None
+        max_prob = 0.0
+        for box in gbl.boxes:
+            if box[0] == class_num and box[1] > max_prob:
+                found = box
+                max_prob = box[1] 
+        
+        rospy.loginfo('class: %s\tconf: %s', box[0], box[1])
+    
+        #ignore ghosts
+        if max_prob > 0.20:
+            return found
+        else:
+            return None
+    
     # These get set at the start of each state, allowing the user to call them as needed
     current_state_start_time = None
     current_state_start_depth = None
@@ -155,13 +191,14 @@ class sub(smach.State):
     is_close = False
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
+    ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
+    depth_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, depth_callback)
 
     # default settings for each part of the joy message
 
-    #the -0.01 is to compensate for a slight drift to the side
     #the -1.0 is to keep the left trigger held down, indicating that there's control
     #the 1.0 is because the triggers/default to 1.0 when untouched instead of 0.0 like the others (there's only one direction for them to move)
-    def_msg_axes = (-0.01, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
+    def_msg_axes = (0.0, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
     def_msg_buttons = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
     axes_dict = {'rotate': 0, 'vertical' : 1, 'lt' : 2, 'leftright' : 3, 'frontback' : 4, 'rt' : 5, 'dpad_h' : 6, 'dpad_v' : 7}
