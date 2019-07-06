@@ -199,6 +199,6 @@ include_directories(
 # catkin_add_nosetests(test)
 
 
-add_executable(TestNode src/TestNode.cpp)
-target_link_libraries(TestNode ${catkin_LIBRARIES})
-add_dependencies(TestNode message_test_generate_messages_cpp)
+#add_executable(TestNode src/TestNode.cpp)
+#target_link_libraries(TestNode ${catkin_LIBRARIES})
+#add_dependencies(TestNode message_test_generate_messages_cpp)
