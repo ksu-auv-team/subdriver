@@ -2,11 +2,12 @@
 
 import rospy
 import StateMachine.machines.BaseStateMachine as base
+import StateMachine.machines.PrequalifyMachine as prequal
 import argparse
 import StateMachine.gbl as gbl
 
 parser = argparse.ArgumentParser(description="execute a state machine for the submarine")
-parser.add_argument('-m', '--machine', default="full_state_machine", help="the name of the state machine to execute (default: %(default)s)")
+parser.add_argument('-m', '--machine', default="BaseStateMachine", help="the name of the state machine to execute (default: %(default)s)")
 parser.add_argument('-d', '--debug', action="store_true", help='Launches in debug mode. Will try to go through entire state machine.')
 args = parser.parse_args()
 
@@ -14,8 +15,8 @@ def hello_world():
 	print("Hi! I'm useless!")
 
 states = {
-	'full_state_machine': base.createStateMachine,
-	'test_machine': hello_world,
+	'BaseStateMachine': base.createStateMachine,
+	'PrequalifyMachine': prequal.createStateMachine,
 	'this_is_filler': 2,
 	'to_show_the_concept': 3,
 }
