@@ -10,7 +10,7 @@ class search_recenter(sub):
     def execute(self, userdata):
         self.init_state()
         msg = self.init_joy_msg()
-        msg.axes[self.axes_dict['rotate']] = -.2
+        msg.axes[self.axes_dict['rotate']] = -.05
         msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
         if(gbl.debug):

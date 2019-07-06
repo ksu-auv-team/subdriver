@@ -103,7 +103,6 @@ class sub(smach.State):
       Returns:
         thrust, float(?) value for maintaining the depth to pass along to controller.
       '''
-      msg = self.init_joy_msg()
 
       if gbl.depth == None or self.current_state_start_depth == None:
         thrust = gbl.depth_const
@@ -111,11 +110,11 @@ class sub(smach.State):
 
       elif gbl.depth - self.current_state_start_depth > 0.25:
         if self.get_depth() > 1:
-          thrust = gbl.depth_const + 0.2
+          thrust = gbl.depth_const + 0.01
         else: 
           thrust = gbl.depth_const
       elif gbl.depth - self.current_state_start_depth < -0.25:
-        thrust = gbl.depth_const - 0.2
+        thrust = gbl.depth_const - 0.01
       else:
         thrust = gbl.depth_const
 
@@ -162,7 +161,6 @@ class sub(smach.State):
     #TODO: update this to read in by the new message structure
     def get_box_of_class(self, boxes, class_num):
         if gbl.boxes == []:
-            rospy.sleep(1)
             rospy.loginfo('No boxes in image at time: ' + str(rospy.get_time()))
             return None
 

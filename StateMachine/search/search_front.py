@@ -10,7 +10,7 @@ class search_front(sub):
     def execute(self, userdata):
         self.init_state()
         msg = self.init_joy_msg()
-        msg.axes[self.axes_dict['frontback']] = .4
+        msg.axes[self.axes_dict['frontback']] = .2
         msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
         while(1):
