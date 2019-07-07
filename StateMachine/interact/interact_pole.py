@@ -73,7 +73,7 @@ class interact_pole(sub):
 
             #hold depth
             #if we can see the ends of the pole (i.e. the bounding box doesn't end at the edge of the screen), center on it
-            if detection.box[3] > 0.1 and detection.box[5] < 0.9:
+            if detection.box[1] > 0.1 and detection.box[3] < 0.9:
                 if (center[1]) < 0.45:
                     msg.axes[self.axes_dict['vertical']] = gbl.depth_const + 0.1
                 elif center[1] > 0.55:
@@ -82,17 +82,6 @@ class interact_pole(sub):
                 msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
             self.joy_pub.publish(msg)
-            
-            ##************Code for the individual turns method*************##
-            # num_turns = 0
-            # pole_on_right = False
-            # pole_on_left = False
-            # while num_turns < 3:
-            #     while (not pole_on_right):
-            #         msg.axes[self.axes_dict['leftright']] = -0.1
-
-            #     while (not pole_on_left):
-            #         msg.axes[self.axes_dict['rotate']] = 0.05
         #end while
 
         #move out of the pole's way
