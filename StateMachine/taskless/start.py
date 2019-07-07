@@ -16,9 +16,11 @@ class start(sub):
         self.init_state()
         rospy.loginfo("Run Start Time: " + str(gbl.run_start_time))
 
-        # Set the run start depth
+        # Set the run start depth and heading
         if gbl.depth:
             gbl.init_depth = gbl.depth
+        if gbl.heading:
+            gbl.init_heading = gbl.heading
 
         curr_msg = self.init_joy_msg()
         curr_msg.axes[self.axes_dict['vertical']] = self.depth_hold() - 0.4

@@ -143,7 +143,7 @@ class sub(smach.State):
       return math.sqrt((x2-x1)**2 + (y2-y1)**2)
 
     # ROS callbacks
-    def depth_callback(self, msg): 
+    def vfr_hud_callback(self, msg): 
         gbl.depth = msg.altitude
 
     #TODO: Update this to read in the new Tensorflow message structure
@@ -156,7 +156,10 @@ class sub(smach.State):
             #rospy.loginfo(boxes)
 
     def get_depth(self):
-            return gbl.depth - gbl.init_depth
+      return gbl.depth - gbl.init_depth
+
+    def get_heading(self):
+      return gbl.heading
 
     #TODO: update this to read in by the new message structure
     def get_box_of_class(self, boxes, class_num):
@@ -203,7 +206,7 @@ class sub(smach.State):
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
     ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
-    depth_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, depth_callback)
+    vfr_hud_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, vfr_hud_callback) #provides depth and heading
 
     # default settings for each part of the joy message
 
