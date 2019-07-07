@@ -129,7 +129,7 @@ class sub(smach.State):
         Returns:
           center of a bounding box sent to it
         '''
-        return ((box[4] + box[2]) / 2 ,box[5])
+        return ((box[4] +  box[2]) / 2 , (box[5] + box[3]) / 2)
 
     def getDistance(self, x1, y1, x2, y2):
       '''Gets distance between two points.
@@ -178,6 +178,16 @@ class sub(smach.State):
             return found
         else:
             return None
+      def getDistance(self, box):
+      '''Gets distance between the corners of a bounding box.
+
+      Args:
+        x1,y1,x2,y2: float, scalar coordinates for the two points.
+
+      Returns:
+        float, distance between the two points.
+      '''
+      return math.sqrt((box4-box2)**2 + (box5-box3)**2)
 
     # These get set at the start of each state, allowing the user to call them as needed
     current_state_start_time = None
@@ -189,6 +199,7 @@ class sub(smach.State):
     last_seen = None
 
     is_close = False
+    init_distance = 0
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
     ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
