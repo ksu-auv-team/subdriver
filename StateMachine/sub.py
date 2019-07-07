@@ -14,6 +14,11 @@ from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Joy
 from sensor_msgs.msg import FluidPressure
 from mavros_msgs.msg import VFR_HUD
+
+from submarine_msgs_srvs.msg import Detections
+
+from classes import Detection
+
 import numpy as np
 import pymavlink
 
@@ -129,7 +134,8 @@ class sub(smach.State):
         Returns:
           center of a bounding box sent to it
         '''
-        return ((box[4] +  box[2]) / 2 , (box[5] + box[3]) / 2)
+        print(box)
+        return ((box[0] + box[2]) / 2.0 , (box[1] + box[3]) / 2.0)
 
     def getDistance(self, x1, y1, x2, y2):
       '''Gets distance between two points.
@@ -147,13 +153,13 @@ class sub(smach.State):
         gbl.depth = msg.altitude
 
     #TODO: Update this to read in the new Tensorflow message structure
-    def bbox_callback(self, msg):
-            #get multidimensional list of boxes
-            gbl.boxes = []
-            num_boxes = int(msg.data[0])
-            for i in range (num_boxes):
-                gbl.boxes.append(list(msg.data[7 * i + 1: 7 * i + 7]))
-            #rospy.loginfo(boxes)
+    def bbox_callback(msg):
+            gbl.detections = []
+            gbl.num_detections = msg.detected[0]
+
+            for i in range(int(gbl.num_detections)):
+                detection = Detection.Detection(msg.scores[i], msg.boxes[(i*4):(i+1)*4], msg.classes[i])
+                gbl.detections.append(detection)
 
     def get_depth(self):
       return gbl.depth - gbl.init_depth
@@ -162,19 +168,20 @@ class sub(smach.State):
       return gbl.heading
 
     #TODO: update this to read in by the new message structure
-    def get_box_of_class(self, boxes, class_num):
-        if gbl.boxes == []:
-            rospy.loginfo('No boxes in image at time: ' + str(rospy.get_time()))
+    def get_box_of_class(self, detections, class_num):
+        if gbl.detections == []:
+            rospy.loginfo('No detections in image at time: ' + str(rospy.get_time()))
             return None
 
         found = None
         max_prob = 0.0
-        for box in gbl.boxes:
-            if box[0] == class_num and box[1] > max_prob:
-                found = box
-                max_prob = box[1] 
+        for detection in detections:
+            if detection.class_id == class_num and detection.score > max_prob:
+                found = detection
+                max_prob = detection.score 
 
-        rospy.loginfo('class: %s\tconf: %s', box[0], box[1])
+        if found:
+            rospy.loginfo('class: %s\tconf: %s', str(found.class_id), str(found.score))
 
         #ignore ghosts
         if max_prob > 0.20:
@@ -205,7 +212,7 @@ class sub(smach.State):
     init_distance = 0
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
-    ssd_sub = rospy.Subscriber('ssd_output', Float32MultiArray, bbox_callback)
+    ssd_sub = rospy.Subscriber('ssd_output', Detections, bbox_callback)
     vfr_hud_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, vfr_hud_callback) #provides depth and heading
 
     # default settings for each part of the joy message
@@ -219,8 +226,4 @@ class sub(smach.State):
     buttons_dict = {'a' : 0, 'b' : 1, 'x' : 2, 'y' : 3, 'lb' : 4, 'rb' : 5, 'back' : 6, 'start' : 7, 'xbox' : 8, 'lstickpress' : 9, 'rstickpress' : 10}
 
 
-    #AFAIK class_dict and balloon_class_dict are never actually used in subdriver. They're just here for reference.
-    class_dict = {"background":0, "path_marker":1, "start_gate":2, 
-            "pole":3}
-
-    balloon_class_dict = {'background':0, 'pink_balloon':1, 'red_balloon':2, 'orange_balloon':3, 'yellow_balloon':4, 'green_balloon':5}
+    class_dict = {"background":0, "start_gate":1, "pole":2, "path_marker":3}

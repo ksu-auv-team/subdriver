@@ -33,28 +33,25 @@ class interact_pole(sub):
         self.last_seen = rospy.get_time()
         self.init_heading = self.get_heading()
 
-
-        continue = true
-
         #keep going until we're within 10 degrees of the opposite of the initial heading
-        while (abs(init_heading - get_heading) < 170 and abs(init_heading - get_heading) > 190)
-            box = gbl.get_box_of_class(gbl.boxes, gbl.current_target)
-            center = self.getCenter(box)
+        while (abs(init_heading - get_heading) < 170 and abs(init_heading - get_heading) > 190):
+            detection = self.get_box_of_class(gbl.detections, gbl.current_target)
+            center = self.getCenter(detection.box)
             msg = self.init_joy_msg()
 
-            if box != None:  # If the box is good
+            if detection != None:  # If the box is good
                 #update values
                 if self.init_size == None:
-                    self.init_size = self.getDistance(box)
+                    self.init_size = self.getDistance(detection.box)
                 self.last_seen = rospy.get_time()
-            else if rospy.get_time - self.last_seen <= 5:
+            elif (rospy.get_time - self.last_seen) <= 5:
                 #stay still and look around to see if we can pick it back up
                 msg.axes[self.axes_dict['vertical']] = self.depth_hold()
                 msg.axes[self.axes_dict['rotate']] = -0.1 * random.randint(-1, 1)
                 self.joy_pub.publish(msg)
                 rospy.sleep(gbl.sleep_time)
                 continue
-            else #if last seen more than 5 seconds ago
+            else: #if last seen more than 5 seconds ago
                 return 'Lost_Pole' # Transitions to SEARCH_POLE (I think)
 
             #strafe right
@@ -69,19 +66,19 @@ class interact_pole(sub):
                 msg.axes[self.axes_dict['rotate']] = -0.1
 
             #maintain distance
-            if getDistance(box) > 1.2 * self.init_size:
+            if getDistance(detection.box) > 1.2 * self.init_size:
                 msg.axes[self.axes_dict['frontback']] = -0.2
-            else if getDistance(box) < 0.8 * self.init_size:
+            elif getDistance(detection.box) < 0.8 * self.init_size:
                 msg.axes[self.axes_dict['frontback']] = 0.2
 
             #hold depth
             #if we can see the ends of the pole (i.e. the bounding box doesn't end at the edge of the screen), center on it
-            if box[3] > 0.1 and box[5] < 0.9:
+            if detection.box[3] > 0.1 and detection.box[5] < 0.9:
                 if (center[1]) < 0.45:
                     msg.axes[self.axes_dict['vertical']] = gbl.depth_const + 0.1
                 elif center[1] > 0.55:
                     msg.axes[self.axes_dict['vertical']] = gbl.depth_const - 0.1
-            else #otherwise, hold depth
+            else: #otherwise, hold depth
                 msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
             self.joy_pub.publish(msg)
@@ -102,12 +99,13 @@ class interact_pole(sub):
         #keep strafing without rotating until the pole is to our side
         #exact position is only a guess and will probably need to be modified
         while(True):
-            box = gbl.get_box_of_class(gbl.boxes, gbl.current_target))
-            center = self.getCenter(box)
-            if (center[0] > 0.2 and center[0] < 0.8)
+            detection = self.get_box_of_class(gbl.detections, gbl.current_target)
+            center = self.getCenter(detection.box)
+            if (center[0] > 0.2 and center[0] < 0.8):
                 msg = self.init_joy_msg()
                 msg.axes[self.axes_dict['vertical']] = self.depth_hold()
                 msg.axes[self.axes_dict['leftright']] = 0.15
+                self.joy_pub.publish(msg)
             else:
                 break
         

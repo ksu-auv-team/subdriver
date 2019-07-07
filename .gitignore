@@ -267,3 +267,8 @@ __pycache__/
 
 # MATLAB symbol tables
 *.asv
+
+# Catkin Workspace things
+# Catkin_Workspace Things:
+catkin_ws/build
+catkin_ws/devel
