@@ -22,7 +22,7 @@ init_size
 # define state interact_pole
 class interact_pole(sub):
     #setting to none indicates that we haven't seen it yet
-    self.init_size = None
+    init_size = None
 
     def __init__(self):
         smach.State.__init__(self, outcomes=['Around_Pole','Lost_Pole'])
@@ -31,10 +31,10 @@ class interact_pole(sub):
         #initialization
         self.init_state()
         self.last_seen = rospy.get_time()
-        self.init_heading = self.get_heading()
+        init_heading = self.get_heading()
 
         #keep going until we're within 10 degrees of the opposite of the initial heading
-        while (abs(init_heading - get_heading) < 170 and abs(init_heading - get_heading) > 190):
+        while (abs(init_heading - self.get_heading()) < 170 and abs(init_heading - self.get_heading()) > 190):
             detection = self.get_box_of_class(gbl.detections, gbl.current_target)
             center = self.getCenter(detection.box)
             msg = self.init_joy_msg()

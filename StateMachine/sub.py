@@ -68,62 +68,62 @@ class sub(smach.State):
 
 
     def execute(self, userdata):
-      '''Executes the behavior defined for a given state.
-      Every state requires an 'execute' function. This is the function that automatically
-      gets called by SMACH when we transition into the new state. In each of the subclasses 
-      that inherit from 'sub' we override the 'execute' function to do that state's speciffic job.
+        '''Executes the behavior defined for a given state.
+        Every state requires an 'execute' function. This is the function that automatically
+        gets called by SMACH when we transition into the new state. In each of the subclasses 
+        that inherit from 'sub' we override the 'execute' function to do that state's speciffic job.
 
-      Args:
-        userdata: dict, k-v mapping of data pertinent to state.
-      '''
-      pass
+        Args:
+            userdata: dict, k-v mapping of data pertinent to state.
+        '''
+        pass
 
     def log(self):
-      '''Logs to ROS.
-      The log function is designed to be overridden in each subclass as a catch-all for when
-      you want to log things to ROS.
-      '''
-      pass
+        '''Logs to ROS.
+        The log function is designed to be overridden in each subclass as a catch-all for when
+        you want to log things to ROS.
+        '''
+        pass
 
     def init_joy_msg(self):
-      '''This initializes a joystick message. We drive our sub by simulating joystick commands and sending
-      them to the Pixhawk.
+        '''This initializes a joystick message. We drive our sub by simulating joystick commands and sending
+        them to the Pixhawk.
 
-      Returns:
-        empty joystick message ready for editing.
-      '''
-      msg = Joy()
-      msg.axes = list(self.def_msg_axes)
-      msg.buttons = list(self.def_msg_buttons)
-      return msg
+        Returns:
+            empty joystick message ready for editing.
+        '''
+        msg = Joy()
+        msg.axes = list(self.def_msg_axes)
+        msg.buttons = list(self.def_msg_buttons)
+        return msg
     
     def depth_hold(self):
-      '''Holds sub depth to value from 'gbl.depth'.
+        '''Holds sub depth to value from 'gbl.depth'.
       
-      The depth_hold does what is says: holding the depth. It compares the current depth 'gbl.depth'
-      to what the depth was at the start of the current state. If it's higher or lower, it adjusts 
-      'thrust' which gets returned. The one thing to keep in mind here, is that depth_hold is not actually 
-      commanding your sub anything, just returning the value to pack into your message to hold the current depth.
+        The depth_hold does what is says: holding the depth. It compares the current depth 'gbl.depth'
+        to what the depth was at the start of the current state. If it's higher or lower, it adjusts 
+        'thrust' which gets returned. The one thing to keep in mind here, is that depth_hold is not actually 
+        commanding your sub anything, just returning the value to pack into your message to hold the current depth.
       
-      Returns:
-        thrust, float(?) value for maintaining the depth to pass along to controller.
-      '''
+        Returns:
+            thrust, float(?) value for maintaining the depth to pass along to controller.
+        '''
 
-      if gbl.depth == None or self.current_state_start_depth == None:
-        thrust = gbl.depth_const
-        rospy.logerr("While trying to hold depth, depth = None")
+        if gbl.depth == None or self.current_state_start_depth == None:
+            thrust = gbl.depth_const
+            rospy.logerr("While trying to hold depth, depth = None")
 
-      elif gbl.depth - self.current_state_start_depth > 0.25:
-        if self.get_depth() > 1:
-          thrust = gbl.depth_const + 0.01
-        else: 
-          thrust = gbl.depth_const
-      elif gbl.depth - self.current_state_start_depth < -0.25:
-        thrust = gbl.depth_const - 0.01
-      else:
-        thrust = gbl.depth_const
+        elif gbl.depth - self.current_state_start_depth > 0.25:
+            if self.get_depth() > 1:
+                thrust = gbl.depth_const + 0.01
+            else: 
+                thrust = gbl.depth_const
+        elif gbl.depth - self.current_state_start_depth < -0.25:
+              thrust = gbl.depth_const - 0.01
+        else:
+            thrust = gbl.depth_const
 
-      return thrust
+        return thrust
 
     def getCenter(self, box):
         '''Gets the center point of a bounding box.
@@ -138,19 +138,20 @@ class sub(smach.State):
         return ((box[0] + box[2]) / 2.0 , (box[1] + box[3]) / 2.0)
 
     def getDistance(self, x1, y1, x2, y2):
-      '''Gets distance between two points.
+        '''Gets distance between two points.
 
-      Args:
-        x1,y1,x2,y2: float, scalar coordinates for the two points.
+        Args:
+            x1,y1,x2,y2: float, scalar coordinates for the two points.
 
-      Returns:
-        float, distance between the two points.
-      '''
-      return math.sqrt((x2-x1)**2 + (y2-y1)**2)
+        Returns:
+            float, distance between the two points.
+        '''
+        return math.sqrt((x2-x1)**2 + (y2-y1)**2)
 
     # ROS callbacks
     def vfr_hud_callback(self, msg): 
         gbl.depth = msg.altitude
+	gbl.heading = msg.heading
 
     #TODO: Update this to read in the new Tensorflow message structure
     def bbox_callback(msg):
@@ -162,10 +163,10 @@ class sub(smach.State):
                 gbl.detections.append(detection)
 
     def get_depth(self):
-      return gbl.depth - gbl.init_depth
+        return gbl.depth - gbl.init_depth
 
     def get_heading(self):
-      return gbl.heading
+        return gbl.heading
 
     #TODO: update this to read in by the new message structure
     def get_box_of_class(self, detections, class_num):
@@ -188,16 +189,16 @@ class sub(smach.State):
             return found
         else:
             return None
-      def getDistance(self, box):
-      '''Gets distance between the corners of a bounding box.
+    def getDistance(self, box):
+        '''Gets distance between the corners of a bounding box.
 
-      Args:
-        x1,y1,x2,y2: float, scalar coordinates for the two points.
+        Args:
+            x1,y1,x2,y2: float, scalar coordinates for the two points.
 
-      Returns:
-        float, distance between the two points.
-      '''
-      return math.sqrt((box4-box2)**2 + (box5-box3)**2)
+        Returns:
+            float, distance between the two points.
+        '''
+        return math.sqrt((box4-box2)**2 + (box5-box3)**2)
 
     # These get set at the start of each state, allowing the user to call them as needed
     current_state_start_time = None
