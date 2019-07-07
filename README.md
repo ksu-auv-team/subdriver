@@ -9,3 +9,12 @@ TODO: add in environment setup suggestions; where to get/install rospy for local
 sudo apt-get install libxml2-dev libxslt-dev python-dev
 sudo pip2 install -U pymavlink
 ```
+
+## Catkin_Ws
+```bash
+cd /path/to/subdriver2018
+echo "source $(pwd)/catkin_ws/devel/setup.bash" >> ~/.bashrc
+cd catkin_ws
+catkin_make
+source ~/.bashrc
+```

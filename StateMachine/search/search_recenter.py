@@ -18,7 +18,7 @@ class search_recenter(sub):
 
         while(1):
             self.joy_pub.publish(msg)
-            if self.get_box_of_class(gbl.boxes, gbl.current_target):
+            if self.get_box_of_class(gbl.detections, gbl.current_target):
                 if self.search_frames_seen <= 2:
                     self.search_frames_seen += 1
                 else:

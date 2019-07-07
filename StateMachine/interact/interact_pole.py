@@ -16,14 +16,16 @@ class interact_pole(sub):
         num_turns = 0
         pole_on_right = False
         pole_on_left = False
+        ''' WORK IN PROGRESS
         while num_turns < 3:
             while (not pole_on_right):
+                box = self.get_box_of_class(gbl.boxes, gbl.current_target)
                 msg.axes[self.axes_dict['leftright']] = -0.1
 
             while (not pole_on_left):
                 msg.axes[self.axes_dict['rotate']] = 0.05
 
-
+        '''
         gbl.current_target = self.class_dict['start_gate']
 
         return 'Around_Pole' # Transitions to SEARCH_FRONT_GATE

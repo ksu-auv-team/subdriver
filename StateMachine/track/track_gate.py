@@ -14,12 +14,12 @@ class track_gate(sub):
         #control loop
         while(1):
             msg = self.init_joy_msg()
-            box = self.get_box_of_class(gbl.boxes, gbl.current_target)
+            detection = self.get_box_of_class(gbl.detections, gbl.current_target)
             msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
-            if (box != None) and box[1] > .3:  # If the box is good
+            if (detection != None) and detection.score > 0.3:  # If the box is good
                 self.last_seen = rospy.get_time()
-                center = self.getCenter(box)
+                center = self.getCenter(detection.box)
                 msg.axes[self.axes_dict['frontback']] = 0.3
   
                 if center[0] < 0.45:
@@ -34,8 +34,8 @@ class track_gate(sub):
                         msg.axes[self.axes_dict['vertical']] = self.depth_hold()
                 elif center[1] > .55:
                     msg.axes[self.axes_dict['vertical']] = self.depth_hold() - 0.2
-                if box:
-                    if self.getDistance(box[2], box[3], box[4], box[5]) > 0.4:
+                if detection:
+                    if self.getDistance(detection.box[0], detection.box[1], detection.box[2], detection.box[3]) > 0.4:
                         self.is_close = True
 
             if self.is_close:
