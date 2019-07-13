@@ -213,7 +213,7 @@ class sub(smach.State):
     init_distance = 0
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
-    ssd_sub = rospy.Subscriber('ssd_output', Detections, bbox_callback)
+    network_sub = rospy.Subscriber('network_output', Detections, bbox_callback)
     vfr_hud_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, vfr_hud_callback) #provides depth and heading
 
     # default settings for each part of the joy message
