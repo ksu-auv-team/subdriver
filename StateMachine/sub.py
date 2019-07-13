@@ -151,16 +151,16 @@ class sub(smach.State):
     # ROS callbacks
     def vfr_hud_callback(self, msg): 
         gbl.depth = msg.altitude
-	gbl.heading = msg.heading
+        gbl.heading = msg.heading
 
     #TODO: Update this to read in the new Tensorflow message structure
     def bbox_callback(msg):
-            gbl.detections = []
-            gbl.num_detections = msg.detected[0]
+        gbl.detections = []
+        gbl.num_detections = msg.detected[0]
 
-            for i in range(int(gbl.num_detections)):
-                detection = Detection.Detection(msg.scores[i], msg.boxes[(i*4):(i+1)*4], msg.classes[i])
-                gbl.detections.append(detection)
+        for i in range(int(gbl.num_detections)):
+            detection = Detection.Detection(msg.scores[i], msg.boxes[(i*4):(i+1)*4], msg.classes[i])
+            gbl.detections.append(detection)
 
     def get_depth(self):
         return gbl.depth - gbl.init_depth
