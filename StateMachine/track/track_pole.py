@@ -43,7 +43,7 @@ class track_pole(sub):
                 return "Approached_Pole" # Transitions to INTERACT_POLE
             elif (rospy.get_time() - self.last_seen) > 2:
                 msg.axes[self.axes_dict['frontback']] = 0
-                self.joy_pub.publish(msg)
+                self.publish_joy(msg)
                 rospy.logwarn("Lost tracking the pole for more than 2 seconds")
                 
                 if(gbl.debug):
@@ -51,7 +51,7 @@ class track_pole(sub):
                 
                 return "Lost_Pole" # Transitions to SEARCH_FRONT_POLE
 
-            self.joy_pub.publish(msg)
+            self.publish_joy(msg)
 
             rospy.sleep(gbl.sleep_time)
 

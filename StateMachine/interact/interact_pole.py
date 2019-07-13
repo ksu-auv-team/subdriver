@@ -48,7 +48,7 @@ class interact_pole(sub):
                 #stay still and look around to see if we can pick it back up
                 msg.axes[self.axes_dict['vertical']] = self.depth_hold()
                 msg.axes[self.axes_dict['rotate']] = -0.1 * random.randint(-1, 1)
-                self.joy_pub.publish(msg)
+                self.publish_joy(msg)
                 rospy.sleep(gbl.sleep_time)
                 continue
             else: #if last seen more than 5 seconds ago
@@ -81,7 +81,7 @@ class interact_pole(sub):
             else: #otherwise, hold depth
                 msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
-            self.joy_pub.publish(msg)
+            self.publish_joy(msg)
         #end while
 
         #move out of the pole's way
@@ -94,7 +94,7 @@ class interact_pole(sub):
                 msg = self.init_joy_msg()
                 msg.axes[self.axes_dict['vertical']] = self.depth_hold()
                 msg.axes[self.axes_dict['leftright']] = 0.15
-                self.joy_pub.publish(msg)
+                self.publish_joy(msg)
             else:
                 break
         

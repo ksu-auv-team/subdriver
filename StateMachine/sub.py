@@ -200,6 +200,20 @@ class sub(smach.State):
         '''
         return math.sqrt((box4-box2)**2 + (box5-box3)**2)
 
+    def publish_joy(self, msg):
+        '''
+        Accepts a ROS joystick message as a parameter, modifies it, then republishes it.
+        Intended to be used to scale speed globally, among other potential uses.
+
+        Args:
+            msg: ROS joystick message
+        '''
+
+        #msg['frontback'] = msg['frontback'] * 0.9
+
+        #changes go here
+        self.joy_pub.publish(msg) 
+
     # These get set at the start of each state, allowing the user to call them as needed
     current_state_start_time = None
     current_state_start_depth = None

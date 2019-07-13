@@ -33,7 +33,7 @@ class start(sub):
 
         # Control loop
         while(1):
-            self.joy_pub.publish(curr_msg)
+            self.publish_joy(curr_msg)
 
             if self.get_box_of_class(gbl.detections, self.class_dict['start_gate']):
                 return 'Found_Gate' # Transitions to TRACK_GATE

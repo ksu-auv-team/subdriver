@@ -14,7 +14,7 @@ class search_right(sub):
         msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
         while(1):
-            self.joy_pub.publish(msg)
+            self.publish_joy(msg)
             if self.get_box_of_class(gbl.detections, gbl.current_target):
                 if self.search_frames_seen <= 2:
                     self.search_frames_seen += 1
