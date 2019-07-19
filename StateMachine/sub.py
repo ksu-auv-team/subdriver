@@ -108,6 +108,7 @@ class sub(smach.State):
         Returns:
             thrust, float(?) value for maintaining the depth to pass along to controller.
         '''
+        return 0.0
 
         if gbl.depth == None or self.current_state_start_depth == None:
             thrust = gbl.depth_const
@@ -243,7 +244,7 @@ class sub(smach.State):
 
 
     # ROS callbacks
-    def vfr_hud_callback(self, msg): 
+    def vfr_hud_callback(msg): 
         gbl.depth = msg.altitude
         gbl.heading = msg.heading
 
