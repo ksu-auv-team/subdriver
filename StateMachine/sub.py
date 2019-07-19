@@ -148,16 +148,25 @@ class sub(smach.State):
         '''
         return math.sqrt((x2-x1)**2 + (y2-y1)**2)
     def getCenterScreenOffset(self, box, offsetX, offsetY):
-        """ Returns a Joystick message to center the sub around a bounding box with an offset 
-        relative to a percentages of the screens dimensions.
+        """         
+        Args:
+            box: [top-left x, top-left y, bottom-right x, bottom-right y]
+
+            offsetX: Horizontal offset as a percentage of the screen's width
+
+            offsetY: Vertical offset as a percentage of the screen's height
+
+        Returns:
+            a Joystick message to center the sub around the center of a bounding box with
+            offsets relative to percentages of the boxes dimensions.
         """
-        STRAFE_LEFTRIGHT_SPEED = 3.0
-        VERTICAL_SPEED = 3.0
+        STRAFE_LEFTRIGHT_SPEED = 0.3
+        VERTICAL_SPEED = 0.3
         # screenWidth = 1.0
         # screenHeight = 1.0
 
-        boxWidth = box[5] - box[3] # box[right] - box[left]
-        boxHeight = box[6] - box[4] #box[bottom] - box[top]
+        boxWidth = box[2] - box[0] # box[right] - box[left]
+        boxHeight = box[3] - box[1] #box[bottom] - box[top]
         center = self.getCenter(box)
         msg = self.init_joy_msg()
 
@@ -176,23 +185,32 @@ class sub(smach.State):
         if(relativeY != 0.5):
 
             if(relativeY > 0.5): # Target Position is to the below
-                msg.axes[self.axes_dict['vertical']] = VERTICAL_SPEED
+                msg.axes[self.axes_dict['vertical']] = -1 *VERTICAL_SPEED
             elif(relativey < 0.5): # Target Position is to the above
-                msg.axes[self.axes_dict['vertical']] = -1 * VERTICAL_SPEED
+                msg.axes[self.axes_dict['vertical']] =  VERTICAL_SPEED
         
         return msg
 
 
     def getCenterBoxOffset(self, box, offsetX, offsetY):
-        """ Returns a Joystick message to center the sub around the center of a bounding box with
-        offsets relative to percentages of the boxes dimensions.
+        """ 
+        Args:
+            box: [top-left x, top-left y, bottom-right x, bottom-right y]
+
+            offsetX: Horizontal offset as a percentage of the box's width
+
+            offsetY: Vertical offset as a percentage of the box's height
+
+        Returns:
+            a Joystick message to center the sub around the center of a bounding box with
+            offsets relative to percentages of the boxes dimensions.
         """
-        STRAFE_LEFTRIGHT_SPEED = 3.0
-        VERTICAL_SPEED = 3.0
+        STRAFE_LEFTRIGHT_SPEED = 0.3
+        VERTICAL_SPEED = 0.3
 
 
-        boxWidth = box[5] - box[3] # box[right] - box[3]
-        boxHeight = box[6] - box[4] #box[bottom] - box[4]
+        boxWidth = box[2] - box[0] # box[right] - box[left]
+        boxHeight = box[3] - box[1] #box[bottom] - box[top]
         center = self.getCenter(box)
         msg = self.init_joy_msg()
         
@@ -211,9 +229,9 @@ class sub(smach.State):
         if(relativeY != 0.5):
 
             if(relativeY > 0.5): # Target Position is to the below
-                msg.axes[self.axes_dict['vertical']] = VERTICAL_SPEED
-            elif(relativey < 0.5): # Target Position is to the above
                 msg.axes[self.axes_dict['vertical']] = -1 * VERTICAL_SPEED
+            elif(relativey < 0.5): # Target Position is to the above
+                msg.axes[self.axes_dict['vertical']] = VERTICAL_SPEED
         
         return msg
             
