@@ -147,6 +147,52 @@ class sub(smach.State):
             float, distance between the two points.
         '''
         return math.sqrt((x2-x1)**2 + (y2-y1)**2)
+    def getCenterScreenOffset(self, box, offsetX, offsetY):
+        """ Returns a Joystick message to center the sub around a bounding box with an offset 
+        relative to a percentages of the screens dimensions.
+        """
+        screenWidth = 1.0
+        screenHeight = 1.0
+    def getCenterBoxOffset(self, box, offsetX, offsetY):
+        """ Returns a Joystick message to center the sub around the center of a bounding box with
+        offsets relative to percentages of the boxes dimensions.
+        """
+        STRAFE_LEFTRIGHT_SPEED = 3.0
+        VERTICAL_SPEED = 3.0
+
+
+        boxWidth = box[5] - box[3] # box[right] - box[3]
+        boxHeight = box[6] - box[4] #box[bottom] - box[4]
+        center = self.getCenter(box)
+        msg = self.init_joy_msg()
+        
+        relativeX = center[0] + offsetX * boxWidth # Target x position relative to current
+        relativeY = center[1] + offsetY * boxHeight # Target y position relative to current
+
+        # Horizontal
+        if(relativeX != 0.5):
+
+            if(relativeX > 0.5): # Target Position is to the right
+                msg.axes[self.axes_dict['leftright']] = STRAFE_LEFTRIGHT_SPEED
+            elif(relativeX < 0.5): # Target Position is to the left
+                msg.axes[self.axes_dict['leftright']] = -1 * STRAFE_LEFTRIGHT_SPEED
+        
+        # Vertical
+        if(relativeY != 0.5):
+
+            if(relativeY > 0.5): # Target Position is to the below
+                msg.axes[self.axes_dict['vertical']] = VERTICAL_SPEED
+            elif(relativey < 0.5): # Target Position is to the above
+                msg.axes[self.axes_dict['vertical']] = -1 * VERTICAL_SPEED
+        
+        return msg
+            
+
+
+
+        
+
+
 
     # ROS callbacks
     def vfr_hud_callback(self, msg): 
