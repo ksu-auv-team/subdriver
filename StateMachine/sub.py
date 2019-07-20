@@ -300,15 +300,13 @@ class sub(smach.State):
         '''
         return math.sqrt((box4-box2)**2 + (box5-box3)**2)
 
-    def get_launcher(self):
-      '''Examines system health message to set active launcher. '''
-      if self.health_sub.launcher_left_ready:
-        self.active_launcher = 'LAUNCHER_LEFT'
-        self.active_launcher_offset = LAUNCHER_LEFT_OFFSET
-        return
-      elif self.health_sub.launcher_right_ready:
+    def set_active_launcher(self):
+      '''Changes active launcher. 
+        Assumes that the first launcher will be LAUNCHER_LEFT and that the function will be called every time a launcher is used to select the next one.
+      '''
+      if self.active_launcher == 'LAUNCHER_LEFT':
         self.active_launcher = 'LAUNCHER_RIGHT'
-        self.active_launcher_offset = LAUNCHER_LEFT_OFFSET
+        self.active_launcher_offset = LAUNCHER_RIGHT_OFFSET
         return
       else
         self.active_launcher = None
@@ -331,7 +329,6 @@ class sub(smach.State):
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
     network_sub = rospy.Subscriber('network_output', Detections, bbox_callback)
     vfr_hud_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, vfr_hud_callback) #provides depth and heading
-    health_sub = rospy.Subscriber('health', Health, queue_size=1)
 
     active_launcher = 'LAUNCHER_LEFT'
     active_launcher_offset = LAUNCHER_LEFT_OFFSET
