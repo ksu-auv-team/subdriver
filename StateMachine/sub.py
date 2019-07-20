@@ -113,23 +113,6 @@ class sub(smach.State):
       msg.axes = list(DEFAULT_MSG_AXES)
       msg.buttons = list(DEFAULT_MSG_BUTTONS)
       return msg
-    
-    def depth_hold(self):
-        '''Holds sub depth to value from 'gbl.depth'.
-      
-        TODO: remove
-
-        Now useless because the Pixhawk is working correctly
-
-        The depth_hold does what is says: holding the depth. It compares the current depth 'gbl.depth'
-        to what the depth was at the start of the current state. If it's higher or lower, it adjusts 
-        'thrust' which gets returned. The one thing to keep in mind here, is that depth_hold is not actually 
-        commanding your sub anything, just returning the value to pack into your message to hold the current depth.
-      
-        Returns:
-            thrust, float(?) value for maintaining the depth to pass along to controller.
-        '''
-        return 0.0
 
     def getCenter(self, box):
         '''Gets the center point of a bounding box.

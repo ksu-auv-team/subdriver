@@ -15,25 +15,28 @@ class track_pole(sub):
         while(1):
             msg = self.init_joy_msg()
             detection = self.get_box_of_class(gbl.detections, gbl.current_target)
-            msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
             if (detection != None) and detection.score > 0.3:  # If the box is good
                 self.last_seen = rospy.get_time()
                 center = self.getCenter(detection.box)
+
+                #move forward
                 msg.axes[self.axes_dict['frontback']] = 0.3
   
+                #center horizontally on pole
                 if center[0] < 0.45:
                     msg.axes[self.axes_dict['rotate']] = 0.05
                 elif center[0] > 0.55:
                     msg.axes[self.axes_dict['rotate']] = -0.05
   
+                #center vertically on pole
                 if center[1] < .45:
-                    if self.get_depth() > 1:
-                        msg.axes[self.axes_dict['vertical']] = self.depth_hold() + 0.2
-                    else: 
-                        msg.axes[self.axes_dict['vertical']] = self.depth_hold()
+                    if self.get_depth() > 0.5:
+                        msg.axes[self.axes_dict['vertical']] = 0.2
+                    #else no change - stay at least half a meter below the surface
                 elif center[1] > .55:
-                    msg.axes[self.axes_dict['vertical']] = self.depth_hold() - 0.2
+                    msg.axes[self.axes_dict['vertical']] = -0.2
+
                 if detection:
                     if self.getDistance(detection.box[0], detection.box[1], detection.box[2], detection.box[3]) > 0.4:
                         self.is_close = True

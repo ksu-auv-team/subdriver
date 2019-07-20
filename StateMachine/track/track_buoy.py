@@ -41,8 +41,6 @@ class track_buoy(sub):
         msg.axis[self.axis_dict['vertical']] = PID().update(self.getCenter(gbl.boxes[self.findBoxNumber()])[1])
         self.joy_pub.publish(msg)
         rospy.sleep(gbl.const.const.SLEEP_TIME)
-        # Stabilize
-        msg.axis[self.axis_dict['vertical']] = self.depth_hold
         self.joy_pub.publish(msg)
 
     def matchBuoyLeftRight(self):

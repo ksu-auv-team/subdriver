@@ -12,7 +12,7 @@ class interact_gate(sub):
 
         msg = self.init_joy_msg()
         msg.axes[self.axes_dict['frontback']] = 0.7
-        msg.axes[self.axes_dict['vertical']] = self.depth_hold()
+        
 
         rospy.loginfo("Charging forward for 5 seconds")
         

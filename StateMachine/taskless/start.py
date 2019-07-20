@@ -23,7 +23,6 @@ class start(sub):
             gbl.init_heading = gbl.heading
 
         curr_msg = self.init_joy_msg()
-        curr_msg.axes[self.axes_dict['vertical']] = self.depth_hold() - 0.4
         curr_msg.axes[self.axes_dict['frontback']] = 0.5
 
         gbl.current_target = self.class_dict['start_gate']

@@ -46,7 +46,6 @@ class interact_pole(sub):
                 self.last_seen = rospy.get_time()
             elif (rospy.get_time - self.last_seen) <= 5:
                 #stay still and look around to see if we can pick it back up
-                msg.axes[self.axes_dict['vertical']] = self.depth_hold()
                 msg.axes[self.axes_dict['rotate']] = -0.1 * random.randint(-1, 1)
                 self.joy_pub.publish(msg)
                 rospy.sleep(gbl.const.const.SLEEP_TIME)
@@ -78,8 +77,7 @@ class interact_pole(sub):
                     msg.axes[self.axes_dict['vertical']] = gbl.depth_const + 0.1
                 elif center[1] > 0.55:
                     msg.axes[self.axes_dict['vertical']] = gbl.depth_const - 0.1
-            else: #otherwise, hold depth
-                msg.axes[self.axes_dict['vertical']] = self.depth_hold()
+            #otherwise no change
 
             self.joy_pub.publish(msg)
         #end while

@@ -28,7 +28,7 @@ class track_torpedo(sub):
         self.last_seen = rospy.get_time()
         #TODO: Tune these controllers
         x_pid = PID(s=CAMERA_FORWARD_CENTER['X'] + self.active_launcher_offset['WINDAGE_OFFSET'])
-        z_pid = PID(s=CAMERA_FORWARD_CENTER['Z'] + self.active_launcher_offset['ELEVATION_OFFSET'] + gbl.depth_const)
+        z_pid = PID(s=CAMERA_FORWARD_CENTER['Z'] + self.active_launcher_offset['ELEVATION_OFFSET'])
 
     while(1):
         jmsg = self.init_joy_msg()
