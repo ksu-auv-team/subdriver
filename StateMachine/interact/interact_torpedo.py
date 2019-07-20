@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from StateMachine.const import BUTTONS_ENUM, JOY_MAP
+from StateMachine.const import BUTTONS, JOY_MAP
 
 from StateMachine.sub import sub
 from StateMachine.sub import rospy
@@ -59,13 +59,13 @@ class interact_torpedo(sub):
         '''
         try:
             jmsg = self.init_joy_msg()
-            jmsg.buttons[BUTTONS_ENUM[JOY_MAP[launcher]]]=1
+            jmsg.buttons[BUTTONS[JOY_MAP[launcher]]]=1
             self.joy_pub.publish(jmsg)
             rospy.sleep(1)
-            jmsg.buttons[BUTTONS_ENUM[JOY_MAP[launcher]]]=0
+            jmsg.buttons[BUTTONS[JOY_MAP[launcher]]]=0
             self.joy_pub.publish(jmsg)
             # Activates next tube
-            self.get_launcher()
+            self.set_active_launcher()
         except Exception as e:
             raise LaunchError(e)
 

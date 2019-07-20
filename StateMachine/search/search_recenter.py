@@ -10,7 +10,7 @@ class search_recenter(sub):
     def execute(self, userdata):
         self.init_state()
         msg = self.init_joy_msg()
-        msg.axes[self.axes_dict['rotate']] = -.05
+        msg.axes[const.AXES['rotate']] = -.05
         
 
         if(gbl.debug):
@@ -31,5 +31,5 @@ class search_recenter(sub):
             else:
                 self.search_frames_seen = 0
                 
-            rospy.sleep(gbl.const.const.SLEEP_TIME)
+            rospy.sleep(const.SLEEP_TIME)
 

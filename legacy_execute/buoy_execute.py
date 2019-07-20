@@ -9,7 +9,6 @@ import math
 import pymavlink
 import random
 
-
 use_hold_depth = False 
 target_depth = 0
 search_frames_seen = 0

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from StateMachine.gbl import boxes
+from StateMachine.gbl import *
+from StateMachine.const import *
 from StateMachine.sub import *
 from StateMachine.controllers import PID
 import math
@@ -11,10 +12,10 @@ from enum import Enum
     # Buoy Dimensions:  24 in. wide by 48 in. tall
     # Buoy will rotate 1-5 RPM
     # There is a two sided buoy with a Jiangshi on it. Do not target it
-    # There is a three sided  buoy with Drauger, Vetalas, and Aswang on it.
+    # There is a three sided  buoy with draugr, vetalas, and aswang on it.
         # We choose which one we will target and we will get 600 pts for hitting the one we chose
         # And 300 pts if we hit one of the other two.
-    # Target Face of buoy: Since it is arbitrary, we will be targetting the Drauger
+    # Target Face of buoy: Since it is arbitrary, we will be targetting the draugr
 
 # Calculated Information:
     # When to move forward
@@ -36,10 +37,10 @@ class interact_buoy(sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Clear_Of_Buoy'])
         self.rotationOrder = -1
-        self.targetFace = BuoyFaces.Drauger
+        self.targetFace = BuoyFaces.draugr
         self.maxAcceleration = 20
     def execute(self, userdata):
-        """ We will attempt to bump into the Drauger face of the buoy """
+        """ We will attempt to bump into the draugr face of the buoy """
         rospy.loginfo('Executing state INTERACT_BUOY')
         # At this point, the sub is stationary and facing the Buoy
         self.init_state()
@@ -57,17 +58,17 @@ class interact_buoy(sub):
 
         # Move towards buoy
         rospy.loginfo("Preparing to move forward.")
-        while findFace()!=BuoyFaces.Drauger:
+        while self.findFace() != BuoyFaces.draugr:
             rospy.sleep(period/6)
             startTime=rospy.Time.now()
             rospy.loginfo("Moving forward for 10 seconds")
         
-        while rospy.Time.now()<startTime+10000: # Move for 10 seconds
-            msg.axis[self.axis_dict['forward']] = 1
+        while rospy.Time.now() < startTime + 10000: # Move for 10 seconds
+            msg.axes[const.AXES['forward']] = 1
             self.joy_pub.publish(msg)
-            rospy.sleep(gbl.const.const.SLEEP_TIME)
+            rospy.sleep(const.SLEEP_TIME)
         
-        msg.axis[self.axis_dict['forward']] = 0
+        msg.axes[const.AXES['forward']] = 0
         rospy.loginfo("Done moving")
         gbl.current_target = None
         return 'Clear_Of_Buoy'
@@ -75,15 +76,17 @@ class interact_buoy(sub):
     def findBox(self):
         # Returns the index in gbl.boxes that the buoy is in
         for i in range(0, len(boxes)):
-            if(boxes[i][1] == BuoyFaces.Drauger or boxes[i][1] == BuoyFaces.Aswang or boxes[i][1] == BuoyFaces.Vetalas):
+            if(boxes[i][1] == BuoyFaces.draugr or boxes[i][1] == BuoyFaces.aswang or boxes[i][1] == BuoyFaces.vetalas):
                 return i[1]
         return -1 # Face was not found
+
     def findFace(self):
         # returns the face of the buoy that is currently visible
         box = self.findBox()
         if(box<0):
             return -1
         return boxes[box][1]
+
     def determineRotationSpeed(self):
         """ returns rotation speed in RPM,
         or Returns -1 if unable to find order, but that doesn't necessarily mean that the 
@@ -119,37 +122,37 @@ class interact_buoy(sub):
             return -1
         # Determine Order by waiting for a face to appear, then waiting until the next face appears
         
-        if(firstFace == BuoyFaces.Drauger): #Drauger
+        if(firstFace == BuoyFaces.draugr): #draugr
             
-            if(secondFace == BuoyFaces.Aswang):
+            if(secondFace == BuoyFaces.aswang):
                 self.rotationOrder = BuoyRotationOrder.DAV
                 return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
         
-            elif(secondFace == BuoyFaces.Vetalas):
+            elif(secondFace == BuoyFaces.vetalas):
                 self.rotationOrder = BuoyRotationOrder.VAD
                 return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
         
             else:
                 return -1
         
-        elif(firstFace == BuoyFaces.Aswang): #Aswang
+        elif(firstFace == BuoyFaces.aswang): #aswang
             
-            if(secondFace == BuoyFaces.Drauger):
+            if(secondFace == BuoyFaces.draugr):
                 self.rotationOrder = BuoyRotationOrder.VAD
                 return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
             
-            elif(secondFace == BuoyFaces.Vetalas):
+            elif(secondFace == BuoyFaces.vetalas):
                 self.rotationOrder = BuoyRotationOrder.DAV
                 return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
             
             else:
                 return -1
         
-        elif(firstFace == BuoyFaces.Vetalas): #Vetalas
-            if(secondFace == BuoyFaces.Aswang):
+        elif(firstFace == BuoyFaces.vetalas): #vetalas
+            if(secondFace == BuoyFaces.aswang):
                 self.rotationOrder = BuoyRotationOrder.VAD
                 return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
-            elif(secondFace == BuoyFaces.Drauger):
+            elif(secondFace == BuoyFaces.draugr):
                 self.rotationOrder = BuoyRotationOrder.DAV
                 return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
             else:
@@ -169,23 +172,23 @@ class interact_buoy(sub):
            
     def nextFace(self, face):
         # Given a buoy face, method will return the next face in the order
-        if(face == BuoyFaces.Drauger):
+        if(face == BuoyFaces.draugr):
             if(self.rotationOrder == BuoyRotationOrder.DAV):
-                return BuoyFaces.Aswang
+                return BuoyFaces.aswang
             else:
-                return BuoyFaces.Vetalas
+                return BuoyFaces.vetalas
         
-        elif(face == BuoyFaces.Aswang):
+        elif(face == BuoyFaces.aswang):
             if(self.rotationOrder == BuoyRotationOrder.DAV):
-                return BuoyFaces.Vetalas
+                return BuoyFaces.vetalas
             else:
-                return BuoyFaces.Drauger
+                return BuoyFaces.draugr
         
-        elif(face == BuoyFaces.Vetalas):
+        elif(face == BuoyFaces.vetalas):
             if(self.rotationOrder == BuoyRotationOrder.DAV):
-                return BuoyFaces.Drauger
+                return BuoyFaces.draugr
             else:
-                return BuoyFaces.Aswang
+                return BuoyFaces.aswang
 
     def getThirdAtTime(self, period, startTime, currentTime):
         # Finds out what face will be showing at a certain time
@@ -205,17 +208,18 @@ class interact_buoy(sub):
 
 
 class BuoyFaces(Enum): # Numbers will need to be changed to a proper class_id
-    Drauger = 0
-    Aswang = 1
-    Vetalas = 2
+    draugr = 0
+    aswang = 1
+    vetalas = 2
+
 class BuoyRotationOrder(Enum):
     """Enumeration for if the rotation order is:
-     Drauger, Aswang, Vetalas,  , (DAV)
-     or Vetalas, Aswang, Drauger (VAD)
+     draugr, aswang, vetalas (DAV)
+     or vetalas, aswang, draugr (VAD)
     """
     DAV = 0
     VAD = 1
-    UnKnown = 3
+    Unknown = 3
 
 
 

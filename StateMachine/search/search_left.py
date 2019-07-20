@@ -10,7 +10,7 @@ class search_left(sub):
     def execute(self, userdata):
         self.init_state()
         msg = self.init_joy_msg()
-        msg.axes[self.axes_dict['rotate']] = -.05
+        msg.axes[const.AXES['rotate']] = -.05
         
 
         while(1):
@@ -28,5 +28,5 @@ class search_left(sub):
             else:
                 self.search_frames_seen = 0
 
-            rospy.sleep(gbl.const.const.SLEEP_TIME)
+            rospy.sleep(const.SLEEP_TIME)
 

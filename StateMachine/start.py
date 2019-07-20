@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from StateMachine import const
 from sub import sub, smach, rospy, gbl
 
 # define state start
@@ -20,10 +21,10 @@ class start(sub):
         gbl.init_depth = gbl.depth
 
     	curr_msg = self.init_joy_msg()
-    	curr_msg.axes[self.axes_dict['vertical']] = -1
-    	curr_msg.axes[self.axes_dict['frontback']] = 1
+    	curr_msg.axes[const.AXES['vertical']] = -1
+    	curr_msg.axes[const.AXES['frontback']] = 1
 
-        gbl.current_target = self.class_dict['start_gate']
+        gbl.current_target = const.CLASSES['start_gate']
 
         return 'Not_Found_Gate' # Debug Porpoises Only!
 
@@ -32,10 +33,10 @@ class start(sub):
             self.joy_pub.publish(curr_msg)
 
             if rospy.get_time() > (gbl.run_start_time + 15):
-                if self.get_box_of_class(gbl.boxes, self.class_dict['start_gate']):
+                if self.get_box_of_class(gbl.boxes, const.CLASSES['start_gate']):
                     return 'Found_Gate' # Transitions to TRACK_GATE
                 else:
                     return 'Not_Found_Gate' # Transitions to SEARCH_FRONT_GATE
 
-            rospy.sleep(gbl.const.const.SLEEP_TIME)
+            rospy.sleep(const.SLEEP_TIME)
 

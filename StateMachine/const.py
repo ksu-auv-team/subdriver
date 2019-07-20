@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python2
 '''Collection of system constants referenced by the system.
 
 Collecting necessary constants in a single location so that
@@ -13,28 +13,28 @@ DEFAULT_MSG_BUTTONS = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
 Usage:
   1) Pushing the front/back control stick forward:
-    from constants import AXES_ENUM
+    from constants import AXES
     from StateMachine import sub
 
     jmsg = sub.init_joy_msg()
-    jmsg[AXES_ENUM['frontback']] = 255
+    jmsg[AXES['frontback']] = 255
     sub.joy_pub.publish(jmsg)
 
   2) Pressing a button:
-    from constants import BUTTONS_ENUM
+    from constants import BUTTONS
     from StateMachine import sub
 
     jmsg = sub.init_joy_msg()
-    jmsg[BUTTONS_ENUM['x']] = 1
+    jmsg[BUTTONS['x']] = 1
     sub.joy_pub.publish(jmsg)
     time.sleep(DEBOUNCE_DELAY)
-    jmsg[BUTTONS_ENUM['x']] = 0
+    jmsg[BUTTONS['x']] = 0
     sub.joy_pub.publish(jmsg)
 
 
 '''
 #TODO: verify and annotate input ranges for these fields.
-AXES_ENUM = {'rotate': 0,
+AXES = {'rotate': 0,
              'vertical': 1,
              'lt': 2,
              'leftright': 3,
@@ -43,7 +43,7 @@ AXES_ENUM = {'rotate': 0,
              'dpad_h': 6,
              'dpad_v': 7}
 
-BUTTONS_ENUM = {'a': 0,
+BUTTONS = {'a': 0,
                 'b': 1,
                 'x': 2,
                 'y': 3,
@@ -55,7 +55,8 @@ BUTTONS_ENUM = {'a': 0,
                 'lstickpress': 9,
                 'rstickpress': 10}
 
-CLASSES_ENUM = {'background': 0,
+#TODO: update for this year's tasks
+CLASSES = {'background': 0,
                 'path_marker': 1,
                 'start_gate': 2,
                 'channel': 3,

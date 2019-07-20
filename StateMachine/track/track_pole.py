@@ -21,21 +21,21 @@ class track_pole(sub):
                 center = self.getCenter(detection.box)
 
                 #move forward
-                msg.axes[self.axes_dict['frontback']] = 0.3
+                msg.axes[const.AXES['frontback']] = 0.3
   
                 #center horizontally on pole
                 if center[0] < 0.45:
-                    msg.axes[self.axes_dict['rotate']] = 0.05
+                    msg.axes[const.AXES['rotate']] = 0.05
                 elif center[0] > 0.55:
-                    msg.axes[self.axes_dict['rotate']] = -0.05
+                    msg.axes[const.AXES['rotate']] = -0.05
   
                 #center vertically on pole
                 if center[1] < .45:
                     if self.get_depth() > 0.5:
-                        msg.axes[self.axes_dict['vertical']] = 0.2
+                        msg.axes[const.AXES['vertical']] = 0.2
                     #else no change - stay at least half a meter below the surface
                 elif center[1] > .55:
-                    msg.axes[self.axes_dict['vertical']] = -0.2
+                    msg.axes[const.AXES['vertical']] = -0.2
 
                 if detection:
                     if self.getDistance(detection.box[0], detection.box[1], detection.box[2], detection.box[3]) > 0.4:
@@ -45,7 +45,7 @@ class track_pole(sub):
                 self.is_close = False
                 return "Approached_Pole" # Transitions to INTERACT_POLE
             elif (rospy.get_time() - self.last_seen) > 2:
-                msg.axes[self.axes_dict['frontback']] = 0
+                msg.axes[const.AXES['frontback']] = 0
                 self.joy_pub.publish(msg)
                 rospy.logwarn("Lost tracking the pole for more than 2 seconds")
                 
@@ -56,7 +56,7 @@ class track_pole(sub):
 
             self.joy_pub.publish(msg)
 
-            rospy.sleep(gbl.const.const.SLEEP_TIME)
+            rospy.sleep(const.SLEEP_TIME)
 
     def log(self):
       rospy.loginfo('Executing state TRACK_POLE')

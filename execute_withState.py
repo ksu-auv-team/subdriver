@@ -11,9 +11,6 @@ parser.add_argument('-m', '--machine', default="BaseStateMachine", help="the nam
 parser.add_argument('-d', '--debug', action="store_true", help='Launches in debug mode. Will try to go through entire state machine.')
 args = parser.parse_args()
 
-def hello_world():
-    print("Hi! I'm useless!")
-
 states = {
     'BaseStateMachine': base.createStateMachine,
     'PrequalifyMachine': prequal.createStateMachine,

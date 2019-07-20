@@ -18,7 +18,6 @@ import sys, signal
 #messages
 from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Joy
-from sensor_msgs.msg import Health
 from sensor_msgs.msg import FluidPressure
 from mavros_msgs.msg import VFR_HUD
 
@@ -27,7 +26,7 @@ from classes import Detection
 
 # Global Variables
 from StateMachine import gbl
-from constants import *
+from StateMachine import const
 
 
 
@@ -110,8 +109,8 @@ class sub(smach.State):
         empty joystick message ready for editing.
       '''
       msg = Joy()
-      msg.axes = list(DEFAULT_MSG_AXES)
-      msg.buttons = list(DEFAULT_MSG_BUTTONS)
+      msg.axes = list(const.DEFAULT_MSG_AXES)
+      msg.buttons = list(const.DEFAULT_MSG_BUTTONS)
       return msg
 
     def getCenter(self, box):
@@ -136,6 +135,18 @@ class sub(smach.State):
             float, distance between the two points.
         '''
         return math.sqrt((x2-x1)**2 + (y2-y1)**2)
+
+    def getDistanceFromBox(self, box):
+        '''Gets distance between the corners of a bounding box.
+
+        Args:
+            x1,y1,x2,y2: float, scalar coordinates for the two points.
+
+        Returns:
+            float, distance between the two points.
+        '''
+        return math.sqrt((box[4]-box[2])**2 + (box[5]-box[3])**2)
+
     def getCenterScreenOffset(self, box, offsetX, offsetY):
         """         
         Args:
@@ -166,17 +177,17 @@ class sub(smach.State):
         if(relativeX != 0.5):
 
             if(relativeX > 0.5): # Target Position is to the right
-                msg.axes[self.axes_dict['leftright']] = STRAFE_LEFTRIGHT_SPEED
+                msg.axes[const.AXES['leftright']] = STRAFE_LEFTRIGHT_SPEED
             elif(relativeX < 0.5): # Target Position is to the left
-                msg.axes[self.axes_dict['leftright']] = -1 * STRAFE_LEFTRIGHT_SPEED
+                msg.axes[const.AXES['leftright']] = -1 * STRAFE_LEFTRIGHT_SPEED
         
         # Vertical
         if(relativeY != 0.5):
 
             if(relativeY > 0.5): # Target Position is to the below
-                msg.axes[self.axes_dict['vertical']] = -1 *VERTICAL_SPEED
-            elif(relativey < 0.5): # Target Position is to the above
-                msg.axes[self.axes_dict['vertical']] =  VERTICAL_SPEED
+                msg.axes[const.AXES['vertical']] = -1 *VERTICAL_SPEED
+            elif(relativeY < 0.5): # Target Position is to the above
+                msg.axes[const.AXES['vertical']] =  VERTICAL_SPEED
         
         return msg
 
@@ -210,40 +221,19 @@ class sub(smach.State):
         if(relativeX != 0.5):
 
             if(relativeX > 0.5): # Target Position is to the right
-                msg.axes[self.axes_dict['leftright']] = STRAFE_LEFTRIGHT_SPEED
+                msg.axes[const.AXES['leftright']] = STRAFE_LEFTRIGHT_SPEED
             elif(relativeX < 0.5): # Target Position is to the left
-                msg.axes[self.axes_dict['leftright']] = -1 * STRAFE_LEFTRIGHT_SPEED
+                msg.axes[const.AXES['leftright']] = -1 * STRAFE_LEFTRIGHT_SPEED
         
         # Vertical
         if(relativeY != 0.5):
 
             if(relativeY > 0.5): # Target Position is to the below
-                msg.axes[self.axes_dict['vertical']] = -1 * VERTICAL_SPEED
-            elif(relativey < 0.5): # Target Position is to the above
-                msg.axes[self.axes_dict['vertical']] = VERTICAL_SPEED
+                msg.axes[const.AXES['vertical']] = -1 * VERTICAL_SPEED
+            elif(relativeY < 0.5): # Target Position is to the above
+                msg.axes[const.AXES['vertical']] = VERTICAL_SPEED
         
         return msg
-            
-
-
-
-        
-
-
-
-    # ROS callbacks
-    def vfr_hud_callback(msg): 
-        gbl.depth = msg.altitude
-        gbl.heading = msg.heading
-
-    #TODO: Update this to read in the new Tensorflow message structure
-    def bbox_callback(msg):
-        gbl.detections = []
-        gbl.num_detections = msg.detected[0]
-
-        for i in range(int(gbl.num_detections)):
-            detection = Detection.Detection(msg.scores[i], msg.boxes[(i*4):(i+1)*4], msg.classes[i])
-            gbl.detections.append(detection)
 
     def get_depth(self):
         return gbl.depth - gbl.init_depth
@@ -272,29 +262,19 @@ class sub(smach.State):
             return found
         else:
             return None
-    def getDistance(self, box):
-        '''Gets distance between the corners of a bounding box.
-
-        Args:
-            x1,y1,x2,y2: float, scalar coordinates for the two points.
-
-        Returns:
-            float, distance between the two points.
-        '''
-        return math.sqrt((box4-box2)**2 + (box5-box3)**2)
-
+        
     def set_active_launcher(self):
-      '''Changes active launcher. 
-        Assumes that the first launcher will be LAUNCHER_LEFT and that the function will be called every time a launcher is used to select the next one.
-      '''
-      if self.active_launcher == 'LAUNCHER_LEFT':
-        self.active_launcher = 'LAUNCHER_RIGHT'
-        self.active_launcher_offset = LAUNCHER_RIGHT_OFFSET
-        return
-      else
-        self.active_launcher = None
-        self.active_launcher_offset = None
-        return
+        '''Changes active launcher. 
+            Assumes that the first launcher will be LAUNCHER_LEFT and that the function will be called every time a launcher is used to select the next one.
+        '''
+        if self.active_launcher == 'LAUNCHER_LEFT':
+            self.active_launcher = 'LAUNCHER_RIGHT'
+            self.active_launcher_offset = const.LAUNCHER_RIGHT_OFFSET
+            return
+        else:
+            self.active_launcher = None
+            self.active_launcher_offset = None
+            return
 
     # These get set at the start of each state, allowing the user to call them
     # as needed
@@ -314,7 +294,22 @@ class sub(smach.State):
     vfr_hud_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, vfr_hud_callback) #provides depth and heading
 
     active_launcher = 'LAUNCHER_LEFT'
-    active_launcher_offset = LAUNCHER_LEFT_OFFSET
-    
+    active_launcher_offset = const.LAUNCHER_LEFT_OFFSET
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
+
+# ROS callbacks
+#global to make the linter happy
+def vfr_hud_callback(msg): 
+    gbl.depth = msg.altitude
+    gbl.heading = msg.heading
+
+#TODO: Update this to read in the new Tensorflow message structure
+def bbox_callback(msg):
+    gbl.detections = []
+    gbl.num_detections = msg.detected[0]
+
+    for i in range(int(gbl.num_detections)):
+        detection = Detection.Detection(msg.scores[i], msg.boxes[(i*4):(i+1)*4], msg.classes[i])
+        gbl.detections.append(detection)
+

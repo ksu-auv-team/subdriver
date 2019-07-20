@@ -23,9 +23,9 @@ class start(sub):
             gbl.init_heading = gbl.heading
 
         curr_msg = self.init_joy_msg()
-        curr_msg.axes[self.axes_dict['frontback']] = 0.5
+        curr_msg.axes[const.AXES['frontback']] = 0.5
 
-        gbl.current_target = self.class_dict['start_gate']
+        gbl.current_target = const.CLASSES['start_gate']
 
         if(gbl.debug):
             return 'Not_Found_Gate' # Debug Porpoises Only!    
@@ -34,10 +34,10 @@ class start(sub):
         while(1):
             self.joy_pub.publish(curr_msg)
 
-            if self.get_box_of_class(gbl.detections, self.class_dict['start_gate']):
+            if self.get_box_of_class(gbl.detections, const.CLASSES['start_gate']):
                 return 'Found_Gate' # Transitions to TRACK_GATE
             elif (rospy.get_time() - self.current_state_start_time) > 2:
                 return 'Not_Found_Gate' # Transitions to SEARCH_FRONT_GATE
 
-            rospy.sleep(gbl.const.const.SLEEP_TIME)
+            rospy.sleep(const.SLEEP_TIME)
 

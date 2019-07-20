@@ -31,7 +31,7 @@ class interact_pole_smallturns(sub):
         #keep going until we're within 10 degrees of the opposite of the initial heading
         num_turns = 0
         max_turns = 3
-        while (num_turns < max_turns and not (num_turns > 2 and abs(init_heading - get_heading) < 170 and abs(init_heading - get_heading) > 190)):
+        while (num_turns < max_turns and not (num_turns > 2 and abs(gbl.init_heading - self.get_heading()) < 170 and abs(gbl.init_heading - self.get_heading()) > 190)):
             pole_on_right = False
             pole_on_left = False
             
@@ -46,25 +46,25 @@ class interact_pole_smallturns(sub):
 
                 if detection != None:
                     if center[0] > 0.8:
-                        pole_on_right = true
+                        pole_on_right = True
 
                     #strafe left
-                    msg.axes[self.axes_dict['leftright']] = -0.15
+                    msg.axes[const.AXES['leftright']] = -0.15
 
                     #hold depth
                     #if we can see the ends of the pole (i.e. the bounding box doesn't end at the edge of the screen), center on it
                     if detection.box[3] > 0.1 and detection.box[5] < 0.9:
                         if (center[1]) < 0.45:
-                            msg.axes[self.axes_dict['vertical']] = gbl.depth_const + 0.1
+                            msg.axes[const.AXES['vertical']] = 0.1
                         elif center[1] > 0.55:
-                            msg.axes[self.axes_dict['vertical']] = gbl.depth_const - 0.1
+                            msg.axes[const.AXES['vertical']] = -0.1
                         #otherwise stay still
                             
                 elif rospy.get_time - self.last_seen < 5:
                     #stay still and look around to see if we can pick it back up              
-                    msg.axes[self.axes_dict['rotate']] = -0.1 * random.randint(-1, 1)
+                    msg.axes[const.AXES['rotate']] = -0.1 * random.randint(-1, 1)
                     self.joy_pub.publish(msg)
-                    rospy.sleep(gbl.const.const.SLEEP_TIME)
+                    rospy.sleep(const.SLEEP_TIME)
                     continue
                 else:
                     return 'Lost_Pole'
@@ -76,25 +76,25 @@ class interact_pole_smallturns(sub):
 
                 if detection != None:
                     if center[0] < 0.2:
-                        pole_on_left= true
+                        pole_on_left= True
 
                     #rotate right
-                    msg.axes[self.axes_dict['rotate']] = -0.08
+                    msg.axes[const.AXES['rotate']] = -0.08
 
                     #hold depth
                     #if we can see the ends of the pole (i.e. the bounding box doesn't end at the edge of the screen), center on it
                     if detection.box[1] > 0.1 and detection.box[3] < 0.9:
                         if (center[1]) < 0.45:
-                            msg.axes[self.axes_dict['vertical']] = gbl.depth_const + 0.1
+                            msg.axes[const.AXES['vertical']] = 0.1
                         elif center[1] > 0.55:
-                            msg.axes[self.axes_dict['vertical']] = gbl.depth_const - 0.1
+                            msg.axes[const.AXES['vertical']] = -0.1
                         #otherwise no change
 
                 elif rospy.get_time - self.last_seen < 5:
                     #stay still and look around to see if we can pick it back up
-                    msg.axes[self.axes_dict['rotate']] = -0.1 * random.randint(-1, 1)
+                    msg.axes[const.AXES['rotate']] = -0.1 * random.randint(-1, 1)
                     self.joy_pub.publish(msg)
-                    rospy.sleep(gbl.const.const.SLEEP_TIME)
+                    rospy.sleep(const.SLEEP_TIME)
                     continue
                 else:
                     return 'Lost_Pole'
@@ -108,14 +108,14 @@ class interact_pole_smallturns(sub):
         while(True):
             detection = self.get_box_of_class(gbl.detections, gbl.current_target)
             center = self.getCenter(detection.box)
-            while (abs(init_heading - get_heading) < 170 and abs(init_heading - get_heading) > 190):
+            while (abs(gbl.init_heading - self.get_heading()) < 170 and abs(gbl.init_heading - self.get_heading()) > 190):
                 msg = self.init_joy_msg()
-                msg.axes[self.axes_dict['rotate']] = -0.1
+                msg.axes[const.AXES['rotate']] = -0.1
                 self.joy_pub.publish(msg)
             else:
                 break
         
-        gbl.current_target = self.class_dict['start_gate']
+        gbl.current_target = const.CLASSES['start_gate']
 
         #headed home, motherfuckers
         return 'Around_Pole' # Transitions to SEARCH_FRONT_GATE

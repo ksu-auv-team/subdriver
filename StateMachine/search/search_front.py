@@ -10,8 +10,7 @@ class search_front(sub):
     def execute(self, userdata):
         self.init_state()
         msg = self.init_joy_msg()
-        msg.axes[self.axes_dict['frontback']] = .2
-        msg.axes[self.axes_dict['vertical']] = self.depth_hold()
+        msg.axes[const.AXES['frontback']] = .2
 
         while(1):
             self.joy_pub.publish(msg)
@@ -28,6 +27,6 @@ class search_front(sub):
             else:
                 self.search_frames_seen = 0
 			
-            rospy.sleep(gbl.const.const.SLEEP_TIME)
+            rospy.sleep(const.SLEEP_TIME)
         
 

@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
 from StateMachine.sub import *
+from StateMachine import controllers
 
 # define state track_buoy
 class track_buoy(sub):
     """ This state starts with the sub having the buoy in sight.
     In this state, the sub will adjust its depth to match the 3 sided buoy and angle to face it. 
     """
+
     def __init__(self):
         smach.State.__init__(self, outcomes=['Lost_buoy','Locked_Onto_buoy'])
 
@@ -38,25 +40,25 @@ class track_buoy(sub):
     def matchBuoyDepth(self):
         rospy.loginfo("matchBuoyDepth: Adjusting depth")
         
-        msg.axis[self.axis_dict['vertical']] = PID().update(self.getCenter(gbl.boxes[self.findBoxNumber()])[1])
+        msg.axes[const.AXES['vertical']] = PID().update(self.getCenter(gbl.boxes[self.findBoxNumber()])[1])
         self.joy_pub.publish(msg)
-        rospy.sleep(gbl.const.const.SLEEP_TIME)
+        rospy.sleep(const.SLEEP_TIME)
         self.joy_pub.publish(msg)
 
     def matchBuoyLeftRight(self):
         rospy.loginfo("matchBuoyLeftRight: Adjusting left to right")
-        msg.axis[self.axis_dict['leftright']] = PID().update(self.getCenter(gbl.boxes[self.findBoxNumber()])[0])
+        msg.axes[const.AXES['leftright']] = PID().update(self.getCenter(gbl.boxes[self.findBoxNumber()])[0])
         self.joy_pub.publish(msg)
-        rospy.sleep(gbl.const.const.SLEEP_TIME)
+        rospy.sleep(const.SLEEP_TIME)
         # Stop rotating
-        msg.axis[self.axis_dict['leftright']] = 0
+        msg.axes[const.AXES['leftright']] = 0
         self.joy_pub.publish(msg)
     
     def moveCloseToBuoy(self):
         rospy.loginfo("moveCloseToBuoy: Moving close to buoy")# While the image width of buoy is less than 0.75
-        msg.axis[self.axis_dict['forward']] = 0.3
-        rospy.sleep(gbl.const.const.SLEEP_TIME)
-        msg.axis[self.axis_dict['forward']] = 0
+        msg.axes[const.AXES['forward']] = 0.3
+        rospy.sleep(const.SLEEP_TIME)
+        msg.axes[const.AXES['forward']] = 0
         rospy.loginfo("Done adjusting distance")
 
         
