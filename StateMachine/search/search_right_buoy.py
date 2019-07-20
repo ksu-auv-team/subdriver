@@ -4,7 +4,7 @@ from StateMachine.search.search_right import *
 
 # define state search_right_dice
 class search_right_buoy(search_right):
-	pass
+    pass
 
-	def log(self):
-		rospy.loginfo('Executing state SEARCH_RIGHT_BUOY')
+    def log(self):
+        rospy.loginfo('Executing state SEARCH_RIGHT_BUOY')

@@ -12,23 +12,23 @@ parser.add_argument('-d', '--debug', action="store_true", help='Launches in debu
 args = parser.parse_args()
 
 def hello_world():
-	print("Hi! I'm useless!")
+    print("Hi! I'm useless!")
 
 states = {
-	'BaseStateMachine': base.createStateMachine,
-	'PrequalifyMachine': prequal.createStateMachine,
-	'this_is_filler': 2,
-	'to_show_the_concept': 3,
+    'BaseStateMachine': base.createStateMachine,
+    'PrequalifyMachine': prequal.createStateMachine,
+    'this_is_filler': 2,
+    'to_show_the_concept': 3,
 }
 
 def main():
-	rospy.loginfo("Running {}".format(args.machine))
-	try:
-		states[args.machine]()
-	except KeyError:
-		rospy.logfatal("Error: state machine name not recognized")
+    rospy.loginfo("Running {}".format(args.machine))
+    try:
+        states[args.machine]()
+    except KeyError:
+        rospy.logfatal("Error: state machine name not recognized")
 
 if __name__ == '__main__':
-	gbl.debug = args.debug
-	main()
+    gbl.debug = args.debug
+    main()
 
