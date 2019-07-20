@@ -23,7 +23,7 @@ depth_const = -.5
 
 last_state = None
 
-completed = dict.fromkeys(['start_gate_found', 'start_gate_passed', 'dice_found', 'dice_hit'], False)
+completed = dict.fromkeys(['start_gate_found', 'start_gate_passed', 'buoy_found', 'buoy_hit'], False)
 
 current_target = None
 searches_run = 0
@@ -170,16 +170,16 @@ def ramming_speed(boxes):
     msg.axes[axes_dict['frontback']] = 0.7
 
     if (time.time() - start_time) > 10:
-        print("headed to the land of dice, motherfuckers")
+        print("headed to the land of buoy, motherfuckers")
         current_target = None
         if not completed['start_gate_passed']:
             completed['start_gate_passed'] = True
             
-            current_state = find_dice
+            current_state = find_buoy
             msg = init_msg()
             start_time = time.time()
-        elif not completed['dice_hit']:
-            completed['dice_hit'] = True
+        elif not completed['buoy_hit']:
+            completed['buoy_hit'] = True
             current_state = surface
             msg = init_msg()
             start_time = time.time()
@@ -206,9 +206,9 @@ def surface(boxes):
 
     return msg
             
-def find_dice(boxes):
+def find_buoy(boxes):
     # basically a copy of track
-    # ram into a bunch of dice then surface
+    # ram into a bunch of buoy then surface
     global current_state
     global current_target
     global start_time
@@ -230,7 +230,7 @@ def find_dice(boxes):
         box = None
 
     if box and box[1] > .2:
-        completed['dice_found'] = True
+        completed['buoy_found'] = True
         is_close += 1
         last_seen = time.time()
         center = getCenter(box)
@@ -265,15 +265,15 @@ def find_dice(boxes):
         else:
             msg.axes[axes_dict['vertical']] = hold_depth() #replace with hold_depth later
 
-    if completed['dice_found'] and ((time.time() - last_seen) > 10) and (is_close >= 10):
-        completed['dice_hit'] = True
+    if completed['buoy_found'] and ((time.time() - last_seen) > 10) and (is_close >= 10):
+        completed['buoy_hit'] = True
         target_depth = get_depth()
         start_time = time.time()
         current_state = surface
 
     # random < (tangent of 10 degrees)*2:
     #    move left at 1/2 the speed of moving forward
-    if random.random() < (0.1763269807*2) and not completed['dice_found']:
+    if random.random() < (0.1763269807*2) and not completed['buoy_found']:
         msg.axes[axes_dict['leftright']] = .2 # this is left
 
     msg.axes[axes_dict['frontback']] = .4

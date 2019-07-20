@@ -20,7 +20,6 @@ from submarine_msgs_srvs.msg import Detections
 from classes import Detection
 
 import numpy as np
-import pymavlink
 
 # Global Vaiables
 from StateMachine import gbl
@@ -67,6 +66,12 @@ class sub(smach.State):
             self.log()
 
 
+    def moveDistance(self, distance, direction):
+      """ Direcion will be something like: 'leftright', 'vertical', or 'rotate' 
+      This function will be fully implemented once data on acceleration is measured in pool tests """
+      pass
+
+
     def execute(self, userdata):
         '''Executes the behavior defined for a given state.
         Every state requires an 'execute' function. This is the function that automatically
@@ -100,6 +105,10 @@ class sub(smach.State):
     def depth_hold(self):
         '''Holds sub depth to value from 'gbl.depth'.
       
+        TODO: remove
+
+        Now useless because the Pixhawk is working correctly
+
         The depth_hold does what is says: holding the depth. It compares the current depth 'gbl.depth'
         to what the depth was at the start of the current state. If it's higher or lower, it adjusts 
         'thrust' which gets returned. The one thing to keep in mind here, is that depth_hold is not actually 
@@ -109,22 +118,6 @@ class sub(smach.State):
             thrust, float(?) value for maintaining the depth to pass along to controller.
         '''
         return 0.0
-
-        if gbl.depth == None or self.current_state_start_depth == None:
-            thrust = gbl.depth_const
-            rospy.logerr("While trying to hold depth, depth = None")
-
-        elif gbl.depth - self.current_state_start_depth > 0.25:
-            if self.get_depth() > 1:
-                thrust = gbl.depth_const + 0.01
-            else: 
-                thrust = gbl.depth_const
-        elif gbl.depth - self.current_state_start_depth < -0.25:
-              thrust = gbl.depth_const - 0.01
-        else:
-            thrust = gbl.depth_const
-
-        return thrust
 
     def getCenter(self, box):
         '''Gets the center point of a bounding box.

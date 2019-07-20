@@ -2,7 +2,7 @@
 run_start_time = None
 depth = None #current depth in meters
 init_depth = None #depth at beginning of run - should be near 0
-#depth_const = -0.28 #downward thrust to maintain depth without a depth sensor or other reference point
+#TODO: remove depth_const - now useless b/c pixhawk works
 depth_const = 0.0 #downward thrust to maintain depth without a depth sensor or other reference point
 heading = None #current compass heading in degrees from 0-360
 init_heading = None #compass heading at beginning of run
