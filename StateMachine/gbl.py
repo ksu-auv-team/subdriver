@@ -9,8 +9,4 @@ init_heading = None #compass heading at beginning of run
 detections = [] #list of detections that will be filled by the neural network
 num_detections = 0 #why would we not just use len(detections)?
 current_target = None #the current object being targeted TODO: allow multiple targets
-sleep_time = 0.05 #the amount of time to sleep before looking for another frame
-
-current_target = None
-sleep_time = 0.05
 debug = False

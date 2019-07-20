@@ -49,7 +49,7 @@ class interact_pole(sub):
                 msg.axes[self.axes_dict['vertical']] = self.depth_hold()
                 msg.axes[self.axes_dict['rotate']] = -0.1 * random.randint(-1, 1)
                 self.joy_pub.publish(msg)
-                rospy.sleep(gbl.sleep_time)
+                rospy.sleep(gbl.const.const.SLEEP_TIME)
                 continue
             else: #if last seen more than 5 seconds ago
                 return 'Lost_Pole' # Transitions to SEARCH_POLE (I think)

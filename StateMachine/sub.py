@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 '''
 sub.py implements a common base class for all states used in the SubDriver
 state machine.
@@ -6,25 +6,31 @@ state machine.
 As currently implemented, the base class does implicitly depend on state data
 stored as global vars in gbl, and system data exposed through rospy API.
 '''
+
+#external libraries
 import rospy
 import smach
 import math
 
+import numpy as np
+import sys, signal
+
+#messages
 from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Joy
+from sensor_msgs.msg import Health
 from sensor_msgs.msg import FluidPressure
 from mavros_msgs.msg import VFR_HUD
 
 from submarine_msgs_srvs.msg import Detections
-
 from classes import Detection
 
-import numpy as np
-
-# Global Vaiables
+# Global Variables
 from StateMachine import gbl
+from constants import *
 
-import sys, signal
+
+
 
 
 def signal_handler(signal, frame):
@@ -39,15 +45,18 @@ def signal_handler(signal, frame):
 
 
 class sub(smach.State):
-    '''This is our overall 'sub' state. It is the superclass that all the other states inherit from.
-    The idea here being that there are many things that all the states should be able to do,
-    but we don't want to re-write them all.
+    '''This is our overall 'sub' state. It is the superclass that all the other
+    states inherit from.
+    
+    The idea here being that there are many things that all the states should
+    be able to do, but we don't want to re-write them all.
     '''
     def __init__(self):
         '''Initializes a Sub.
 
-        Every state must be initiailized with an __init__ function that defines what the outcomes
-        of the state can be. The outcomes determine what state is moved to next.
+        Every state must be initiailized with an __init__ function that defines
+        what the outcomes of the state can be. The outcomes determine what
+        state is moved to next.
         '''
         smach.State.__init__(self, outcomes=['Finished_Run'])
 
@@ -56,9 +65,11 @@ class sub(smach.State):
         Upon adding the states to the state machine, they run the init_state,
         but we only want them to run it after we have actually started the run.
 
-        Implicit args: gbl.run_start_time, used to check if run is actually started.
+        Implicit args: gbl.run_start_time, used to check if run is actually
+                           started.
                        gbl.depth, current sub depth at start of state.
-                       (time), time as returned by rospy.get_time() at start of state.
+                       (time), time as returned by rospy.get_time() at start
+                           of state.
         '''
         if gbl.run_start_time:
             self.current_state_start_time = rospy.get_time()
@@ -84,23 +95,24 @@ class sub(smach.State):
         pass
 
     def log(self):
-        '''Logs to ROS.
-        The log function is designed to be overridden in each subclass as a catch-all for when
-        you want to log things to ROS.
-        '''
-        pass
+      '''Logs to ROS.
+
+      The log function is designed to be overridden in each subclass as a
+      catch-all for when you want to log things to ROS.
+      '''
+      pass
 
     def init_joy_msg(self):
-        '''This initializes a joystick message. We drive our sub by simulating joystick commands and sending
-        them to the Pixhawk.
+      '''This initializes a joystick message. We drive our sub by simulating
+      joystick commands and sending them to the Pixhawk.
 
-        Returns:
-            empty joystick message ready for editing.
-        '''
-        msg = Joy()
-        msg.axes = list(self.def_msg_axes)
-        msg.buttons = list(self.def_msg_buttons)
-        return msg
+      Returns:
+        empty joystick message ready for editing.
+      '''
+      msg = Joy()
+      msg.axes = list(DEFAULT_MSG_AXES)
+      msg.buttons = list(DEFAULT_MSG_BUTTONS)
+      return msg
     
     def depth_hold(self):
         '''Holds sub depth to value from 'gbl.depth'.
@@ -288,7 +300,23 @@ class sub(smach.State):
         '''
         return math.sqrt((box4-box2)**2 + (box5-box3)**2)
 
-    # These get set at the start of each state, allowing the user to call them as needed
+    def get_launcher(self):
+      '''Examines system health message to set active launcher. '''
+      if self.health_sub.launcher_left_ready:
+        self.active_launcher = 'LAUNCHER_LEFT'
+        self.active_launcher_offset = LAUNCHER_LEFT_OFFSET
+        return
+      elif self.health_sub.launcher_right_ready:
+        self.active_launcher = 'LAUNCHER_RIGHT'
+        self.active_launcher_offset = LAUNCHER_LEFT_OFFSET
+        return
+      else
+        self.active_launcher = None
+        self.active_launcher_offset = None
+        return
+
+    # These get set at the start of each state, allowing the user to call them
+    # as needed
     current_state_start_time = None
     current_state_start_depth = None
 
@@ -303,16 +331,10 @@ class sub(smach.State):
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
     network_sub = rospy.Subscriber('network_output', Detections, bbox_callback)
     vfr_hud_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, vfr_hud_callback) #provides depth and heading
+    health_sub = rospy.Subscriber('health', Health, queue_size=1)
 
-    # default settings for each part of the joy message
+    active_launcher = 'LAUNCHER_LEFT'
+    active_launcher_offset = LAUNCHER_LEFT_OFFSET
+    
 
-    #the -1.0 is to keep the left trigger held down, indicating that there's control
-    #the 1.0 is because the triggers/default to 1.0 when untouched instead of 0.0 like the others (there's only one direction for them to move)
-    def_msg_axes = (0.0, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
-    def_msg_buttons = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
-    axes_dict = {'rotate': 0, 'vertical' : 1, 'lt' : 2, 'leftright' : 3, 'frontback' : 4, 'rt' : 5, 'dpad_h' : 6, 'dpad_v' : 7}
-    buttons_dict = {'a' : 0, 'b' : 1, 'x' : 2, 'y' : 3, 'lb' : 4, 'rb' : 5, 'back' : 6, 'start' : 7, 'xbox' : 8, 'lstickpress' : 9, 'rstickpress' : 10}
-
-
-    class_dict = {"background":0, "start_gate":1, "pole":2, "path_marker":3}
+    joy_pub = rospy.Publisher('joy', Joy, queue_size=2)

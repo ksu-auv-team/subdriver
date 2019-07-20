@@ -53,7 +53,7 @@ class track_pole(sub):
 
             self.joy_pub.publish(msg)
 
-            rospy.sleep(gbl.sleep_time)
+            rospy.sleep(gbl.const.const.SLEEP_TIME)
 
     def log(self):
       rospy.loginfo('Executing state TRACK_POLE')

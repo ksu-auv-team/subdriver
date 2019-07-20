@@ -65,7 +65,7 @@ class interact_pole_smallturns(sub):
                     msg.axes[self.axes_dict['vertical']] = self.depth_hold()
                     msg.axes[self.axes_dict['rotate']] = -0.1 * random.randint(-1, 1)
                     self.joy_pub.publish(msg)
-                    rospy.sleep(gbl.sleep_time)
+                    rospy.sleep(gbl.const.const.SLEEP_TIME)
                     continue
                 else:
                     return 'Lost_Pole'
@@ -96,7 +96,7 @@ class interact_pole_smallturns(sub):
                     msg.axes[self.axes_dict['vertical']] = self.depth_hold()
                     msg.axes[self.axes_dict['rotate']] = -0.1 * random.randint(-1, 1)
                     self.joy_pub.publish(msg)
-                    rospy.sleep(gbl.sleep_time)
+                    rospy.sleep(gbl.const.const.SLEEP_TIME)
                     continue
                 else:
                     return 'Lost_Pole'

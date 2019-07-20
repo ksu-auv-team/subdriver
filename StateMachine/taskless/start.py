@@ -40,5 +40,5 @@ class start(sub):
             elif (rospy.get_time() - self.current_state_start_time) > 2:
                 return 'Not_Found_Gate' # Transitions to SEARCH_FRONT_GATE
 
-            rospy.sleep(gbl.sleep_time)
+            rospy.sleep(gbl.const.const.SLEEP_TIME)
 

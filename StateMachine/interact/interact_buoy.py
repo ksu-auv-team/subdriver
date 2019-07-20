@@ -65,7 +65,7 @@ class interact_buoy(sub):
         while rospy.Time.now()<startTime+10000: # Move for 10 seconds
             msg.axis[self.axis_dict['forward']] = 1
             self.joy_pub.publish(msg)
-            rospy.sleep(gbl.sleep_time)
+            rospy.sleep(gbl.const.const.SLEEP_TIME)
         
         msg.axis[self.axis_dict['forward']] = 0
         rospy.loginfo("Done moving")

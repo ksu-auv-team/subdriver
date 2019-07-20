@@ -28,6 +28,6 @@ class search_front(sub):
             else:
                 self.search_frames_seen = 0
 			
-            rospy.sleep(gbl.sleep_time)
+            rospy.sleep(gbl.const.const.SLEEP_TIME)
         
 

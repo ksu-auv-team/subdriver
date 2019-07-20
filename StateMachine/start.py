@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from sub import *
+from sub import sub, smach, rospy, gbl
 
 # define state start
 class start(sub):
@@ -37,5 +37,5 @@ class start(sub):
                 else:
                     return 'Not_Found_Gate' # Transitions to SEARCH_FRONT_GATE
 
-            rospy.sleep(gbl.sleep_time)
+            rospy.sleep(gbl.const.const.SLEEP_TIME)
 

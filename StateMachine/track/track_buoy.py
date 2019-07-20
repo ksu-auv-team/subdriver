@@ -40,7 +40,7 @@ class track_buoy(sub):
         
         msg.axis[self.axis_dict['vertical']] = PID().update(self.getCenter(gbl.boxes[self.findBoxNumber()])[1])
         self.joy_pub.publish(msg)
-        rospy.sleep(gbl.sleep_time)
+        rospy.sleep(gbl.const.const.SLEEP_TIME)
         # Stabilize
         msg.axis[self.axis_dict['vertical']] = self.depth_hold
         self.joy_pub.publish(msg)
@@ -49,7 +49,7 @@ class track_buoy(sub):
         rospy.loginfo("matchBuoyLeftRight: Adjusting left to right")
         msg.axis[self.axis_dict['leftright']] = PID().update(self.getCenter(gbl.boxes[self.findBoxNumber()])[0])
         self.joy_pub.publish(msg)
-        rospy.sleep(gbl.sleep_time)
+        rospy.sleep(gbl.const.const.SLEEP_TIME)
         # Stop rotating
         msg.axis[self.axis_dict['leftright']] = 0
         self.joy_pub.publish(msg)
@@ -57,7 +57,7 @@ class track_buoy(sub):
     def moveCloseToBuoy(self):
         rospy.loginfo("moveCloseToBuoy: Moving close to buoy")# While the image width of buoy is less than 0.75
         msg.axis[self.axis_dict['forward']] = 0.3
-        rospy.sleep(gbl.sleep_time)
+        rospy.sleep(gbl.const.const.SLEEP_TIME)
         msg.axis[self.axis_dict['forward']] = 0
         rospy.loginfo("Done adjusting distance")
 

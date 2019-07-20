@@ -59,6 +59,8 @@ def createStateMachine():
 
         smach.StateMachine.add('SURFACE', surface(), transitions={'Surfaced':'Finished_Run'})
 
+        #TODO(travis): Integrate the torpedo actions in appropriate transition points (depends upon target acquition and tracking states).
+        #smach.StateMachine.add('INTERACT_TORPEDO', interact_torpedo(), transitions={'Torpedo_Launched':'SUCCESS_STATE','Torpedo_Failed':'FAILURE_STATE'})
 
         # Execute SMACH plan
     outcome = sm_AUV.execute()

@@ -53,7 +53,7 @@ class track_gate(sub):
 
             self.joy_pub.publish(msg)
 
-            rospy.sleep(gbl.sleep_time)
+            rospy.sleep(const.SLEEP_TIME)
 
     def log(self):
       rospy.loginfo('Executing state TRACK_GATE')

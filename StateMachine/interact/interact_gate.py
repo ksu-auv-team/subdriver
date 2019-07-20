@@ -18,7 +18,7 @@ class interact_gate(sub):
         
         while rospy.get_time() < (self.current_state_start_time + 5):
             self.joy_pub.publish(msg)
-            rospy.sleep(gbl.sleep_time)
+            rospy.sleep(gbl.const.const.SLEEP_TIME)
 
         gbl.current_target = self.class_dict['pole']
 
