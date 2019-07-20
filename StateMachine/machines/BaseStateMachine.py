@@ -37,27 +37,27 @@ def createStateMachine():
     # Open the container
     with sm_AUV:
 
-        smach.StateMachine.add('START', start(), transitions={'Not_Found_Gate':'SEARCH_FRONT_GATE', 'Found_Gate':'TRACK_GATE'})
+        smach.StateMachine.add('START', Start(), transitions={'Not_Found_Gate':'SEARCH_FRONT_GATE', 'Found_Gate':'TRACK_GATE'})
 
-        smach.StateMachine.add('SEARCH_FRONT_GATE', search_front_gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_LEFT_GATE'})
-        smach.StateMachine.add('SEARCH_LEFT_GATE', search_left_gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_RIGHT_GATE'})
-        smach.StateMachine.add('SEARCH_RIGHT_GATE', search_right_gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_RECENTER_GATE'})
-        smach.StateMachine.add('SEARCH_RECENTER_GATE', search_recenter_gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_FRONT_GATE'})
+        smach.StateMachine.add('SEARCH_FRONT_GATE', Search_Front_Gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_LEFT_GATE'})
+        smach.StateMachine.add('SEARCH_LEFT_GATE', Search_Left_Gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_RIGHT_GATE'})
+        smach.StateMachine.add('SEARCH_RIGHT_GATE', Search_Right_Gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_RECENTER_GATE'})
+        smach.StateMachine.add('SEARCH_RECENTER_GATE', Search_Recenter_Gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_FRONT_GATE'})
 
-        smach.StateMachine.add('TRACK_GATE', track_gate(), transitions={'Lost_Gate':'SEARCH_FRONT_GATE', 'Approached_Gate':'INTERACT_GATE'})
+        smach.StateMachine.add('TRACK_GATE', Track_Gate(), transitions={'Lost_Gate':'SEARCH_FRONT_GATE', 'Approached_Gate':'INTERACT_GATE'})
 
-        smach.StateMachine.add('INTERACT_GATE', interact_gate(), transitions={'Through_Gate':'SEARCH_FRONT_BUOY'})
+        smach.StateMachine.add('INTERACT_GATE', Interact_Gate(), transitions={'Through_Gate':'SEARCH_FRONT_BUOY'})
 
-        smach.StateMachine.add('SEARCH_FRONT_BUOY', search_front_buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_LEFT_BUOY'})
-        smach.StateMachine.add('SEARCH_LEFT_BUOY', search_left_buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_RIGHT_BUOY'})
-        smach.StateMachine.add('SEARCH_RIGHT_BUOY', search_right_buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_RECENTER_BUOY'})
-        smach.StateMachine.add('SEARCH_RECENTER_BUOY', search_recenter_buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_FRONT_BUOY'})
+        smach.StateMachine.add('SEARCH_FRONT_BUOY', Search_Front_Buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_LEFT_BUOY'})
+        smach.StateMachine.add('SEARCH_LEFT_BUOY', Search_Left_Buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_RIGHT_BUOY'})
+        smach.StateMachine.add('SEARCH_RIGHT_BUOY', Search_Right_Buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_RECENTER_BUOY'})
+        smach.StateMachine.add('SEARCH_RECENTER_BUOY', Search_Recenter_Buoy(), transitions={'Found_Object':'TRACK_BUOY', 'Not_Found_Object':'SEARCH_FRONT_BUOY'})
 
-        smach.StateMachine.add('TRACK_BUOY', track_buoy(), transitions={'Lost_buoy':'SEARCH_FRONT_BUOY','Locked_Onto_buoy':'INTERACT_BUOY'})
+        smach.StateMachine.add('TRACK_BUOY', Track_Buoy(), transitions={'Lost_Buoy':'SEARCH_FRONT_BUOY','Locked_Onto_Buoy':'INTERACT_BUOY'})
 
-        smach.StateMachine.add('INTERACT_BUOY', interact_buoy(), transitions={'Clear_Of_Buoy':'SURFACE'})
+        smach.StateMachine.add('INTERACT_BUOY', Interact_Buoy(), transitions={'Clear_Of_Buoy':'SURFACE'})
 
-        smach.StateMachine.add('SURFACE', surface(), transitions={'Surfaced':'Finished_Run'})
+        smach.StateMachine.add('SURFACE', Surface(), transitions={'Surfaced':'Finished_Run'})
 
         #TODO(travis): Integrate the torpedo actions in appropriate transition points (depends upon target acquition and tracking states).
         #smach.StateMachine.add('INTERACT_TORPEDO', interact_torpedo(), transitions={'Torpedo_Launched':'SUCCESS_STATE','Torpedo_Failed':'FAILURE_STATE'})

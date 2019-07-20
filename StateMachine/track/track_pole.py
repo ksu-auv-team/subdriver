@@ -3,7 +3,7 @@
 from StateMachine.sub import *
 
 # define state track_pole
-class track_pole(sub):
+class Track_Pole(Sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Lost_Pole','Approached_Pole'])
 
@@ -18,7 +18,7 @@ class track_pole(sub):
 
             if (detection != None) and detection.score > 0.3:  # If the box is good
                 self.last_seen = rospy.get_time()
-                center = self.getCenter(detection.box)
+                center = self.get_center(detection.box)
 
                 #move forward
                 msg.axes[const.AXES['frontback']] = 0.3
@@ -38,7 +38,7 @@ class track_pole(sub):
                     msg.axes[const.AXES['vertical']] = -0.2
 
                 if detection:
-                    if self.getDistance(detection.box[0], detection.box[1], detection.box[2], detection.box[3]) > 0.4:
+                    if self.get_distance(detection.box[0], detection.box[1], detection.box[2], detection.box[3]) > 0.4:
                         self.is_close = True
 
             if self.is_close:

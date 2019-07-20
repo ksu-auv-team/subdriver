@@ -37,27 +37,27 @@ def createStateMachine():
     # Open the container
     with sm_AUV:
 
-        smach.StateMachine.add('START', start(), transitions={'Not_Found_Gate':'SEARCH_FRONT_GATE', 'Found_Gate':'TRACK_GATE'})
+        smach.StateMachine.add('START', Start(), transitions={'Not_Found_Gate':'SEARCH_FRONT_GATE', 'Found_Gate':'TRACK_GATE'})
 
-        smach.StateMachine.add('SEARCH_FRONT_GATE', search_front_gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_LEFT_GATE'})
-        smach.StateMachine.add('SEARCH_LEFT_GATE', search_left_gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_RIGHT_GATE'})
-        smach.StateMachine.add('SEARCH_RIGHT_GATE', search_right_gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_RECENTER_GATE'})
-        smach.StateMachine.add('SEARCH_RECENTER_GATE', search_recenter_gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_FRONT_GATE'})
+        smach.StateMachine.add('SEARCH_FRONT_GATE', Search_Front_Gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_LEFT_GATE'})
+        smach.StateMachine.add('SEARCH_LEFT_GATE', Search_Left_Gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_RIGHT_GATE'})
+        smach.StateMachine.add('SEARCH_RIGHT_GATE', Search_Right_Gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_RECENTER_GATE'})
+        smach.StateMachine.add('SEARCH_RECENTER_GATE', Search_Recenter_Gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_FRONT_GATE'})
 
-        smach.StateMachine.add('TRACK_GATE', track_gate(), transitions={'Lost_Gate':'SEARCH_FRONT_GATE', 'Approached_Gate':'INTERACT_GATE'})
+        smach.StateMachine.add('TRACK_GATE', Track_Gate(), transitions={'Lost_Gate':'SEARCH_FRONT_GATE', 'Approached_Gate':'INTERACT_GATE'})
 
-        smach.StateMachine.add('INTERACT_GATE', interact_gate(), transitions={'Through_Gate':'SEARCH_FRONT_POLE'})
+        smach.StateMachine.add('INTERACT_GATE', Interact_Gate(), transitions={'Through_Gate':'SEARCH_FRONT_POLE'})
         
-        smach.StateMachine.add('SEARCH_FRONT_POLE', search_front_pole(), transitions={'Found_Object':'TRACK_POLE', 'Not_Found_Object':'SEARCH_LEFT_POLE'})
-        smach.StateMachine.add('SEARCH_LEFT_POLE', search_left_pole(), transitions={'Found_Object':'TRACK_POLE', 'Not_Found_Object':'SEARCH_RIGHT_POLE'})
-        smach.StateMachine.add('SEARCH_RIGHT_POLE', search_right_pole(), transitions={'Found_Object':'TRACK_POLE', 'Not_Found_Object':'SEARCH_RECENTER_POLE'})
-        smach.StateMachine.add('SEARCH_RECENTER_POLE', search_recenter_pole(), transitions={'Found_Object':'TRACK_POLE', 'Not_Found_Object':'SEARCH_FRONT_POLE'})        
+        smach.StateMachine.add('SEARCH_FRONT_POLE', Search_Front_Pole(), transitions={'Found_Object':'TRACK_POLE', 'Not_Found_Object':'SEARCH_LEFT_POLE'})
+        smach.StateMachine.add('SEARCH_LEFT_POLE', Search_Left_Pole(), transitions={'Found_Object':'TRACK_POLE', 'Not_Found_Object':'SEARCH_RIGHT_POLE'})
+        smach.StateMachine.add('SEARCH_RIGHT_POLE', Search_Right_Pole(), transitions={'Found_Object':'TRACK_POLE', 'Not_Found_Object':'SEARCH_RECENTER_POLE'})
+        smach.StateMachine.add('SEARCH_RECENTER_POLE', Search_Recenter_Pole(), transitions={'Found_Object':'TRACK_POLE', 'Not_Found_Object':'SEARCH_FRONT_POLE'})        
 
-        smach.StateMachine.add('TRACK_POLE', track_pole(), transitions={'Lost_Pole':'SEARCH_FRONT_POLE', 'Approached_Pole':'INTERACT_POLE'})
+        smach.StateMachine.add('TRACK_POLE', Track_Pole(), transitions={'Lost_Pole':'SEARCH_FRONT_POLE', 'Approached_Pole':'INTERACT_POLE'})
 
-        smach.StateMachine.add('INTERACT_POLE', interact_pole(), transitions={'Around_Pole':'SEARCH_FRONT_GATE', 'Lost_Pole':'SEARCH_FRONT_POLE'})
+        smach.StateMachine.add('INTERACT_POLE', Interact_Pole(), transitions={'Around_Pole':'SEARCH_FRONT_GATE', 'Lost_Pole':'SEARCH_FRONT_POLE'})
 
-        smach.StateMachine.add('SURFACE', surface(), transitions={'Surfaced':'Finished_Run'})
+        smach.StateMachine.add('SURFACE', Surface(), transitions={'Surfaced':'Finished_Run'})
 
         # Execute SMACH plan
     outcome = sm_AUV.execute()

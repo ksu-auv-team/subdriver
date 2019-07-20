@@ -1,21 +1,20 @@
 #!/usr/bin/env python
-from StateMachine.const import BUTTONS, JOY_MAP
-
-from StateMachine.sub import sub
+import StateMachine.const
+from StateMachine.sub import *
 from StateMachine.sub import rospy
 from StateMachine.sub import smach
 
 import math
 
-class LaunchError(Exception):
+class Launch_Error(Exception):
     '''Base class for exceptions in this module. Indicates a failure to launch.'''
     pass
 
-class LauncherReadyError(LaunchError):
+class Launcher_Ready_Error(Launch_Error):
     '''Indicates that launchers are failing to present as READY.'''
     pass
 
-class interact_torpedo(sub):
+class Interact_Torpedo(Sub):
     '''Executes interaction state for a task requiring launching torpedoes.
     
     Assumptions:
@@ -38,7 +37,7 @@ class interact_torpedo(sub):
         try:
           self.launch(self.active_launcher)
           return 'Torpedo_Launched'
-        except LaunchError as e:
+        except Launch_Error as e:
             #Issues with launchers themselves - failure to ready, failure to
             #fire, etc.
             rospy.loginfo('[INTERACT_TORPEDO] - %s' % (e.message))
@@ -54,20 +53,20 @@ class interact_torpedo(sub):
         Args:
           launcher: string, id'd launcher, assumed armed and ready to fire.
         Raises:
-          LaunchError: if there is an issue with the launcher(s) preventing
+          Launch_Error: if there is an issue with the launcher(s) preventing
           torpedo launch.
         '''
         try:
             jmsg = self.init_joy_msg()
-            jmsg.buttons[BUTTONS[JOY_MAP[launcher]]]=1
+            jmsg.buttons[const.BUTTONS[const.JOY_MAP[launcher]]]=1
             self.joy_pub.publish(jmsg)
             rospy.sleep(1)
-            jmsg.buttons[BUTTONS[JOY_MAP[launcher]]]=0
+            jmsg.buttons[const.BUTTONS[const.JOY_MAP[launcher]]]=0
             self.joy_pub.publish(jmsg)
             # Activates next tube
             self.set_active_launcher()
         except Exception as e:
-            raise LaunchError(e)
+            raise Launch_Error(e)
 
 
 

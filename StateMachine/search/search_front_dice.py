@@ -3,7 +3,7 @@
 from StateMachine.search.search_front import *
 
 # define state search_front_dice
-class search_front_dice(search_front):
+class Search_Front_Dice(Search_Front):
 	pass
 
 	def log(self):

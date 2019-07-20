@@ -3,7 +3,7 @@
 from StateMachine.sub import *
 
 # define state search_recenter
-class search_recenter(sub):
+class Search_Recenter(Sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Found_Object','Not_Found_Object'])
 

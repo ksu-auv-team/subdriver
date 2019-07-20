@@ -3,7 +3,7 @@
 from search_front import *
 
 # define state search_front_dice
-class search_front_buoy(search_front):
+class Search_Front_Buoy(Search_Front):
 	pass
 	#def __init__(self):
 	#	smach.State.__init__(self, outcomes = 'buoy_found', 'buoy_hit')

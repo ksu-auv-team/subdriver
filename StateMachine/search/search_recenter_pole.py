@@ -3,7 +3,7 @@
 from StateMachine.search.search_recenter import *
 
 # define state search_recenter_pole
-class search_recenter_pole(search_recenter):
+class Search_Recenter_Pole(Search_Recenter):
     pass
 
 

@@ -4,14 +4,14 @@
 # from StateMachine.const import *
 from StateMachine.controllers import PID
 from StateMachine import const
-from StateMachine.sub import sub
+from StateMachine.sub import Sub
 from StateMachine.sub import rospy
 from StateMachine.sub import smach
 from StateMachine.sub import gbl
 
 import math
 
-class track_torpedo(sub):
+class Track_Torpedo(Sub):
     '''Tracker for torpedo targets.
 
     Maintains sub position relative to torpedo target,
@@ -33,10 +33,10 @@ class track_torpedo(sub):
 
         while(1):
             jmsg = self.init_joy_msg()
-            box = gbl.get_box_of_class(gbl.boxes, gbl.current_target)
+            detection = self.get_box_of_class(gbl.detections, gbl.current_target)
 
-            if (box is not None) and box[1] > 0.3:
-                x,z = self.getCenter(box)
+            if (detection is not None) and detection.box[1] > 0.3:
+                x,z = self.get_center(detection.box)
             if (abs(const.CAMERA_FORWARD_CENTER['x']-x) < 5 and abs(const.CAMERA_FORWARD_CENTER['z']-z) < 5):
                 return 'Target_Locked'
             jmsg.axes[const.AXES['leftright']] = x_pid.Update(x)

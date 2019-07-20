@@ -42,8 +42,22 @@ def signal_handler(signal, frame):
     rospy.loginfo("\nShutting Down Run...")
     sys.exit(0)
 
+#ROS callbacks
+#global to make the linter happy
+def vfr_hud_callback(msg): 
+    gbl.depth = msg.altitude
+    gbl.heading = msg.heading
 
-class sub(smach.State):
+def bbox_callback(msg):
+    gbl.detections = []
+    gbl.num_detections = msg.detected[0]
+
+    for i in range(int(gbl.num_detections)):
+        detection = Detection.Detection(msg.scores[i], msg.boxes[(i*4):(i+1)*4], msg.classes[i])
+        gbl.detections.append(detection)
+
+
+class Sub(smach.State):
     '''This is our overall 'sub' state. It is the superclass that all the other
     states inherit from.
     
@@ -76,7 +90,7 @@ class sub(smach.State):
             self.log()
 
 
-    def moveDistance(self, distance, direction):
+    def move_distance(self, distance, direction):
       """ Direcion will be something like: 'leftright', 'vertical', or 'rotate' 
       This function will be fully implemented once data on acceleration is measured in pool tests """
       pass
@@ -113,7 +127,7 @@ class sub(smach.State):
       msg.buttons = list(const.DEFAULT_MSG_BUTTONS)
       return msg
 
-    def getCenter(self, box):
+    def get_center(self, box):
         '''Gets the center point of a bounding box.
 
         Args:
@@ -125,9 +139,8 @@ class sub(smach.State):
         print(box)
         return ((box[0] + box[2]) / 2.0 , (box[1] + box[3]) / 2.0)
 
-    def getDistance(self, x1, y1, x2, y2):
+    def get_distance(self, x1, y1, x2, y2):
         '''Gets distance between two points.
-
         Args:
             x1,y1,x2,y2: float, scalar coordinates for the two points.
 
@@ -136,7 +149,7 @@ class sub(smach.State):
         '''
         return math.sqrt((x2-x1)**2 + (y2-y1)**2)
 
-    def getDistanceFromBox(self, box):
+    def get_distance_from_box(self, box):
         '''Gets distance between the corners of a bounding box.
 
         Args:
@@ -147,7 +160,7 @@ class sub(smach.State):
         '''
         return math.sqrt((box[4]-box[2])**2 + (box[5]-box[3])**2)
 
-    def getCenterScreenOffset(self, box, offsetX, offsetY):
+    def get_center_screen_offset(self, box, offsetX, offsetY):
         """         
         Args:
             box: [top-left x, top-left y, bottom-right x, bottom-right y]
@@ -167,7 +180,7 @@ class sub(smach.State):
 
         boxWidth = box[2] - box[0] # box[right] - box[left]
         boxHeight = box[3] - box[1] #box[bottom] - box[top]
-        center = self.getCenter(box)
+        center = self.get_center(box)
         msg = self.init_joy_msg()
 
         relativeX = center[0] + offsetX # Target x position relative to current
@@ -192,7 +205,7 @@ class sub(smach.State):
         return msg
 
 
-    def getCenterBoxOffset(self, box, offsetX, offsetY):
+    def get_center_box_offset(self, box, offsetX, offsetY):
         """ 
         Args:
             box: [top-left x, top-left y, bottom-right x, bottom-right y]
@@ -211,7 +224,7 @@ class sub(smach.State):
 
         boxWidth = box[2] - box[0] # box[right] - box[left]
         boxHeight = box[3] - box[1] #box[bottom] - box[top]
-        center = self.getCenter(box)
+        center = self.get_center(box)
         msg = self.init_joy_msg()
         
         relativeX = center[0] + offsetX * boxWidth # Target x position relative to current
@@ -297,19 +310,4 @@ class sub(smach.State):
     active_launcher_offset = const.LAUNCHER_LEFT_OFFSET
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
-
-# ROS callbacks
-#global to make the linter happy
-def vfr_hud_callback(msg): 
-    gbl.depth = msg.altitude
-    gbl.heading = msg.heading
-
-#TODO: Update this to read in the new Tensorflow message structure
-def bbox_callback(msg):
-    gbl.detections = []
-    gbl.num_detections = msg.detected[0]
-
-    for i in range(int(gbl.num_detections)):
-        detection = Detection.Detection(msg.scores[i], msg.boxes[(i*4):(i+1)*4], msg.classes[i])
-        gbl.detections.append(detection)
 

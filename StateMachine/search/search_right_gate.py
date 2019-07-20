@@ -3,7 +3,7 @@
 from  StateMachine.search.search_right import *
 
 # define state search_right_gate
-class search_right_gate(search_right):
+class Search_Right_Gate(Search_Right):
 	pass
 
 	def log(self):

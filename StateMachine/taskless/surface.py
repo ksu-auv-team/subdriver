@@ -3,7 +3,7 @@
 from StateMachine.sub import *
 
 # define state surface
-class surface(sub):
+class Surface(Sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Surfaced'])
 

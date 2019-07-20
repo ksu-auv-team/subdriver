@@ -18,7 +18,7 @@ init_size
 '''
 
 # define state interact_pole_smallturns
-class interact_pole_smallturns(sub):
+class Interact_Pole_Small_Turns(Sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Around_Pole','Lost_Pole'])
 
@@ -36,7 +36,7 @@ class interact_pole_smallturns(sub):
             pole_on_left = False
             
             detection = self.get_box_of_class(gbl.detections, gbl.current_target)
-            center = self.getCenter(detection.box)
+            center = self.get_center(detection.box)
             msg = self.init_joy_msg()
 
             while (not pole_on_right):
@@ -107,7 +107,7 @@ class interact_pole_smallturns(sub):
         #Once we've gotten around the pole, aim at the start gate again
         while(True):
             detection = self.get_box_of_class(gbl.detections, gbl.current_target)
-            center = self.getCenter(detection.box)
+            center = self.get_center(detection.box)
             while (abs(gbl.init_heading - self.get_heading()) < 170 and abs(gbl.init_heading - self.get_heading()) > 190):
                 msg = self.init_joy_msg()
                 msg.axes[const.AXES['rotate']] = -0.1

@@ -54,7 +54,7 @@ thrust_mod = -0.1 #times difference in depth
 # create dict of statuses and whether they've been completed
 # that is, track what we've done
 
-def getCenter(box):
+def get_center(box):
     #currently biased down for start gate
     return ((box[4] +  box[2]) / 2 ,box[5]) 
 
@@ -121,7 +121,7 @@ def track(boxes):
     if box and box[1] > .3:
         completed['start_gate_found'] = True
         last_seen = time.time()
-        center = getCenter(box)
+        center = get_center(box)
         msg.axes[axes_dict['frontback']] = 0.4
         if center[0] < .45:
             msg.axes[axes_dict['rotate']] = 0.1
@@ -229,7 +229,7 @@ def find_dice(boxes):
         completed['dice_found'] = True
         is_close += 1
         last_seen = time.time()
-        center = getCenter(box)
+        center = get_center(box)
         msg.axes[axes_dict['frontback']] = 0.4
 
         # proportional control:

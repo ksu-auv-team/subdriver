@@ -3,7 +3,7 @@
 from StateMachine.sub import *
 
 # define state track_gate
-class track_gate(sub):
+class Track_Gate(Sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Lost_Gate','Approached_Gate'])
 
@@ -18,7 +18,7 @@ class track_gate(sub):
 
             if (detection != None) and detection.score > 0.3:  # If the box is good
                 self.last_seen = rospy.get_time()
-                center = self.getCenter(detection.box)
+                center = self.get_center(detection.box)
                 msg.axes[const.AXES['frontback']] = 0.3
   
                 if center[0] < 0.45:
@@ -33,7 +33,7 @@ class track_gate(sub):
                 elif center[1] > .55:
                     msg.axes[const.AXES['vertical']] = -0.2
                 if detection:
-                    if self.getDistance(detection.box[0], detection.box[1], detection.box[2], detection.box[3]) > 0.4:
+                    if self.get_distance(detection.box[0], detection.box[1], detection.box[2], detection.box[3]) > 0.4:
                         self.is_close = True
 
             if self.is_close:

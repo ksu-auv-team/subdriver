@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 from StateMachine import const
-from sub import sub, smach, rospy, gbl
+from sub import Sub, smach, rospy, gbl
 
 # define state start
-class start(sub):
+class start(Sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Not_Found_Gate', 'Found_Gate'])
         
@@ -33,7 +33,7 @@ class start(sub):
             self.joy_pub.publish(curr_msg)
 
             if rospy.get_time() > (gbl.run_start_time + 15):
-                if self.get_box_of_class(gbl.boxes, const.CLASSES['start_gate']):
+                if self.get_box_of_class(gbl.detections, const.CLASSES['start_gate']):
                     return 'Found_Gate' # Transitions to TRACK_GATE
                 else:
                     return 'Not_Found_Gate' # Transitions to SEARCH_FRONT_GATE

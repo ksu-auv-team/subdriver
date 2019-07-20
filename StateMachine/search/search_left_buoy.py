@@ -3,7 +3,7 @@
 from StateMachine.search.search_left import *
 
 # define state search_left_dice
-class search_left_buoy(search_left):
+class Search_Left_Buoy(Search_Left):
 	pass
 
 	def log(self):

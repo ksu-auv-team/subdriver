@@ -3,7 +3,7 @@
 from StateMachine.search.search_recenter import *
 
 # define state search_recenter_dice
-class search_recenter_buoy(search_recenter):
+class Search_Recenter_Buoy(Search_Recenter):
     pass
     
 

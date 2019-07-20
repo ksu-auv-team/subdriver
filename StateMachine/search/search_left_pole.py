@@ -2,8 +2,8 @@
 
 from StateMachine.search.search_left import *
 
-# define state search_left_pole
-class search_left_pole(search_left):
+# define state Search_Left_pole
+class Search_Left_Pole(Search_Left):
     pass
 
     def log(self):

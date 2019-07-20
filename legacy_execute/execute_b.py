@@ -50,7 +50,7 @@ thrust_mod = -0.2 #times difference in depth
 # create dict of statuses and whether they've been completed
 # that is, track what we've done
 
-def getCenter(box):
+def get_center(box):
     #currently biased down for start gate
     return (box[4] - box[2], box[5] - box[3])
 
@@ -118,7 +118,7 @@ def track(boxes):
     box = get_box_of_class(boxes, current_target)
     if box and box[1] > .3:
         last_seen = time.time()
-        center = getCenter(box)
+        center = get_center(box)
         msg.axes[axes_dict['frontback']] = 0.4
         if center[0] < .45:
             msg.axes[axes_dict['leftright']] = 0.2

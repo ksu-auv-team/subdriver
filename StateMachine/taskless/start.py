@@ -3,7 +3,7 @@
 from StateMachine.sub import *
 
 # define state start
-class start(sub):
+class Start(Sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Not_Found_Gate', 'Found_Gate'])
         

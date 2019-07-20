@@ -20,7 +20,7 @@ init_size
 '''
 
 # define state interact_pole
-class interact_pole(sub):
+class Interact_Pole(Sub):
     #setting to none indicates that we haven't seen it yet
     init_size = None
 
@@ -33,16 +33,21 @@ class interact_pole(sub):
         self.last_seen = rospy.get_time()
         init_heading = self.get_heading()
 
+        #get initial heading
+        while not init_heading:
+            rospy.sleep(const.SLEEP_TIME)
+            init_heading = self.get_heading()
+
         #keep going until we're within 10 degrees of the opposite of the initial heading
         while (abs(init_heading - self.get_heading()) < 170 and abs(init_heading - self.get_heading()) > 190):
             detection = self.get_box_of_class(gbl.detections, gbl.current_target)
-            center = self.getCenter(detection.box)
+            center = self.get_center(detection.box)
             msg = self.init_joy_msg()
 
             if detection != None:  # If the box is good
                 #update values
                 if self.init_size == None:
-                    self.init_size = self.getDistanceFromBox(detection.box)
+                    self.init_size = self.get_distance_from_box(detection.box)
                 self.last_seen = rospy.get_time()
             elif (rospy.get_time - self.last_seen) <= 5:
                 #stay still and look around to see if we can pick it back up
@@ -65,9 +70,9 @@ class interact_pole(sub):
                 msg.axes[const.AXES['rotate']] = -0.1
 
             #maintain distance
-            if self.getDistanceFromBox(detection.box) > 1.2 * self.init_size:
+            if self.get_distance_from_box(detection.box) > 1.2 * self.init_size:
                 msg.axes[const.AXES['frontback']] = -0.2
-            elif self.getDistanceFromBox(detection.box) < 0.8 * self.init_size:
+            elif self.get_distance_from_box(detection.box) < 0.8 * self.init_size:
                 msg.axes[const.AXES['frontback']] = 0.2
 
             #hold depth
@@ -87,7 +92,7 @@ class interact_pole(sub):
         #exact position is only a guess and will probably need to be modified
         while(True):
             detection = self.get_box_of_class(gbl.detections, gbl.current_target)
-            center = self.getCenter(detection.box)
+            center = self.get_center(detection.box)
             if (center[0] > 0.2 and center[0] < 0.8):
                 msg = self.init_joy_msg()
                 msg.axes[const.AXES['leftright']] = 0.15

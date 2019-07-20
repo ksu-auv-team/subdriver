@@ -26,14 +26,11 @@ from enum import Enum
 # Needed information:
 
 #Python execute_withState
-#logitec camera 720 x 1080p camera:
-    # Logitec web cam C930e
+#logitech camera 1920 x 1080p camera:
+    # Logitech web cam C930e
 
 
-class interact_buoy(sub):
-    
-    
-
+class Interact_Buoy(Sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Clear_Of_Buoy'])
         self.rotationOrder = -1
@@ -73,6 +70,7 @@ class interact_buoy(sub):
         gbl.current_target = None
         return 'Clear_Of_Buoy'
 
+    #TODO: replace with sub getBoxOfClasses
     def findBox(self):
         # Returns the index in gbl.boxes that the buoy is in
         for i in range(0, len(boxes)):
@@ -80,6 +78,8 @@ class interact_buoy(sub):
                 return i[1]
         return -1 # Face was not found
 
+    #TODO: either remove if getBoxOfClasses makes it redundant or
+    # make more sophisticated (use confidence values)
     def findFace(self):
         # returns the face of the buoy that is currently visible
         box = self.findBox()
