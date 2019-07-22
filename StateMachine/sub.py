@@ -183,24 +183,20 @@ class Sub(smach.State):
         center = self.get_center(box)
         msg = self.init_joy_msg()
 
-        relativeX = center[0] + offsetX # Target x position relative to current
-        relativeY = center[1] + offsetY # Target y position relative to current
-
         # Horizontal
-        if(relativeX != 0.5):
+        if(offsetX > center[0]): # Box is to the left of targetX
+            msg.axes[const.AXES['leftright']] = STRAFE_LEFTRIGHT_SPEED # Move Right
 
-            if(relativeX > 0.5): # Target Position is to the right
-                msg.axes[const.AXES['leftright']] = STRAFE_LEFTRIGHT_SPEED
-            elif(relativeX < 0.5): # Target Position is to the left
-                msg.axes[const.AXES['leftright']] = -1 * STRAFE_LEFTRIGHT_SPEED
+        elif(offsetX < center[0]): # Box is to the right of targetX
+            msg.axes[const.AXES['leftright']] = -1 * STRAFE_LEFTRIGHT_SPEED # Move Left
+        
         
         # Vertical
-        if(relativeY != 0.5):
+        if(offsetX > center[0]): # Box is below targetY
+            msg.axes[const.AXES['leftright']] = STRAFE_LEFTRIGHT_SPEED # Move Up
 
-            if(relativeY > 0.5): # Target Position is to the below
-                msg.axes[const.AXES['vertical']] = -1 *VERTICAL_SPEED
-            elif(relativeY < 0.5): # Target Position is to the above
-                msg.axes[const.AXES['vertical']] =  VERTICAL_SPEED
+        elif(offsetX < center[0]): # Box is above targetY
+            msg.axes[const.AXES['leftright']] = -1 * STRAFE_LEFTRIGHT_SPEED # Move Down
         
         return msg
 
