@@ -59,10 +59,10 @@ class Interact_Torpedo(Sub):
         try:
             jmsg = self.init_joy_msg()
             jmsg.buttons[const.BUTTONS[const.JOY_MAP[launcher]]]=1
-            self.joy_pub.publish(jmsg)
+            self.publish(jmsg)
             rospy.sleep(1)
             jmsg.buttons[const.BUTTONS[const.JOY_MAP[launcher]]]=0
-            self.joy_pub.publish(jmsg)
+            self.publish(jmsg)
             # Activates next tube
             self.set_active_launcher()
         except Exception as e:

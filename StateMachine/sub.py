@@ -289,6 +289,19 @@ class Sub(smach.State):
             self.active_launcher_offset = None
             return
 
+    def publish(self, msg):
+        '''
+        Publish a joy message with joy_pub.
+        This exists to let us modify all messages in one place before they're published,
+        e.g. to stop all forward motion or speed up all rotation.
+        '''
+
+        #modifiers go here
+
+        #publish message
+        self.joy_pub.publish(msg)
+
+
     # These get set at the start of each state, allowing the user to call them
     # as needed
     current_state_start_time = None
@@ -308,6 +321,4 @@ class Sub(smach.State):
 
     active_launcher = 'LAUNCHER_LEFT'
     active_launcher_offset = const.LAUNCHER_LEFT_OFFSET
-
-    joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
 

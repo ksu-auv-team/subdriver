@@ -30,7 +30,7 @@ class start(Sub):
 
         # Control loop
         while(1):
-            self.joy_pub.publish(curr_msg)
+            self.publish(curr_msg)
 
             if rospy.get_time() > (gbl.run_start_time + 15):
                 if self.get_box_of_class(gbl.detections, const.CLASSES['start_gate']):

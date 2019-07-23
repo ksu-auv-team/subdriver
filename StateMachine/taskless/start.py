@@ -32,7 +32,7 @@ class Start(Sub):
 
         # Control loop
         while(1):
-            self.joy_pub.publish(curr_msg)
+            self.publish(curr_msg)
 
             if self.get_box_of_class(gbl.detections, const.CLASSES['start_gate']):
                 return 'Found_Gate' # Transitions to TRACK_GATE
