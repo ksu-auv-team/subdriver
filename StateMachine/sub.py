@@ -293,10 +293,16 @@ class Sub(smach.State):
         '''
         Publish a joy message with joy_pub.
         This exists to let us modify all messages in one place before they're published,
-        e.g. to stop all forward motion or speed up all rotation.
+        e.g. to stop all forward motion, speed up all rotation, or mirror all horizontal motion.
         '''
 
         #modifiers go here
+
+
+        #mirror run
+        if (const.FLIP_RUN):
+            msg.axes["leftright"] = msg.axes["leftright"] * -1
+            msg.axes["rotate"] = msg.axes["rotate"] * -1
 
         #publish message
         self.joy_pub.publish(msg)

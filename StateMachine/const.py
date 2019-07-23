@@ -5,6 +5,11 @@ Collecting necessary constants in a single location so that
 tweaks can be adjusted more easily. 
 '''
 
+# Should the run be flipped left-to-right?
+# Expected to be changed per-run depending on which part of the pool we're in
+# True is left-turning, False is right-turning
+FLIP_RUN = False
+
 # Default joystick message values
 DEFAULT_MSG_AXES = (-0.01, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
 DEFAULT_MSG_BUTTONS = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
