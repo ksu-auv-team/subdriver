@@ -193,10 +193,10 @@ class Sub(smach.State):
         
         # Vertical
         if(offsetY > center[1]): # Box is below targetY
-            msg.axes[const.AXES['leftright']] = STRAFE_LEFTRIGHT_SPEED # Move Up
+            msg.axes[const.AXES['vertical']] = STRAFE_LEFTRIGHT_SPEED # Move Up
 
         elif(offsetY < center[1]): # Box is above targetY
-            msg.axes[const.AXES['leftright']] = -1 * STRAFE_LEFTRIGHT_SPEED # Move Down
+            msg.axes[const.AXES['vertical']] = -1 * STRAFE_LEFTRIGHT_SPEED # Move Down
         
         return msg
 
