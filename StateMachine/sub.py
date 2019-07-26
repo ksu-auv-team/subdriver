@@ -160,7 +160,7 @@ class Sub(smach.State):
         '''
         return math.sqrt((box[4]-box[2])**2 + (box[5]-box[3])**2)
 
-    def get_center_screen_offset(self, box, offsetX, offsetY):
+    def align_with_screen(self, box, offsetX = 0.5, offsetY = 0.5):
         """         
         Args:
             box: [top-left x, top-left y, bottom-right x, bottom-right y]
@@ -201,7 +201,7 @@ class Sub(smach.State):
         return msg
 
 
-    def get_center_box_offset(self, box, offsetX, offsetY):
+    def align_with_box(self, box, offsetX = 0.5, offsetY = 0.5):
         """ 
         Args:
             box: [top-left x, top-left y, bottom-right x, bottom-right y]
