@@ -18,13 +18,13 @@ class Track_Torpedo(Sub):
     applying necessary windage adjustments for the ready tube.
     '''
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Target_Lost','Target_Locked','Hardware_Failure'])
+        smach.State.__init__(self, outcomes=['target_lost','target_locked','hardware_failure'])
 
     def execute(self, userdata):
         # Fail Fast
         if not self.active_launcher:
             rospy.loginfo('[TRACK_TORPEDO] - %s' % ('No available launch tubes'))
-            return 'Hardware_Failure'
+            return 'hardware_failure'
         self.init_state()
         self.last_seen = rospy.get_time()
         #TODO: Tune these controllers
@@ -38,7 +38,7 @@ class Track_Torpedo(Sub):
             if (detection is not None) and detection.box[1] > 0.3:
                 x,z = self.get_center(detection.box)
             if (abs(const.CAMERA_FORWARD_CENTER['x']-x) < 5 and abs(const.CAMERA_FORWARD_CENTER['z']-z) < 5):
-                return 'Target_Locked'
+                return 'target_locked'
             jmsg.axes[const.AXES['leftright']] = x_pid.Update(x)
             jmsg.axes[const.AXES['vertical']] = z_pid.Update(z)
             self.publish(jmsg)

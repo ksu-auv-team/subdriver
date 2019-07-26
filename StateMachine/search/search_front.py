@@ -5,7 +5,7 @@ from StateMachine.sub import *
 # define state search_front
 class Search_Front(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Found_Object','Not_Found_Object'])
+        smach.State.__init__(self, outcomes=['object_found','object_not_found'])
 
     def execute(self, userdata):
         self.init_state()
@@ -19,11 +19,11 @@ class Search_Front(Sub):
                 if self.search_frames_seen <= 2:
                     self.search_frames_seen += 1
                 else:
-                    return "Found_Object" # Transitions to TRACK_GATE
+                    return "object_found" # Transitions to TRACK_GATE
 
             elif (rospy.get_time() - self.current_state_start_time) > 5:
                 self.search_frames_seen = 0
-                return "Not_Found_Object" # Transitions to SEARCH_LEFT_GATE
+                return "object_not_found" # Transitions to SEARCH_LEFT_GATE
 
             else:
                 self.search_frames_seen = 0

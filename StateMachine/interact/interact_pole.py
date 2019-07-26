@@ -25,7 +25,7 @@ class Interact_Pole(Sub):
     init_size = None
 
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Around_Pole','Lost_Pole'])
+        smach.State.__init__(self, outcomes=['around_pole','lost_pole'])
 
     def execute(self, userdata):
         #initialization

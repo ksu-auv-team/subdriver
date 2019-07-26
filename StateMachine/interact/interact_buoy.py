@@ -32,7 +32,7 @@ from enum import Enum
 
 class Interact_Buoy(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Clear_Of_Buoy'])
+        smach.State.__init__(self, outcomes=['clear_of_buoy'])
         self.rotationOrder = -1
         self.targetFace = BuoyFaces.draugr
         self.maxAcceleration = 20
@@ -68,7 +68,7 @@ class Interact_Buoy(Sub):
         msg.axes[const.AXES['forward']] = 0
         rospy.loginfo("Done moving")
         gbl.current_target = None
-        return 'Clear_Of_Buoy'
+        return 'clear_of_buoy'
 
     #TODO: replace with sub getBoxOfClasses
     def findBox(self):

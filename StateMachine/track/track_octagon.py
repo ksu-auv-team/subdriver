@@ -22,9 +22,9 @@ back up once we get to it.
 '''
 
 # define state track_gate
-class track_gate(sub):
+class track_gate(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Lost_Octagon','Approached_Octagon'])
+        smach.State.__init__(self, outcomes=['lost_octagon','approached_octagon'])
 
     def execute(self, userdata):
       self.init_state()
@@ -34,8 +34,7 @@ class track_gate(sub):
       while(1):
         msg = self.init_joy_msg()
         #change to use multiple targets (i.e. coffin and octagon)
-        box = gbl.get_box_of_class(gbl.boxes, gbl.current_target)
-        msg.axes[self.axes_dict['vertical']] = gbl.depth_const
+        detection = self.get_boxes_of_classes(gbl.detections, [gbl.current_target])
 
         
 
@@ -67,7 +66,7 @@ class track_gate(sub):
 
         self.joy_pub.publish(msg)
 
-        rospy.sleep(gbl.sleep_time)
+        rospy.sleep(const.SLEEP_TIME)
 
 	def log(self):
 		rospy.loginfo('Executing state TRACK_GATE')

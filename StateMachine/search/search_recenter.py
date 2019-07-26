@@ -5,7 +5,7 @@ from StateMachine.sub import *
 # define state search_recenter
 class Search_Recenter(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Found_Object','Not_Found_Object'])
+        smach.State.__init__(self, outcomes=['object_found','object_not_found'])
 
     def execute(self, userdata):
         self.init_state()
@@ -14,7 +14,7 @@ class Search_Recenter(Sub):
         
 
         if(gbl.debug):
-            return "Found_Object" # DEBUG purposes only
+            return "object_found" # DEBUG purposes only
 
         while(1):
             self.publish(msg)
@@ -22,11 +22,11 @@ class Search_Recenter(Sub):
                 if self.search_frames_seen <= 2:
                     self.search_frames_seen += 1
                 else:
-                    return "Found_Object" # Transitions to TRACK_GATE
+                    return "object_found" # Transitions to TRACK_GATE
 
             elif abs(self.angle_diff(gbl.heading, gbl.state_heading)) < 5:
                 self.search_frames_seen = 0
-                return "Not_Found_Object" # Transitions to SEARCH_FRONT_GATE
+                return "object_not_found" # Transitions to SEARCH_FRONT_GATE
 
             else:
                 self.search_frames_seen = 0

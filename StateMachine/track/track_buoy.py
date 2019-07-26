@@ -13,7 +13,7 @@ class Track_Buoy(Sub):
     """
 
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Lost_Buoy','Locked_Onto_Buoy'])
+        smach.State.__init__(self, outcomes=['lost_buoy','locked_onto_buoy'])
 
     def execute(self, userdata):
         rospy.loginfo('Executing state TRACK_BUOY')
@@ -22,7 +22,7 @@ class Track_Buoy(Sub):
         msg = self.init_joy_msg()
 
         if not self.get_boxes_of_classes(gbl.detections, const.CLASS_GROUPS['buoy'])[0]:
-            return "Lost_Buoy"
+            return "lost_buoy"
 
 
         # Line up with buoy
@@ -36,7 +36,7 @@ class Track_Buoy(Sub):
             self.moveCloseToBuoy()
 
         # At this point, the sub is stationary and facing the Buoy
-        return 'Locked_Onto_Buoy'
+        return 'locked_onto_buoy'
 
     def matchBuoyDepth(self):
         rospy.loginfo("matchBuoyDepth: Adjusting depth")

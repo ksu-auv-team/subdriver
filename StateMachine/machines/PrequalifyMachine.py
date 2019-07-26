@@ -39,19 +39,19 @@ def createStateMachine():
 
         smach.StateMachine.add('START', Start(), transitions={'Not_Found_Gate':'SEARCH_FRONT_GATE', 'Found_Gate':'TRACK_GATE'})
 
-        smach.StateMachine.add('SEARCH_FRONT_GATE', Search_Front_Gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_LEFT_GATE'})
-        smach.StateMachine.add('SEARCH_LEFT_GATE', Search_Left_Gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_RIGHT_GATE'})
-        smach.StateMachine.add('SEARCH_RIGHT_GATE', Search_Right_Gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_RECENTER_GATE'})
-        smach.StateMachine.add('SEARCH_RECENTER_GATE', Search_Recenter_Gate(), transitions={'Found_Object':'TRACK_GATE', 'Not_Found_Object':'SEARCH_FRONT_GATE'})
+        smach.StateMachine.add('SEARCH_FRONT_GATE', Search_Front_Gate(), transitions={'object_found':'TRACK_GATE', 'object_not_found':'SEARCH_LEFT_GATE'})
+        smach.StateMachine.add('SEARCH_LEFT_GATE', Search_Left_Gate(), transitions={'object_found':'TRACK_GATE', 'object_not_found':'SEARCH_RIGHT_GATE'})
+        smach.StateMachine.add('SEARCH_RIGHT_GATE', Search_Right_Gate(), transitions={'object_found':'TRACK_GATE', 'object_not_found':'SEARCH_RECENTER_GATE'})
+        smach.StateMachine.add('SEARCH_RECENTER_GATE', Search_Recenter_Gate(), transitions={'object_found':'TRACK_GATE', 'object_not_found':'SEARCH_FRONT_GATE'})
 
         smach.StateMachine.add('TRACK_GATE', Track_Gate(), transitions={'Lost_Gate':'SEARCH_FRONT_GATE', 'Approached_Gate':'INTERACT_GATE'})
 
         smach.StateMachine.add('INTERACT_GATE', Interact_Gate(), transitions={'Through_Gate':'SEARCH_FRONT_POLE'})
         
-        smach.StateMachine.add('SEARCH_FRONT_POLE', Search_Front_Pole(), transitions={'Found_Object':'TRACK_POLE', 'Not_Found_Object':'SEARCH_LEFT_POLE'})
-        smach.StateMachine.add('SEARCH_LEFT_POLE', Search_Left_Pole(), transitions={'Found_Object':'TRACK_POLE', 'Not_Found_Object':'SEARCH_RIGHT_POLE'})
-        smach.StateMachine.add('SEARCH_RIGHT_POLE', Search_Right_Pole(), transitions={'Found_Object':'TRACK_POLE', 'Not_Found_Object':'SEARCH_RECENTER_POLE'})
-        smach.StateMachine.add('SEARCH_RECENTER_POLE', Search_Recenter_Pole(), transitions={'Found_Object':'TRACK_POLE', 'Not_Found_Object':'SEARCH_FRONT_POLE'})        
+        smach.StateMachine.add('SEARCH_FRONT_POLE', Search_Front_Pole(), transitions={'object_found':'TRACK_POLE', 'object_not_found':'SEARCH_LEFT_POLE'})
+        smach.StateMachine.add('SEARCH_LEFT_POLE', Search_Left_Pole(), transitions={'object_found':'TRACK_POLE', 'object_not_found':'SEARCH_RIGHT_POLE'})
+        smach.StateMachine.add('SEARCH_RIGHT_POLE', Search_Right_Pole(), transitions={'object_found':'TRACK_POLE', 'object_not_found':'SEARCH_RECENTER_POLE'})
+        smach.StateMachine.add('SEARCH_RECENTER_POLE', Search_Recenter_Pole(), transitions={'object_found':'TRACK_POLE', 'object_not_found':'SEARCH_FRONT_POLE'})        
 
         smach.StateMachine.add('TRACK_POLE', Track_Pole(), transitions={'Lost_Pole':'SEARCH_FRONT_POLE', 'Approached_Pole':'INTERACT_POLE'})
 

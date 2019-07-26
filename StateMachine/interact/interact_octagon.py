@@ -27,7 +27,7 @@ from StateMachine.sub import *
 # define state interact_gate
 class interact_octagon(sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Surfaced'])
+        smach.State.__init__(self, outcomes=['surfaced'])
 
     def execute(self, userdata):
         self.init_state()

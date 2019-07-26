@@ -5,7 +5,7 @@ from StateMachine.sub import *
 # define state track_gate
 class Track_Gate(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Lost_Gate','Approached_Gate'])
+        smach.State.__init__(self, outcomes=['lost_gate','approached_gate'])
 
     def execute(self, userdata):
         self.init_state()
@@ -48,16 +48,16 @@ class Track_Gate(Sub):
 
             if self.is_close:
                 self.is_close = False
-                return "Approached_Gate" # Transitions to INTERACT_GATE
+                return "approached_gate" # Transitions to INTERACT_GATE
             elif (rospy.get_time() - self.last_seen) > 2:
                 msg.axes[const.AXES['frontback']] = 0
                 self.publish(msg)
                 rospy.logwarn("Lost tracking the gate for more than 2 seconds")
                 
                 if(gbl.debug):
-                    return "Approached_Gate" # DEBUG Purposes Only!
+                    return "approached_gate" # DEBUG Purposes Only!
                 
-                return "Lost_Gate" # Transitions to SEARCH_FRONT_GATE
+                return "lost_gate" # Transitions to SEARCH_FRONT_GATE
 
             self.publish(msg)
 

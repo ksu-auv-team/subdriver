@@ -5,7 +5,7 @@ from StateMachine.sub import *
 # define state start
 class Start(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Not_Found_Gate', 'Found_Gate'])
+        smach.State.__init__(self, outcomes=['not_found_gate', 'found_gate'])
         
 
     def execute(self, userdata):
@@ -28,16 +28,16 @@ class Start(Sub):
         gbl.current_target = const.CLASSES['start_gate']
 
         if(gbl.debug):
-            return 'Not_Found_Gate' # Debug Porpoises Only!    
+            return 'not_found_gate' # Debug Porpoises Only!    
 
         # Control loop
         while(1):
             self.publish(curr_msg)
 
             if self.get_box_of_class(gbl.detections, const.CLASSES['start_gate']):
-                return 'Found_Gate' # Transitions to TRACK_GATE
+                return 'found_gate' # Transitions to TRACK_GATE
             elif (rospy.get_time() - self.current_state_start_time) > 2:
-                return 'Not_Found_Gate' # Transitions to SEARCH_FRONT_GATE
+                return 'not_found_gate' # Transitions to SEARCH_FRONT_GATE
 
             rospy.sleep(const.SLEEP_TIME)
 

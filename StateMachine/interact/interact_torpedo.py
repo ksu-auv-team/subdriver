@@ -33,19 +33,19 @@ class Interact_Torpedo(Sub):
         rospy.loginfo('Executing state INTERACT_TORPEDO')
         if not self.active_launcher:
             rospy.loginfo('[INTERACT_TORPEDO] - %s' % ('No available launch tubes'))
-            return 'Torpedo_Failed'
+            return 'torpedo_failed'
         try:
           self.launch(self.active_launcher)
-          return 'Torpedo_Launched'
+          return 'torpedo_launched'
         except Launch_Error as e:
             #Issues with launchers themselves - failure to ready, failure to
             #fire, etc.
             rospy.loginfo('[INTERACT_TORPEDO] - %s' % (e.message))
-            return 'Torpedo_Failed'
+            return 'torpedo_failed'
         except Exception as e:  
             #Some other thing is broken, likely this very code.
             rospy.logwarn('[INTERACT_TORPEDO] - %s' % (e.message))
-            return 'Torpedo_Failed'
+            return 'torpedo_failed'
 
     def launch(self, launcher):
         '''Launches a torpedo at the target.

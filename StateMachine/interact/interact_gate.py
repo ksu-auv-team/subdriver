@@ -5,7 +5,7 @@ from StateMachine.sub import *
 # define state interact_gate
 class Interact_Gate(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Through_Gate'])
+        smach.State.__init__(self, outcomes=['through_gate'])
 
     def execute(self, userdata):
         self.init_state()
@@ -22,7 +22,7 @@ class Interact_Gate(Sub):
 
         gbl.current_target = const.CLASSES['pole']
 
-        return 'Through_Gate' # Transitions to SEARCH_FRONT_POLE
+        return 'through_gate' # Transitions to SEARCH_FRONT_POLE
 
 
     def log(self):

@@ -12,14 +12,14 @@ multiple objects, the coffin and the octagon
 # define state search_front
 class search_front_octagon(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Found_Object','Not_Found_Object'])
+        smach.State.__init__(self, outcomes=['object_found','object_not_found'])
 
     def execute(self, userdata):
         self.init_state()
         msg = self.init_joy_msg()
         msg.axes[const.AXES['frontback']] = .4
 
-        #return 'Not_Found_Object' # Debug purposes only!
+        #return 'object_not_found' # Debug purposes only!
 
         while(1):
             self.joy_pub.publish(msg)
@@ -28,11 +28,11 @@ class search_front_octagon(Sub):
                 if self.search_frames_seen <= 2:
                     self.search_frames_seen += 1
                 else:
-                    return "Found_Object" # Transitions to track_octagon
+                    return "object_found" # Transitions to track_octagon
 
             elif (rospy.get_time() - self.current_state_start_time) > 5:
                 self.search_frames_seen = 0
-                return "Not_Found_Object" # Transitions to search_left_octagon
+                return "object_not_found" # Transitions to search_left_octagon
 
             else:
                 self.search_frames_seen = 0

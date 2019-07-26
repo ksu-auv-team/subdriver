@@ -5,7 +5,7 @@ from StateMachine.sub import *
 # define state track_pole
 class Track_Pole(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Lost_Pole','Approached_Pole'])
+        smach.State.__init__(self, outcomes=['lost_pole','approached_pole'])
 
     def execute(self, userdata):
         self.init_state()
@@ -43,16 +43,16 @@ class Track_Pole(Sub):
 
             if self.is_close:
                 self.is_close = False
-                return "Approached_Pole" # Transitions to INTERACT_POLE
+                return "approached_pole" # Transitions to INTERACT_POLE
             elif (rospy.get_time() - self.last_seen) > 2:
                 msg.axes[const.AXES['frontback']] = 0
                 self.publish(msg)
                 rospy.logwarn("Lost tracking the pole for more than 2 seconds")
                 
                 if(gbl.debug):
-                    return "Approached_Pole" # DEBUG Purposes Only!
+                    return "approached_pole" # DEBUG Purposes Only!
                 
-                return "Lost_Pole" # Transitions to SEARCH_FRONT_POLE
+                return "lost_pole" # Transitions to SEARCH_FRONT_POLE
 
             self.publish(msg)
 
