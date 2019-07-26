@@ -24,7 +24,7 @@ class search_left_octagon(Sub):
         while(1):
             self.joy_pub.publish(msg)
             #will need to change this to multiple targets
-            if self.get_box_of_class(gbl.detections, gbl.current_target):
+            if self.get_box_of_class(gbl.detections_bottom, gbl.current_target):
                 if self.search_frames_seen <= 2:
                     self.search_frames_seen += 1
                 else:

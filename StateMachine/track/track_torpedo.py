@@ -33,7 +33,7 @@ class Track_Torpedo(Sub):
 
         while(1):
             jmsg = self.init_joy_msg()
-            detection = self.get_box_of_class(gbl.detections, gbl.current_target)
+            detection = self.get_box_of_class(gbl.detections_front, gbl.current_target)
 
             if (detection is not None) and detection.box[1] > 0.3:
                 x,z = self.get_center(detection.box)

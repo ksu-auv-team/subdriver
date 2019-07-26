@@ -21,7 +21,7 @@ class Track_Buoy(Sub):
         self.init_state()
         msg = self.init_joy_msg()
 
-        if not self.get_boxes_of_classes(gbl.detections, const.CLASS_GROUPS['buoy'])[0]:
+        if not self.get_boxes_of_classes(gbl.detections_front, const.CLASS_GROUPS['buoy'])[0]:
             return "lost_buoy"
 
 
@@ -30,7 +30,7 @@ class Track_Buoy(Sub):
         # The below code assumes it is able to identify the spinning buoy the entire time.
         
         #TODO: implement this method and define this constant
-        while self.get_center(self.get_boxes_of_classes(gbl.detections, const.CLASS_GROUPS['buoy'])[0]) != 0:
+        while self.get_center(self.get_boxes_of_classes(gbl.detections_front, const.CLASS_GROUPS['buoy'])[0]) != 0:
             self.matchBuoyDepth()
             self.matchBuoyLeftRight()
             self.moveCloseToBuoy()
@@ -41,7 +41,7 @@ class Track_Buoy(Sub):
     def matchBuoyDepth(self):
         rospy.loginfo("matchBuoyDepth: Adjusting depth")
         
-        msg.axes[const.AXES['vertical']] = PID().update(self.get_center(gbl.detections[self.findBoxNumber()])[1])
+        msg.axes[const.AXES['vertical']] = PID().update(self.get_center(gbl.detections_front[self.findBoxNumber()])[1])
         self.publish(msg)
         rospy.sleep(const.SLEEP_TIME)
         self.publish(msg)

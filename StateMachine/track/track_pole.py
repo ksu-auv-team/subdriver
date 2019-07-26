@@ -14,7 +14,7 @@ class Track_Pole(Sub):
         #control loop
         while(1):
             msg = self.init_joy_msg()
-            detection = self.get_box_of_class(gbl.detections, gbl.current_target)
+            detection = self.get_box_of_class(gbl.detections_front, gbl.current_target)
 
             if (detection != None) and detection.score > 0.3:  # If the box is good
                 self.last_seen = rospy.get_time()

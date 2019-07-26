@@ -24,10 +24,14 @@ Variables:
         Compass heading at beginning of current state/set of states.
         This is messy and there may be a better way to do it - I'm doing it this way mostly for search patterns that cross multiple states.
     
-    detections
-        List of detections from the neural network.
-        Updated by bbox_callback()
-    
+    detections_front
+        List of detections on the front camera from the neural network.
+        Updated by bbox_callback_front()
+
+    detections_bottom
+        List of detections on the bottom camera from the neural network.
+        Updated by bbox_callback_bottom()
+
     current_target = None
         The object currently being targeted.
 
@@ -42,7 +46,9 @@ init_depth = None #depth at beginning of run - should be near 0
 heading = None #current compass heading in degrees from 0-360
 init_heading = None #compass heading at beginning of run
 state_heading = None
-detections = [] #list of detections that will be filled by the neural network
-num_detections = 0 #why would we not just use len(detections)?
+detections_front = [] #list of detections from the front camera that will be filled by the neural network
+num_detections_front = 0 #why would we not just use len(detections)?
+detections_bottom = [] #list of detections from the bottom camera that will be filled by the neural network
+num_detections_bottom = 0 #why would we not just use len(detections)?
 current_target = None #the current object being targeted TODO: allow multiple targets
 debug = False

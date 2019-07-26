@@ -40,7 +40,7 @@ class Interact_Pole(Sub):
 
         #keep going until we're within 10 degrees of the opposite of the initial heading
         while (abs(init_heading - self.get_heading()) < 170 and abs(init_heading - self.get_heading()) > 190):
-            detection = self.get_box_of_class(gbl.detections, gbl.current_target)
+            detection = self.get_box_of_class(gbl.detections_front, gbl.current_target)
             center = self.get_center(detection.box)
             msg = self.init_joy_msg()
 
@@ -91,7 +91,7 @@ class Interact_Pole(Sub):
         #keep strafing without rotating until the pole is to our side
         #exact position is only a guess and will probably need to be modified
         while(True):
-            detection = self.get_box_of_class(gbl.detections, gbl.current_target)
+            detection = self.get_box_of_class(gbl.detections_front, gbl.current_target)
             center = self.get_center(detection.box)
             if (center[0] > 0.2 and center[0] < 0.8):
                 msg = self.init_joy_msg()

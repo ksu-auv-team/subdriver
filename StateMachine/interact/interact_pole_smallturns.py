@@ -35,14 +35,14 @@ class Interact_Pole_Small_Turns(Sub):
             pole_on_right = False
             pole_on_left = False
             
-            detection = self.get_box_of_class(gbl.detections, gbl.current_target)
+            detection = self.get_box_of_class(gbl.detections_front, gbl.current_target)
             center = self.get_center(detection.box)
             msg = self.init_joy_msg()
 
             while (not pole_on_right):
                 msg = self.init_joy_msg()
                 #hold depth
-                detection = self.get_box_of_class(gbl.detections, gbl.current_target)
+                detection = self.get_box_of_class(gbl.detections_front, gbl.current_target)
 
                 if detection != None:
                     if center[0] > 0.8:
@@ -72,7 +72,7 @@ class Interact_Pole_Small_Turns(Sub):
             while (not pole_on_left):
                 msg = self.init_joy_msg()
                 #hold depth
-                detection = self.get_box_of_class(gbl.detections, gbl.current_target)
+                detection = self.get_box_of_class(gbl.detections_front, gbl.current_target)
 
                 if detection != None:
                     if center[0] < 0.2:
@@ -106,7 +106,7 @@ class Interact_Pole_Small_Turns(Sub):
 
         #Once we've gotten around the pole, aim at the start gate again
         while(True):
-            detection = self.get_box_of_class(gbl.detections, gbl.current_target)
+            detection = self.get_box_of_class(gbl.detections_front, gbl.current_target)
             center = self.get_center(detection.box)
             while (abs(gbl.init_heading - self.get_heading()) < 170 and abs(gbl.init_heading - self.get_heading()) > 190):
                 msg = self.init_joy_msg()

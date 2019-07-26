@@ -34,7 +34,7 @@ class track_gate(Sub):
       while(1):
         msg = self.init_joy_msg()
         #change to use multiple targets (i.e. coffin and octagon)
-        detection = self.get_boxes_of_classes(gbl.detections, [gbl.current_target])
+        detection = self.get_boxes_of_classes(gbl.detections_bottom, [gbl.current_target])
 
         
 

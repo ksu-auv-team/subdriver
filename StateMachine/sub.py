@@ -28,10 +28,6 @@ from classes import Detection
 from StateMachine import gbl
 from StateMachine import const
 
-
-
-
-
 def signal_handler(signal, frame):
     ''' Handles interrupt signals from OS.
 
@@ -48,14 +44,21 @@ def vfr_hud_callback(msg):
     gbl.depth = msg.altitude
     gbl.heading = msg.heading
 
-def bbox_callback(msg):
-    gbl.detections = []
-    gbl.num_detections = msg.detected[0]
+def bbox_callback_front(msg):
+    gbl.detections_front = []
+    gbl.num_detections_front = msg.detected[0]
 
-    for i in range(int(gbl.num_detections)):
+    for i in range(int(gbl.num_detections_front)):
         detection = Detection.Detection(msg.scores[i], msg.boxes[(i*4):(i+1)*4], msg.classes[i])
-        gbl.detections.append(detection)
+        gbl.detections_front.append(detection)
 
+def bbox_callback_bottom(msg):
+    gbl.detections_bottom = []
+    gbl.num_detections_bottom = msg.detected[0]
+
+    for i in range(int(gbl.num_detections_bottom)):
+        detection = Detection.Detection(msg.scores[i], msg.boxes[(i*4):(i+1)*4], msg.classes[i])
+        gbl.detections_bottom.append(detection)
 
 class Sub(smach.State):
     '''This is our overall 'sub' state. It is the superclass that all the other
@@ -268,7 +271,7 @@ class Sub(smach.State):
             None or a bounding box (list)
         '''
 
-        if gbl.detections == []:
+        if detections == []:
             rospy.loginfo('No detections in image at time: ' + str(rospy.get_time()))
             return None
 
@@ -375,7 +378,8 @@ class Sub(smach.State):
     init_distance = 0
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
-    network_sub = rospy.Subscriber('network_output', Detections, bbox_callback)
+    front_network_sub = rospy.Subscriber('front_network_output', Detections, bbox_callback_front, queue_size=1)
+    bottom_network_sub = rospy.Subscriber('bottom_network_output', Detections, bbox_callback_bottom, queue_size=1)
     vfr_hud_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, vfr_hud_callback) #provides depth and heading
 
     active_launcher = 'LAUNCHER_LEFT'
