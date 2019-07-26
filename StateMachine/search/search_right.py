@@ -10,7 +10,7 @@ class Search_Right(Sub):
     def execute(self, userdata):
         self.init_state()
         msg = self.init_joy_msg()
-        msg.axes[const.AXES['rotate']] = .05
+        msg.axes[const.AXES['rotate']] = .4
         
 
         while(1):
@@ -21,7 +21,7 @@ class Search_Right(Sub):
                 else:
                     return "Found_Object" # Transitions to TRACK_GATE
 
-            elif (rospy.get_time() - self.current_state_start_time) > 4:
+            elif self.angle_diff(gbl.heading, gbl.state_heading + 45) > -5:
                 self.search_frames_seen = 0
                 return "Not_Found_Object" # Transitions to SEARCH_RECENTER_GATE
 

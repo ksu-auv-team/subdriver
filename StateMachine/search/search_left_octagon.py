@@ -10,32 +10,31 @@ multiple objects, the coffin and the octagon
 '''
 
 # define state search_left
-class search_left_octagon(sub):
+class search_left_octagon(Sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['Found_Object','Not_Found_Object'])
 
     def execute(self, userdata):
-    	self.init_state()
-    	msg = self.init_joy_msg()
-    	msg.axes[self.axes_dict['rotate']] = -.2
-        msg.axes[self.axes_dict['vertical']] = self.depth_hold()
+        self.init_state()
+        msg = self.init_joy_msg()
+        msg.axes[const.AXES['rotate']] = -.3
 
-    	#return 'Not_Found_Object' # Debug purposes only!
+        #return 'Not_Found_Object' # Debug purposes only!
 
-    	while(1):
+        while(1):
             self.joy_pub.publish(msg)
             #will need to change this to multiple targets
-            if gbl.get_box_of_class(gbl.boxes, gbl.current_target):
-    			if self.search_frames_seen <= 2:
-    				self.search_frames_seen += 1
-    			else:
-    				return "Found_Object" # Transitions to track_octagon
+            if self.get_box_of_class(gbl.detections, gbl.current_target):
+                if self.search_frames_seen <= 2:
+                    self.search_frames_seen += 1
+                else:
+                    return "Found_Object" # Transitions to track_octagon
 
-            elif (rospy.get_time() - self.current_state_start_time) > 2:
-    			self.search_frames_seen = 0
-    			return "Not_Found_Object" # Transitions to search_right_octagon
+            elif self.angle_diff(gbl.heading, gbl.state_heading - 45) <= 0:
+                self.search_frames_seen = 0
+                return "Not_Found_Object" # Transitions to search_right_octagon
 
             else:
-    			self.search_frames_seen = 0
+                self.search_frames_seen = 0
 
-			rospy.sleep(gbl.sleep_time)
+            rospy.sleep(const.SLEEP_TIME)

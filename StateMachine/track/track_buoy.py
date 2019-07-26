@@ -4,7 +4,6 @@ from StateMachine.sub import *
 from StateMachine import controllers
 
 #TODO: clean up - this needs more work than I'm willing to do right now (while merging stuff)
-#specifically implement a get_box_of_classes method (or decide to use a single buoy class),
 # add a buoy class group, and reference PID() and msg correctly
 
 # define state track_buoy
@@ -22,7 +21,7 @@ class Track_Buoy(Sub):
         self.init_state()
         msg = self.init_joy_msg()
 
-        if not self.get_box_of_classes(detections, const.CLASS_GROUPS['buoy'])[0]:
+        if not self.get_boxes_of_classes(gbl.detections, const.CLASS_GROUPS['buoy'])[0]:
             return "Lost_Buoy"
 
 
@@ -31,7 +30,7 @@ class Track_Buoy(Sub):
         # The below code assumes it is able to identify the spinning buoy the entire time.
         
         #TODO: implement this method and define this constant
-        while self.get_center(self.get_box_of_classes(detections, const.CLASS_GROUPS['buoy'])[0]) != 0:
+        while self.get_center(self.get_boxes_of_classes(gbl.detections, const.CLASS_GROUPS['buoy'])[0]) != 0:
             self.matchBuoyDepth()
             self.matchBuoyLeftRight()
             self.moveCloseToBuoy()

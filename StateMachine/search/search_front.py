@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 
 from StateMachine.sub import *
-from search_front import *
 
 # define state search_front
 class Search_Front(Sub):
@@ -10,6 +9,7 @@ class Search_Front(Sub):
 
     def execute(self, userdata):
         self.init_state()
+        gbl.state_heading = gbl.heading
         msg = self.init_joy_msg()
         msg.axes[const.AXES['frontback']] = .2
 

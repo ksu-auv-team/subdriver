@@ -21,7 +21,7 @@ class Search_Left(Sub):
                 else:
                     return "Found_Object" # Transitions to TRACK_GATE
 
-            elif (rospy.get_time() - self.current_state_start_time) > 2:
+            elif self.angle_diff(gbl.heading, gbl.state_heading - 45) <= 0:
                 self.search_frames_seen = 0
                 return "Not_Found_Object" # Transitions to SEARCH_RIGHT_GATE
 

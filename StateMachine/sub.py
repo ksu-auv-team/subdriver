@@ -349,6 +349,17 @@ class Sub(smach.State):
         #publish message
         self.joy_pub.publish(msg)
 
+    def angle_diff(self, a1, a2):
+        '''
+        Returns the difference between the two angles. Wraps around so that, e.g.,
+        angle_diff(20, 330) returns -50 and angle_diff(330, 20) returns 50. angle_diff(90, 180)
+        returns -90 and angle_diff(180, 90) returns 90.
+        i.e. the number it returns is always the shorter way around and will be negative if necessary 
+        (if a2 is counterclockwise from/smaller than a1)
+        '''
+        diff = a1 - a2
+        return ((diff + 180) % 360) - 180
+
 
     # These get set at the start of each state, allowing the user to call them
     # as needed

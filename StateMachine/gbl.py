@@ -16,6 +16,13 @@ Variables:
     heading
         Current compass heading in degrees (from 0-360).
         Updated by vfr_hud_callback()
+
+    init_heading
+        Compass heading at beginning of run.
+    
+    state_heading
+        Compass heading at beginning of current state/set of states.
+        This is messy and there may be a better way to do it - I'm doing it this way mostly for search patterns that cross multiple states.
     
     detections
         List of detections from the neural network.
@@ -34,6 +41,7 @@ depth = None #current depth in meters
 init_depth = None #depth at beginning of run - should be near 0
 heading = None #current compass heading in degrees from 0-360
 init_heading = None #compass heading at beginning of run
+state_heading = None
 detections = [] #list of detections that will be filled by the neural network
 num_detections = 0 #why would we not just use len(detections)?
 current_target = None #the current object being targeted TODO: allow multiple targets

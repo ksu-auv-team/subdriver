@@ -36,6 +36,16 @@ class Track_Gate(Sub):
                     if self.get_distance(detection.box[0], detection.box[1], detection.box[2], detection.box[3]) > 0.4:
                         self.is_close = True
 
+                #stay within 20 degrees of run initial heading
+                #we'll always start pointed at the gate, so we'll never want more than that unless something goes wrong.
+                if self.angle_diff(gbl.heading, gbl.init_heading) > 20:
+                    #go left
+                    msg.axes[const.AXES['rotate']] = 0.2
+                elif self.angle_diff(gbl.heading, gbl.init_heading) < -20:
+                    #go right
+                    msg.axes[const.AXES['rotate']] = 0.2
+
+
             if self.is_close:
                 self.is_close = False
                 return "Approached_Gate" # Transitions to INTERACT_GATE

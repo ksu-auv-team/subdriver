@@ -24,7 +24,7 @@ class Search_Recenter(Sub):
                 else:
                     return "Found_Object" # Transitions to TRACK_GATE
 
-            elif (rospy.get_time() - self.current_state_start_time) > 2:
+            elif abs(self.angle_diff(gbl.heading, gbl.state_heading)) < 5:
                 self.search_frames_seen = 0
                 return "Not_Found_Object" # Transitions to SEARCH_FRONT_GATE
 
