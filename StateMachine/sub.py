@@ -254,8 +254,20 @@ class Sub(smach.State):
     def get_heading(self):
         return gbl.heading
 
-    #TODO: update this to read in by the new message structure
-    def get_box_of_class(self, detections, class_num):
+    def get_box_of_class(self, detections, class_num, threshold = 0.30):
+        '''
+        Takes a list of detections from the neural network and returns the detection in which
+        an object of class class_num was found with the highest confidence.
+
+        Parameters:
+            detections - list of detection objects
+            class_num - ID of class to detect
+            threshold - Probability confidence needed to ID an object. Should be between 0 and 1.
+
+        Returns:
+            None or a bounding box (list)
+        '''
+
         if gbl.detections == []:
             rospy.loginfo('No detections in image at time: ' + str(rospy.get_time()))
             return None
@@ -271,10 +283,40 @@ class Sub(smach.State):
             rospy.loginfo('class: %s\tconf: %s', str(found.class_id), str(found.score))
 
         #ignore ghosts
-        if max_prob > 0.20:
+        if max_prob > threshold:
             return found
         else:
             return None
+
+    def get_boxes_of_classes(self, detections, classes, threshold = 0.30):
+        '''
+        More versatile, but slower version of get_box_of_class that takes multiple classes and returns
+        a list of all detections in which any of them are found with confidence >= threshold.
+
+        Parameters:
+            detections - list of detection objects (implemented as lists)
+            classes - List of IDs of classes to detect
+            confidence - Confidence threshold to ID an object. Should be between 0 and 1.
+
+        Returns:
+            List of detections. Empty list if none found.
+        '''
+
+        found_detections = []
+
+        if detections == []:
+            rospy.sleep(1)
+            rospy.loginfo('No boxes in image at time: ' + str(rospy.get_time()))
+            return None
+
+        rospy.loginfo('Detections:\n')
+        for det in detections:
+            for class_num in classes:
+                if det.class_id == class_num and det.score > threshold:
+                    found_detections.append(det)
+                    rospy.loginfo('\tclass: %s\tconf: %s', str(det.class_id), str(det.score))        
+
+        return found_detections
         
     def set_active_launcher(self):
         '''Changes active launcher. 

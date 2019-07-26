@@ -1,6 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 from StateMachine.sub import *
+from search_front import *
 
 # define state search_front
 class Search_Front(Sub):
