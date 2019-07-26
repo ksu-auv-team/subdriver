@@ -27,6 +27,7 @@ class PID:
     self.I_min = I_min
     self.set_point = s
     self.error = 0.0
+    self.timestamp = time.time()
 
   def Update(self, current_value):
     '''Calculates controlled output for updated input value.
@@ -35,17 +36,21 @@ class PID:
     Returns:
       (float): controlled output to apply to variable.
     '''
+    incr_t = time.time()
+    delta_t = incr_t - self.timestamp
+    self.timestamp = incr_t
     self.error = self.set_point - current_value
     P_val = self.kp * self.error
     D_val = self.kd * (self.error - self.D)
+    D_val /= delta_t
     self.D = self.error
     self.I += self.error
+    self.I *= delta_t
     if self.I > self.I_max:
       self.I = self.I_max
     if self.I < self.I_min:
       self.I = self.I_min
     I_val = self.I * self.ki
-
     return P_val + I_val + D_val
 
 class PI:
@@ -67,6 +72,7 @@ class PI:
     self.I_min = I_min
     self.set_point = s
     self.error = 0.0
+    self.timestamp = time.time()
 
   def Update(self, current_value):
     '''Calculates controlled output for updated input value.
@@ -75,15 +81,18 @@ class PI:
     Returns:
       (float): controlled output to apply to variable.
     '''
+    incr_t = time.time()
+    delta_t = incr_t - self.timestamp
+    self.timestamp = incr_t
     self.error = self.set_point - current_value
     P_val = self.kp * self.error
     self.I += self.error
+    self.I *= delta_t
     if self.I > self.I_max:
       self.I = self.I_max
     if self.I < self.I_min:
       self.I = self.I_min
     I_val = self.I * self.ki
-
     return P_val + I_val
 
 class PD:
@@ -101,6 +110,7 @@ class PD:
     self.D = D
     self.set_point = s
     self.error = 0.0
+    self.timestamp = time.time()
 
   def Update(self, current_value):
     '''Calculates controlled output for updated input value.
@@ -109,9 +119,13 @@ class PD:
     Returns:
       (float): controlled output to apply to variable.
     '''
+    incr_t = time.time()
+    delta_t = incr_t - self.timestamp
+    self.timestamp = incr_t
     self.error = self.set_point - current_value
     P_val = self.kp * self.error
     D_val = self.kd * (self.error - self.D)
+    D_val /= delta_t
     self.D = self.error
 
     return P_val + D_val
