@@ -17,6 +17,7 @@ import sys, signal
 
 #messages
 from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import Bool
 from sensor_msgs.msg import Joy
 from sensor_msgs.msg import FluidPressure
 from mavros_msgs.msg import VFR_HUD
@@ -253,6 +254,12 @@ class Sub(smach.State):
     def get_heading(self):
         return gbl.heading
 
+    def use_front_network(self, do_use_network):
+       front_network_enable_pub.publish(do_use_network)
+
+    def use_bottom_network(self, do_use_network):
+        bottom_network_enable_pub.publish(do_use_network)
+
     def get_box_of_class(self, detections, class_num, threshold = 0.30):
         '''
         Takes a list of detections from the neural network and returns the detection in which
@@ -374,6 +381,8 @@ class Sub(smach.State):
     init_distance = 0
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
+    front_network_enable_pub = rospy.Publisher('enable_front_network', Bool)
+    bottom_network_enable_pub = rospy.Publisher('enable_bottom_network', Bool)
     front_network_sub = rospy.Subscriber('front_network_output', Detections, bbox_callback_front, queue_size=1)
     bottom_network_sub = rospy.Subscriber('bottom_network_output', Detections, bbox_callback_bottom, queue_size=1)
     vfr_hud_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, vfr_hud_callback) #provides depth and heading
