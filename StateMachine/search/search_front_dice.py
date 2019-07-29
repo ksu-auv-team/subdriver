@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from search_front import *
+from StateMachine.search.search_front import *
 
 # define state search_front_dice
 class search_front_dice(search_front):

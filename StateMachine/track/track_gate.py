@@ -5,7 +5,7 @@ from StateMachine.sub import *
 # define state track_gate
 class track_gate(sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Lost_Gate','Entered_Gate'])
+      smach.State.__init__(self, outcomes=['Lost_Gate','Entered_Gate'])
 
     def execute(self, userdata):
       self.init_state()
@@ -56,5 +56,5 @@ class track_gate(sub):
 
         rospy.sleep(gbl.sleep_time)
 
-	def log(self):
-		rospy.loginfo('Executing state TRACK_GATE')
+    def log(self):
+      rospy.loginfo('Executing state TRACK_GATE')

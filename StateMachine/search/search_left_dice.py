@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from search_left import *
+from StateMachine.search.search_left import *
 
 # define state search_left_dice
 class search_left_dice(search_left):

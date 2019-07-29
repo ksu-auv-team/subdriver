@@ -8,28 +8,28 @@ class search_recenter(sub):
         smach.State.__init__(self, outcomes=['Found_Object','Not_Found_Object'])
 
     def execute(self, userdata):
-    	self.init_state()
-    	msg = self.init_joy_msg()
-    	msg.axes[self.axes_dict['rotate']] = -.2
-    	msg.axes[self.axes_dict['vertical']] = self.depth_hold()
+        self.init_state()
+        msg = self.init_joy_msg()
+        msg.axes[self.axes_dict['rotate']] = -.2
+        msg.axes[self.axes_dict['vertical']] = self.depth_hold()
 
-    	if(gbl.debug):
-			return "Found_Object" # DEBUG purposes only
+        if(gbl.debug):
+            return "Found_Object" # DEBUG purposes only
 
-    	while(1):
-    		self.joy_pub.publish(msg)
-    		if gbl.get_box_of_class(gbl.boxes, gbl.current_target):
-    			if self.search_frames_seen <= 2:
-    				self.search_frames_seen += 1
-    			else:
-    				return "Found_Object" # Transitions to TRACK_GATE
+        while(1):
+            self.joy_pub.publish(msg)
+            if gbl.get_box_of_class(gbl.boxes, gbl.current_target):
+                if self.search_frames_seen <= 2:
+                    self.search_frames_seen += 1
+                else:
+                    return "Found_Object" # Transitions to TRACK_GATE
 
-    		elif (rospy.get_time() - self.current_state_start_time) > 2:
-    			self.search_frames_seen = 0
-    			return "Not_Found_Object" # Transitions to SEARCH_FRONT_GATE
+            elif (rospy.get_time() - self.current_state_start_time) > 2:
+                self.search_frames_seen = 0
+                return "Not_Found_Object" # Transitions to SEARCH_FRONT_GATE
 
-    		else:
-    			self.search_frames_seen = 0
-				
-			rospy.sleep(gbl.sleep_time)
+            else:
+                self.search_frames_seen = 0
+                
+            rospy.sleep(gbl.sleep_time)
 
