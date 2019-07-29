@@ -132,6 +132,7 @@ class Sub(smach.State):
 
     def get_center(self, box):
         '''Gets the center point of a bounding box.
+        
 
         Args:
           box: Box(type?), box whose center to calculate.
@@ -278,7 +279,7 @@ class Sub(smach.State):
         for detection in detections:
             if detection.class_id == class_num and detection.score > max_prob:
                 found = detection
-                max_prob = detection.score 
+                max_prob = detection.score
 
         if found:
             rospy.loginfo('class: %s\tconf: %s', str(found.class_id), str(found.score))
@@ -354,7 +355,7 @@ class Sub(smach.State):
         '''
         Returns the difference between the two angles. Wraps around so that, e.g.,
         angle_diff(20, 330) returns -50 and angle_diff(330, 20) returns 50. angle_diff(90, 180)
-        returns -90 and angle_diff(180, 90) returns 90.
+        returns -90 and angle_diff(180, 90) retsuburns 90.
         i.e. the number it returns is always the shorter way around and will be negative if necessary 
         (if a2 is counterclockwise from/smaller than a1)
         '''
@@ -372,6 +373,10 @@ class Sub(smach.State):
         '''
 
         #msg['frontback'] = msg['frontback'] * 0.9
+
+        #limit depth
+        if (not gbl.surfacing and self.get_depth() < 0.5 and msg.axes[const.AXES['vertical']] > 0):
+            msg.axes[const.AXES['vertical']] = 0
 
         #changes go here
         self.joy_pub.publish(msg) 

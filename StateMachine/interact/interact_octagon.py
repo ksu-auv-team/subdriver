@@ -44,6 +44,7 @@ class Interact_Octagon(Sub):
 
             if (coffin_center[0] > 0.45 and coffin_center[0] < 0.55 and coffin_center[1] > 0.45 and coffin_center[1] < 0.55):
                 self.is_centered = True
+                gbl.surfacing = True
 
             if (coffin_center[0] < 0.45):
                 msg.axes[const.AXES['leftright']] = 0.2
@@ -69,4 +70,5 @@ class Interact_Octagon(Sub):
             msg.axes[const.AXES['vertical']] = 0.2
             self.publish_joy(msg)
 
+        gbl.surfacing = False
         return "surfaced"

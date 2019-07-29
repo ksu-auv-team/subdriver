@@ -35,6 +35,10 @@ Variables:
     current_target = None
         The object currently being targeted.
 
+    surfacing = False
+        Is the sub currently trying to surface?
+        Overrides the depth limiting code in sub.publish_joy to allow us to thrust to the surface
+
     debug
         Are we currently in debug mode?
 '''
@@ -51,4 +55,5 @@ num_detections_front = 0 #why would we not just use len(detections)?
 detections_bottom = [] #list of detections from the bottom camera that will be filled by the neural network
 num_detections_bottom = 0 #why would we not just use len(detections)?
 current_target = None #the current object being targeted TODO: allow multiple targets
+surfacing = False
 debug = False
