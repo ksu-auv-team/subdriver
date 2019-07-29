@@ -19,6 +19,10 @@ class Track_Buoy(Sub):
         rospy.loginfo('Executing state TRACK_BUOY')
         """ We will attempt to bump into the Drauger face of the buoy """
         self.init_state()
+
+        # Start the front network
+        self.use_front_network(True)
+
         msg = self.init_joy_msg()
 
         if not self.get_boxes_of_classes(gbl.detections_front, const.CLASS_GROUPS['buoy'])[0]:

@@ -12,6 +12,8 @@ class Search_Recenter(Sub):
         msg = self.init_joy_msg()
         msg.axes[const.AXES['rotate']] = -.05
         
+        # Start the front network
+        self.use_front_network(True)
 
         if(gbl.debug):
             return "object_found" # DEBUG purposes only

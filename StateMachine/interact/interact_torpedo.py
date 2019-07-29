@@ -30,7 +30,14 @@ class Interact_Torpedo(Sub):
 
     def execute(self, userdata):
         '''Executes the INTERACT_TORPEDO state's primariy action.'''
+        #initialization
+        self.init_state()
+        self.last_seen = rospy.get_time()
         rospy.loginfo('Executing state INTERACT_TORPEDO')
+
+        # Start the front network
+        self.use_front_network(True)
+
         if not self.active_launcher:
             rospy.loginfo('[INTERACT_TORPEDO] - %s' % ('No available launch tubes'))
             return 'torpedo_failed'

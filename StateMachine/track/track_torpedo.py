@@ -21,6 +21,12 @@ class Track_Torpedo(Sub):
         smach.State.__init__(self, outcomes=['target_lost','target_locked','hardware_failure'])
 
     def execute(self, userdata):
+        self.init_state()
+        self.last_seen = rospy.get_time()
+
+        # Start the front network
+        self.use_front_network(True)
+
         # Fail Fast
         if not self.active_launcher:
             rospy.loginfo('[TRACK_TORPEDO] - %s' % ('No available launch tubes'))

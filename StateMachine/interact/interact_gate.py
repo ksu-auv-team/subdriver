@@ -22,7 +22,7 @@ class Interact_Gate(Sub):
 
         gbl.current_target = const.CLASSES['pole']
 
-        return 'through_gate' # Transitions to SEARCH_FRONT_POLE
+        return 'through_gate'
 
 
     def log(self):

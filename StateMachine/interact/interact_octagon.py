@@ -31,6 +31,10 @@ class interact_octagon(sub):
 
     def execute(self, userdata):
         self.init_state()
+        self.last_seen = rospy.get_time()
+
+        # Start the front network
+        self.use_bottom_network(True)
 
         msg = self.init_joy_msg()
 

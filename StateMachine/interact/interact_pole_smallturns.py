@@ -28,6 +28,9 @@ class Interact_Pole_Small_Turns(Sub):
         self.last_seen = rospy.get_time()
         self.init_heading = self.get_heading()
 
+        # Start the front network
+        self.use_front_network(True)
+
         #keep going until we're within 10 degrees of the opposite of the initial heading
         num_turns = 0
         max_turns = 3

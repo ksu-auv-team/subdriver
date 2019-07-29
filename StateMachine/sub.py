@@ -91,6 +91,8 @@ class Sub(smach.State):
         if gbl.run_start_time:
             self.current_state_start_time = rospy.get_time()
             self.current_state_start_depth = gbl.depth
+            self.use_front_network(False)
+            self.use_bottom_network(False)
             self.log()
 
 
@@ -255,10 +257,10 @@ class Sub(smach.State):
         return gbl.heading
 
     def use_front_network(self, do_use_network):
-       front_network_enable_pub.publish(do_use_network)
+       self.front_network_enable_pub.publish(do_use_network)
 
     def use_bottom_network(self, do_use_network):
-        bottom_network_enable_pub.publish(do_use_network)
+        self.bottom_network_enable_pub.publish(do_use_network)
 
     def get_box_of_class(self, detections, class_num, threshold = 0.30):
         '''
