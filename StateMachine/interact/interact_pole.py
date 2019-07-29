@@ -33,6 +33,9 @@ class Interact_Pole(Sub):
         self.last_seen = rospy.get_time()
         init_heading = self.get_heading()
 
+        # Start the front network
+        self.use_front_network(True)
+
         #get initial heading
         while not init_heading:
             rospy.sleep(const.SLEEP_TIME)

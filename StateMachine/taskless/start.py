@@ -22,8 +22,13 @@ class Start(Sub):
         if gbl.heading:
             gbl.init_heading = gbl.heading
 
+        # Start the front network
+        self.use_front_network(True)
+
+        # Initialize joystick message
         curr_msg = self.init_joy_msg()
         curr_msg.axes[const.AXES['frontback']] = 0.5
+        curr_msg.axes[const.AXES['vertical']] = -0.3
 
         gbl.current_target = const.CLASSES['start_gate']
 
@@ -34,10 +39,11 @@ class Start(Sub):
         while(1):
             self.publish_joy(curr_msg)
 
-            if self.get_box_of_class(gbl.detections_front, const.CLASSES['start_gate']):
-                return 'found_gate' # Transitions to TRACK_GATE
-            elif (rospy.get_time() - self.current_state_start_time) > 2:
-                return 'not_found_gate' # Transitions to SEARCH_FRONT_GATE
+            if(rospy.get_time() - self.current_state_start_time) > 2:    
+                if self.get_box_of_class(gbl.detections_front, const.CLASSES['start_gate']):
+                    return 'found_gate' # Transitions to TRACK_GATE
+                elif (rospy.get_time() - self.current_state_start_time) > 4:
+                    return 'not_found_gate' # Transitions to SEARCH_FRONT_GATE
 
             rospy.sleep(const.SLEEP_TIME)
 

@@ -12,6 +12,11 @@ class Search_Right(Sub):
         msg = self.init_joy_msg()
         msg.axes[const.AXES['rotate']] = .4
         
+        # Start the front network
+        self.use_front_network(True)
+
+        if(gbl.debug):
+            return "object_not_found"
 
         while(1):
             self.publish_joy(msg)

@@ -11,6 +11,9 @@ class Track_Gate(Sub):
         self.init_state()
         self.last_seen = rospy.get_time()
 
+        # Start the front network
+        self.use_front_network(True)
+
         #control loop
         while(1):
             msg = self.init_joy_msg()

@@ -36,6 +36,11 @@ class Interact_Octagon(Sub):
     def execute(self, userdata):
         #initialization
         self.init_state()
+        self.last_seen = rospy.get_time()
+
+        # Start the front network
+        self.use_bottom_network(True)
+
         msg = self.init_joy_msg()
         
         while (gbl.depth < -0.1): #10cm seems like a reasonable (generous) margin of error

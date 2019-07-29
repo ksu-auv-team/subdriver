@@ -13,6 +13,9 @@ class Search_Front(Sub):
         msg = self.init_joy_msg()
         msg.axes[const.AXES['frontback']] = .2
 
+        # Start the front network
+        self.use_front_network(True)
+
         while(1):
             self.publish_joy(msg)
             if self.get_box_of_class(gbl.detections_front, gbl.current_target):
