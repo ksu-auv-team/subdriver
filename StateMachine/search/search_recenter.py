@@ -17,7 +17,7 @@ class Search_Recenter(Sub):
             return "object_found" # DEBUG purposes only
 
         while(1):
-            self.publish(msg)
+            self.publish_joy(msg)
             if self.get_box_of_class(gbl.detections_front, gbl.current_target):
                 if self.search_frames_seen <= 2:
                     self.search_frames_seen += 1

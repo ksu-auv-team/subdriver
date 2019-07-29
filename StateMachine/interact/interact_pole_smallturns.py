@@ -63,7 +63,7 @@ class Interact_Pole_Small_Turns(Sub):
                 elif rospy.get_time - self.last_seen < 5:
                     #stay still and look around to see if we can pick it back up              
                     msg.axes[const.AXES['rotate']] = -0.1 * random.randint(-1, 1)
-                    self.publish(msg)
+                    self.publish_joy(msg)
                     rospy.sleep(const.SLEEP_TIME)
                     continue
                 else:
@@ -93,14 +93,14 @@ class Interact_Pole_Small_Turns(Sub):
                 elif rospy.get_time - self.last_seen < 5:
                     #stay still and look around to see if we can pick it back up
                     msg.axes[const.AXES['rotate']] = -0.1 * random.randint(-1, 1)
-                    self.publish(msg)
+                    self.publish_joy(msg)
                     rospy.sleep(const.SLEEP_TIME)
                     continue
                 else:
                     return 'Lost_Pole'
             
 
-            self.publish(msg)
+            self.publish_joy(msg)
             
         #end while
 
@@ -111,7 +111,7 @@ class Interact_Pole_Small_Turns(Sub):
             while (abs(gbl.init_heading - self.get_heading()) < 170 and abs(gbl.init_heading - self.get_heading()) > 190):
                 msg = self.init_joy_msg()
                 msg.axes[const.AXES['rotate']] = -0.1
-                self.publish(msg)
+                self.publish_joy(msg)
             else:
                 break
         

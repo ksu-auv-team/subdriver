@@ -14,7 +14,7 @@ class Search_Front(Sub):
         msg.axes[const.AXES['frontback']] = .2
 
         while(1):
-            self.publish(msg)
+            self.publish_joy(msg)
             if self.get_box_of_class(gbl.detections_front, gbl.current_target):
                 if self.search_frames_seen <= 2:
                     self.search_frames_seen += 1

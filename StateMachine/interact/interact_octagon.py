@@ -1,57 +1,72 @@
 #!/usr/bin/env python2
 
 from StateMachine.sub import *
+import random
 
 '''
-    interact_octagon is the state for interacting with the 
-    octagon/coffin/sunlight/surfacing task. It assumes that the sub
-    is close to the coffin/octagon (close enough that they can't be detected
-    from the front camera) and between them in depth when the state starts.
+interact_octagon.py
+Implements the Interact_Octagon class, which inherits from Sub
 
-    It works by slowly moving forward until the coffin is centered in the bottom camera,
-    stopping, and then moving up while keeping the coffin centered
-    until it goes out of view (if it does). If the coffin does go out of
-    view, the sub will go straight up until surfaced.
+Will interact with the octagon/coffin surfacing task
 
-    The best way to determine when the sub is surfaced is unclear. Possibilities
-    include: looking at parts of the octagon in the front camera,
-    using the depth sensor, or going up for n seconds.
+Works by centering the sub over the coffin, then climbing while keeping it centered
+until we hit the surface. If we lose the coffin, it'll keep going straight up until we hit depth 0 or so.
 
-    It ignores the octagon because it's too hard to see.
+Will try to thrust just past the surface, in case our depth sensor is miscalibrated, then stop.
+I'm expecting we won't do anything after we surface - we're allowed to go back under, but I think this will
+be the last thing we do.
 
-    We may decide to make this the last state in the run, which is likely,
-    or we can implement a following state that will resubmerge the sub and move
-    to another task.
+I thought about trying to look for the octagon on the surface as we climb, but decided against it.
+It'll be hard to see on the surface, it doesn't tell us much about horizontal position, and the
+depth sensor is more accurate for vertical position.
+
+Variables:
+is_centered - whether we've gotten centered over the coffin. We won't start climbing until we are.
+thrust_start_time - the time we started the final thrust up.
 '''
 
-# define state interact_gate
-class interact_octagon(sub):
+# define state interact_pole
+class Interact_Octagon(Sub):
+    is_centered = False
+    thrust_start_time = None
+
     def __init__(self):
         smach.State.__init__(self, outcomes=['surfaced'])
 
     def execute(self, userdata):
+        #initialization
         self.init_state()
-
         msg = self.init_joy_msg()
-
-        #default to no movement
-        msg.axes[self.axes_dict['vertical']] = self.depth_hold()
         
-        #check whether the coffin is visible
-        if (not gbl.get_box_of_class(gbl.bottom_boxes, gbl.classes['coffin']):
-            #if it isn't, move slowly forward until we can see it
-            #maybe add a small search pattern here?
-            msg.axes[self.axes_dict['frontback']] = 0.1
+        while (gbl.depth < -0.1): #10cm seems like a reasonable (generous) margin of error
+            #TODO: update this to how we actually do it
+            coffin_center = bottom_camera.get_object_center(coffin)
 
-        #once the coffin is visible, center the sub over it
+            if (coffin_center[0] > 0.45 and coffin_center[0] < 0.55 and coffin_center[1] > 0.45 and coffin_center[1] < 0.55):
+                self.is_centered = True
 
-        #once the sub is centered, thrust up and stay centered
+            if (coffin_center[0] < 0.45):
+                msg.axes[const.AXES['leftright']] = 0.2
+            elif (coffin_center[0] > 0.55):
+                msg.axes[const.AXES['leftright']] = -0.2
+            
+            if (coffin_center[1] < 0.45):
+                msg.axes[const.AXES['frontback']] = 0.2
+            elif (coffin_center[1] > 0.55):
+                msg.axes[const.AXES['frontback']] = -0.2
+            
+            #intent is that if we're centered and lose the coffin we keep going straight up
+            if (self.is_centered):
+                msg.axes[const.AXES['vertical']] = 0.2
 
-        #once the sub is near-surfaced/after a max of 5 or so seconds,
-        #stop thrusting
+            self.publish_joy(msg)
+        #end while
 
-        #either stop or resubmerge.
-        
+        self.thrust_start_time = rospy.get_time()
 
-    def log(self):
-        rospy.loginfo('Executing state interact_octagon')
+        #thrust up a bit more to be sure we break the surface
+        while(rospy.get_time() < self.thrust_start_time + 1):
+            msg.axes[const.AXES['vertical']] = 0.2
+            self.publish_joy(msg)
+
+        return "surfaced"

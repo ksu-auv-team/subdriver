@@ -181,8 +181,6 @@ class Sub(smach.State):
         # screenWidth = 1.0
         # screenHeight = 1.0
 
-        boxWidth = box[2] - box[0] # box[right] - box[left]
-        boxHeight = box[3] - box[1] #box[bottom] - box[top]
         center = self.get_center(box)
         msg = self.init_joy_msg()
 
@@ -364,8 +362,21 @@ class Sub(smach.State):
         return ((diff + 180) % 360) - 180
 
 
-    # These get set at the start of each state, allowing the user to call them
-    # as needed
+    def publish_joy(self, msg):
+        '''
+        Accepts a ROS joystick message as a parameter, modifies it, then republishes it.
+        Intended to be used to scale speed globally, among other potential uses.
+
+        Args:
+            msg: ROS joystick message
+        '''
+
+        #msg['frontback'] = msg['frontback'] * 0.9
+
+        #changes go here
+        self.joy_pub.publish(msg) 
+
+    # These get set at the start of each state, allowing the user to call them as needed
     current_state_start_time = None
     current_state_start_depth = None
 

@@ -51,7 +51,7 @@ class Track_Gate(Sub):
                 return "approached_gate" # Transitions to INTERACT_GATE
             elif (rospy.get_time() - self.last_seen) > 2:
                 msg.axes[const.AXES['frontback']] = 0
-                self.publish(msg)
+                self.publish_joy(msg)
                 rospy.logwarn("Lost tracking the gate for more than 2 seconds")
                 
                 if(gbl.debug):
@@ -59,7 +59,7 @@ class Track_Gate(Sub):
                 
                 return "lost_gate" # Transitions to SEARCH_FRONT_GATE
 
-            self.publish(msg)
+            self.publish_joy(msg)
 
             rospy.sleep(const.SLEEP_TIME)
 

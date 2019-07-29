@@ -52,7 +52,7 @@ class Interact_Pole(Sub):
             elif (rospy.get_time - self.last_seen) <= 5:
                 #stay still and look around to see if we can pick it back up
                 msg.axes[const.AXES['rotate']] = -0.1 * random.randint(-1, 1)
-                self.publish(msg)
+                self.publish_joy(msg)
                 rospy.sleep(const.SLEEP_TIME)
                 continue
             else: #if last seen more than 5 seconds ago
@@ -84,7 +84,7 @@ class Interact_Pole(Sub):
                     msg.axes[const.AXES['vertical']] = -0.1
             #otherwise no change
 
-            self.publish(msg)
+            self.publish_joy(msg)
         #end while
 
         #move out of the pole's way
@@ -96,7 +96,7 @@ class Interact_Pole(Sub):
             if (center[0] > 0.2 and center[0] < 0.8):
                 msg = self.init_joy_msg()
                 msg.axes[const.AXES['leftright']] = 0.15
-                self.publish(msg)
+                self.publish_joy(msg)
             else:
                 break
         
