@@ -254,7 +254,7 @@ class Sub(smach.State):
             rospy.loginfo("Depth is none, but we are debugging, returning 0.0")
             return 0.0
         elif (gbl.depth is None or gbl.init_depth is None):
-            rospy.logerror("init depth or current depth is NONE")
+            rospy.logerr("init depth or current depth is NONE")
             return None
         return gbl.depth - gbl.init_depth
 
@@ -370,6 +370,12 @@ class Sub(smach.State):
         i.e. the number it returns is always the shorter way around and will be negative if necessary 
         (if a2 is counterclockwise from/smaller than a1)
         '''
+        if gbl.debug:
+            return 0
+        
+        elif a1 is None or a2 is None:
+            return None
+
         diff = a1 - a2
         return ((diff + 180) % 360) - 180
 
