@@ -249,7 +249,7 @@ class Sub(smach.State):
         
         return msg
 
-    def center_on_heading(self, target, msg = []):
+    def center_on_heading(self, target, msg = [], min_thrust=0.1, max_thrust=0.4):
         '''
         Center the sub on the target heading target.
         Will end up bobbing back and forth around the center, but it should work well enough
@@ -257,17 +257,21 @@ class Sub(smach.State):
         Args:
             target - heading in degrees (0-360)
             msg - joy_msg to modify (default is init_joy_msg)
+            min_thrust - minumum thrust amount. Must be positive and less than max_thrust.
+            max_thrust - maximum thrust amount. Must be positive and greater than min_thrust
         Returns:
             msg, modified to point the sub to target
         '''
 
-        ROTATION_THRUST = 0.3 #this is fairly slow because precision is more important than speed for this
+        mid_thrust = (max_thrust + min_thrust) / 2 #default is .25
+        factor = (max_thrust - min_thrust) / 90
 
         if not msg:
             msg = self.init_joy_msg()
 
-        if self.angle_diff(target, gbl.heading) < 0:
-            msg.axes[const.AXES['rotate']] = ROTATION_THRUST
+        diff = self.angle_diff(target, gbl.heading)
+        
+        msg.axes[const.AXES['rotate']] = min_thrust + (diff * factor)   
         elif self.angle_diff(target, gbl.heading) > 0:
             msg.axes[const.AXES['rotate']] = -ROTATION_THRUST
 
