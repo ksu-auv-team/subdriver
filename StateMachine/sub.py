@@ -97,7 +97,7 @@ class Sub(smach.State):
 
 
     def move_distance(self, distance, direction):
-      """ Direcion will be something like: 'leftright', 'vertical', or 'rotate' 
+      """ Direcion will be something like: 'strafe', 'vertical', or 'rotate' 
       This function will be fully implemented once data on acceleration is measured in pool tests """
       pass
 
@@ -180,7 +180,7 @@ class Sub(smach.State):
             a Joystick message to center the sub around the center of a bounding box with
             offsets relative to percentages of the boxes dimensions.
         """
-        STRAFE_LEFTRIGHT_SPEED = 0.3
+        STRAFE_strafe_SPEED = 0.3
         VERTICAL_SPEED = 0.3
         # screenWidth = 1.0
         # screenHeight = 1.0
@@ -190,18 +190,18 @@ class Sub(smach.State):
 
         # Horizontal
         if(offsetX > center[0]): # Box is to the left of targetX
-            msg.axes[const.AXES['leftright']] = STRAFE_LEFTRIGHT_SPEED # Move Right
+            msg.axes[const.AXES['strafe']] = STRAFE_strafe_SPEED # Move Right
 
         elif(offsetX < center[0]): # Box is to the right of targetX
-            msg.axes[const.AXES['leftright']] = -1 * STRAFE_LEFTRIGHT_SPEED # Move Left
+            msg.axes[const.AXES['strafe']] = -1 * STRAFE_strafe_SPEED # Move Left
         
         
         # Vertical
         if(offsetY > center[1]): # Box is below targetY
-            msg.axes[const.AXES['vertical']] = STRAFE_LEFTRIGHT_SPEED # Move Up
+            msg.axes[const.AXES['vertical']] = STRAFE_strafe_SPEED # Move Up
 
         elif(offsetY < center[1]): # Box is above targetY
-            msg.axes[const.AXES['vertical']] = -1 * STRAFE_LEFTRIGHT_SPEED # Move Down
+            msg.axes[const.AXES['vertical']] = -1 * STRAFE_strafe_SPEED # Move Down
         
         return msg
 
@@ -219,7 +219,7 @@ class Sub(smach.State):
             a Joystick message to center the sub around the center of a bounding box with
             offsets relative to percentages of the boxes dimensions.
         """
-        STRAFE_LEFTRIGHT_SPEED = 0.3
+        STRAFE_strafe_SPEED = 0.3
         VERTICAL_SPEED = 0.3
 
 
@@ -235,9 +235,9 @@ class Sub(smach.State):
         if(relativeX != 0.5):
 
             if(relativeX > 0.5): # Target Position is to the right
-                msg.axes[const.AXES['leftright']] = STRAFE_LEFTRIGHT_SPEED
+                msg.axes[const.AXES['strafe']] = STRAFE_strafe_SPEED
             elif(relativeX < 0.5): # Target Position is to the left
-                msg.axes[const.AXES['leftright']] = -1 * STRAFE_LEFTRIGHT_SPEED
+                msg.axes[const.AXES['strafe']] = -1 * STRAFE_strafe_SPEED
         
         # Vertical
         if(relativeY != 0.5):
@@ -385,7 +385,7 @@ class Sub(smach.State):
 
         #mirror run
         if (const.FLIP_RUN):
-            msg.axes["leftright"] = msg.axes["leftright"] * -1
+            msg.axes["strafe"] = msg.axes["strafe"] * -1
             msg.axes["rotate"] = msg.axes["rotate"] * -1
 
         #publish message

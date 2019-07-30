@@ -42,7 +42,7 @@ Usage:
 AXES = {'rotate': 0,
              'vertical': 1,
              'lt': 2,
-             'leftright': 3,
+             'strafe': 3,
              'frontback': 4,
              'rt': 5,
              'dpad_h': 6,

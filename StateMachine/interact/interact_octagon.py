@@ -52,9 +52,9 @@ class Interact_Octagon(Sub):
                 gbl.surfacing = True
 
             if (coffin_center[0] < 0.45):
-                msg.axes[const.AXES['leftright']] = 0.2
+                msg.axes[const.AXES['strafe']] = 0.2
             elif (coffin_center[0] > 0.55):
-                msg.axes[const.AXES['leftright']] = -0.2
+                msg.axes[const.AXES['strafe']] = -0.2
             
             if (coffin_center[1] < 0.45):
                 msg.axes[const.AXES['frontback']] = 0.2

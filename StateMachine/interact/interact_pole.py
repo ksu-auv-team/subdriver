@@ -62,7 +62,7 @@ class Interact_Pole(Sub):
                 return 'Lost_Pole' # Transitions to SEARCH_POLE (I think)
 
             #strafe right
-            msg.axes[const.AXES['leftright']] = 0.15
+            msg.axes[const.AXES['strafe']] = 0.15
 
             #keep the pole centered by rotating
             #these are fast, but I'm assuming we want to make sure rotation keeps up so the circle stays tight.
@@ -98,7 +98,7 @@ class Interact_Pole(Sub):
             center = self.get_center(detection.box)
             if (center[0] > 0.2 and center[0] < 0.8):
                 msg = self.init_joy_msg()
-                msg.axes[const.AXES['leftright']] = 0.15
+                msg.axes[const.AXES['strafe']] = 0.15
                 self.publish_joy(msg)
             else:
                 break

@@ -45,7 +45,7 @@ class Track_Torpedo(Sub):
                 x,z = self.get_center(detection.box)
             if (abs(const.CAMERA_FORWARD_CENTER['x']-x) < 5 and abs(const.CAMERA_FORWARD_CENTER['z']-z) < 5):
                 return 'target_locked'
-            jmsg.axes[const.AXES['leftright']] = x_pid.Update(x)
+            jmsg.axes[const.AXES['strafe']] = x_pid.Update(x)
             jmsg.axes[const.AXES['vertical']] = z_pid.Update(z)
             self.publish(jmsg)
 

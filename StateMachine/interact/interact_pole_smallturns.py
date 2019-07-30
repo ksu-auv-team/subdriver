@@ -52,7 +52,7 @@ class Interact_Pole_Small_Turns(Sub):
                         pole_on_right = True
 
                     #strafe left
-                    msg.axes[const.AXES['leftright']] = -0.15
+                    msg.axes[const.AXES['strafe']] = -0.15
 
                     #hold depth
                     #if we can see the ends of the pole (i.e. the bounding box doesn't end at the edge of the screen), center on it

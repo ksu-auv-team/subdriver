@@ -32,7 +32,7 @@ class_dict = {"background":0, "path_marker":1, "start_gate":2,
             'r_ball_tray':16, 'g_ball_tray':17, 'floating_area':18, 'r_funnel':19,
             'y_funnel':20, 'g_chip_dispenser':21, 'g_chip_plate':22, 'dieX':23, 'g_funnel':24}
 
-axes_dict = {'rotate': 0, 'vertical' : 1, 'lt' : 2, 'leftright' : 3, 'frontback' : 4, 'rt' : 5, 'dpad_h' : 6, 'dpad_v' : 7}
+axes_dict = {'rotate': 0, 'vertical' : 1, 'lt' : 2, 'strafe' : 3, 'frontback' : 4, 'rt' : 5, 'dpad_h' : 6, 'dpad_v' : 7}
 buttons_dict = {'a' : 0, 'b' : 1, 'x' : 2, 'y' : 3, 'lb' : 4, 'rb' : 5, 'back' : 6, 'start' : 7, 'xbox' : 8, 'lstickpress' : 9, 'rstickpress' : 10}
 
 
@@ -121,9 +121,9 @@ def track(boxes):
         center = get_center(box)
         msg.axes[axes_dict['frontback']] = 0.4
         if center[0] < .45:
-            msg.axes[axes_dict['leftright']] = 0.2
+            msg.axes[axes_dict['strafe']] = 0.2
         elif center[0] > .55:
-            msg.axes[axes_dict['leftright']] = -0.2
+            msg.axes[axes_dict['strafe']] = -0.2
 
         if center[1] < .45:
             msg.axes[axes_dict['vertical']] = -0.1
