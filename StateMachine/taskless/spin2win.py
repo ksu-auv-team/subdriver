@@ -3,7 +3,7 @@
 from StateMachine.sub import *
 
 # define state interact_gate
-class Interact_Gate(Sub):
+class SpinToWin(Sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['through_gate'])
 

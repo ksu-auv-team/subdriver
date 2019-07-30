@@ -3,6 +3,7 @@
 import rospy
 import StateMachine.machines.BaseStateMachine as base
 import StateMachine.machines.PrequalifyMachine as prequal
+import StateMachine.machines.TestSpinMachine as testspin
 import argparse
 import StateMachine.gbl as gbl
 
@@ -14,7 +15,7 @@ args = parser.parse_args()
 states = {
     'BaseStateMachine': base.createStateMachine,
     'PrequalifyMachine': prequal.createStateMachine,
-    'this_is_filler': 2,
+    'TestSpinMachine': testspin.createStateMachine,
     'to_show_the_concept': 3,
 }
 
