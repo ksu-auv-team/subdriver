@@ -10,7 +10,7 @@ class Search_Right(Sub):
     def execute(self, userdata):
         self.init_state()
         msg = self.init_joy_msg()
-        msg.axes[const.AXES['rotate']] = .4
+        msg.axes[const.AXES['rotate']] = -0.3
         
         # Start the front network
         self.use_front_network(True)
@@ -24,6 +24,7 @@ class Search_Right(Sub):
                 if self.search_frames_seen <= 2:
                     self.search_frames_seen += 1
                 else:
+                    self.search_frames_seen = 0
                     return "object_found" # Transitions to TRACK_GATE
 
             elif abs(self.angle_diff(gbl.heading, gbl.state_heading + 45)) < 2:
