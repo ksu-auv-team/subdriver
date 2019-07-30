@@ -266,9 +266,9 @@ class Sub(smach.State):
         if not msg:
             msg = self.init_joy_msg()
 
-        if self.angle_diff(target, gbl.heading) < 0:
+        if self.angle_diff(gbl.heading, target) < 0:
             msg.axes[const.AXES['rotate']] = ROTATION_THRUST
-        elif self.angle_diff(target, gbl.heading) > 0:
+        elif self.angle_diff(gbl.heading, target) > 0:
             msg.axes[const.AXES['rotate']] = -ROTATION_THRUST
 
         #if the robotics gods have blessed us and they're somehow equal do nothing

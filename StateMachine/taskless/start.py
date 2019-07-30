@@ -41,7 +41,7 @@ class Start(Sub):
             if(rospy.get_time() - self.current_state_start_time) > 2:    
                 if self.get_box_of_class(gbl.detections_front, const.CLASSES['start_gate']):
                     return 'found_gate' # Transitions to TRACK_GATE
-                elif (rospy.get_time() - self.current_state_start_time) > 4:
+                elif (rospy.get_time() - self.current_state_start_time) > 2:
                     return 'not_found_gate' # Transitions to SEARCH_FRONT_GATE
 
             rospy.sleep(const.SLEEP_TIME)
