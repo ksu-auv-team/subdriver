@@ -343,6 +343,8 @@ class Sub(smach.State):
             List of detections. Empty list if none found.
         '''
 
+        found_detections = []
+
         if detections == []:
             rospy.sleep(1)
             rospy.loginfo('No boxes in image at time: ' + str(rospy.get_time()))
@@ -353,11 +355,11 @@ class Sub(smach.State):
             best_confidence = threshold
             best_det = None
             for det in detections:
-                if det.score > best_confidence:
+                if det.class_id == class_num and det.score > best_confidence:
                     best_det = det
                     best_confidence = det.score
 
-            if (best_det)
+            if (best_det):
                 found_detections.append(best_det)
                 rospy.loginfo('\tclass: %s\tconf: %s', str(det.class_id), str(det.score))   
         
