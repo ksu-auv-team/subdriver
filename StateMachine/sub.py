@@ -391,21 +391,21 @@ class Sub(smach.State):
         #publish message
         self.joy_pub.publish(msg)
 
-    def angle_diff(self, a1, a2):
+    def angle_diff(self, source, target):
         '''
         Returns the difference between the two angles. Wraps around so that, e.g.,
         angle_diff(20, 330) returns -50 and angle_diff(330, 20) returns 50. angle_diff(90, 180)
-        returns -90 and angle_diff(180, 90) retsuburns 90.
+        returns 90 and angle_diff(180, 90) returns -90.
         i.e. the number it returns is always the shorter way around and will be negative if necessary 
-        (if a2 is counterclockwise from/smaller than a1)
+        (if target is counterclockwise from/smaller than source)
         '''
         if gbl.debug:
             return 0
         
-        elif a1 is None or a2 is None:
+        elif target is None or source is None:
             return None
 
-        diff = a1 - a2
+        diff = target - source
         return ((diff + 180) % 360) - 180
 
 
