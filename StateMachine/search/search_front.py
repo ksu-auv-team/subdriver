@@ -11,7 +11,7 @@ class Search_Front(Sub):
         self.init_state()
         gbl.state_heading = gbl.heading
         msg = self.init_joy_msg()
-        msg.axes[const.AXES['frontback']] = .2
+        msg.axes[const.AXES['frontback']] = 0.3
 
         # Start the front network
         self.use_front_network(True)
@@ -22,6 +22,7 @@ class Search_Front(Sub):
                 if self.search_frames_seen <= 2:
                     self.search_frames_seen += 1
                 else:
+                    self.search_frames_seen = 0
                     return "object_found" # Transitions to TRACK_GATE
 
             elif (rospy.get_time() - self.current_state_start_time) > 5:

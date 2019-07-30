@@ -25,9 +25,9 @@ class Track_Gate(Sub):
                 msg.axes[const.AXES['frontback']] = 0.3
   
                 if center[0] < 0.45:
-                    msg.axes[const.AXES['rotate']] = 0.05
+                    msg.axes[const.AXES['rotate']] = -0.2
                 elif center[0] > 0.55:
-                    msg.axes[const.AXES['rotate']] = -0.05
+                    msg.axes[const.AXES['rotate']] = 0.2
   
                 if center[1] < .45:
                     if self.get_depth() > 0.5:
@@ -46,7 +46,7 @@ class Track_Gate(Sub):
                     msg.axes[const.AXES['rotate']] = 0.2
                 elif self.angle_diff(gbl.heading, gbl.init_heading) < -20:
                     #go right
-                    msg.axes[const.AXES['rotate']] = 0.2
+                    msg.axes[const.AXES['rotate']] = -0.2
 
 
             if self.is_close:
