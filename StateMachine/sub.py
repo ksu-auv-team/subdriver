@@ -271,12 +271,7 @@ class Sub(smach.State):
 
         diff = self.angle_diff(target, gbl.heading)
         
-        msg.axes[const.AXES['rotate']] = min_thrust + (diff * factor)   
-        elif self.angle_diff(target, gbl.heading) > 0:
-            msg.axes[const.AXES['rotate']] = -ROTATION_THRUST
-
-        #if the robotics gods have blessed us and they're somehow equal do nothing
-        #just kidding, they'll never be equal because they're floats
+        msg.axes[const.AXES['rotate']] = min_thrust + (diff * factor)
 
         return msg
 
@@ -348,21 +343,27 @@ class Sub(smach.State):
             List of detections. Empty list if none found.
         '''
 
-        found_detections = []
-
         if detections == []:
             rospy.sleep(1)
             rospy.loginfo('No boxes in image at time: ' + str(rospy.get_time()))
             return None
 
         rospy.loginfo('Detections:\n')
-        for det in detections:
-            for class_num in classes:
-                if det.class_id == class_num and det.score > threshold:
-                    found_detections.append(det)
-                    rospy.loginfo('\tclass: %s\tconf: %s', str(det.class_id), str(det.score))        
+        for class_num in classes:
+            best_confidence = threshold
+            best_det = None
+            for det in detections:
+                if det.score > best_confidence:
+                    best_det = det
+                    best_confidence = det.score
 
-        return found_detections
+            if (best_det)
+                found_detections.append(best_det)
+                rospy.loginfo('\tclass: %s\tconf: %s', str(det.class_id), str(det.score))   
+        
+        return found_detections     
+
+
         
     def set_active_launcher(self):
         '''Changes active launcher. 
