@@ -36,7 +36,7 @@ class Track_Buoy(Sub):
         #TODO: implement this method and define this constant
         while self.get_center(self.get_boxes_of_classes(gbl.detections_front, const.CLASS_GROUPS['buoy'])[0]) != 0:
             self.matchBuoyDepth()
-            self.matchBuoystrafe()
+            self.matchBuoyStrafe()
             self.moveCloseToBuoy()
 
         # At this point, the sub is stationary and facing the Buoy
@@ -50,8 +50,8 @@ class Track_Buoy(Sub):
         rospy.sleep(const.SLEEP_TIME)
         self.publish(msg)
 
-    def matchBuoystrafe(self):
-        rospy.loginfo("matchBuoystrafe: Adjusting left to right")
+    def matchBuoyStrafe(self):
+        rospy.loginfo("matchBuoyStrafe: Adjusting left to right")
         msg.axes[const.AXES['strafe']] = PID().update(self.get_center(gbl.boxes[self.findBoxNumber()])[0])
         self.publish(msg)
         rospy.sleep(const.SLEEP_TIME)
