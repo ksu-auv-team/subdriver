@@ -249,6 +249,35 @@ class Sub(smach.State):
         
         return msg
 
+    def center_on_heading(self, target, msg = []):
+        '''
+        Center the sub on the target heading target.
+        Will end up bobbing back and forth around the center, but it should work well enough
+
+        Args:
+            target - heading in degrees (0-360)
+            msg - joy_msg to modify (default is init_joy_msg)
+        Returns:
+            msg, modified to point the sub to target
+        '''
+
+        ROTATION_THRUST = 0.3 #this is fairly slow because precision is more important than speed for this
+
+        if not msg:
+            msg = self.init_joy_msg()
+
+        if self.angle_diff(target, gbl.heading) < 0:
+            msg.axes[const.AXES['rotate']] = ROTATION_THRUST
+        elif self.angle_diff(target, gbl.heading) > 0:
+            msg.axes[const.AXES['rotate']] = -ROTATION_THRUST
+
+        #if the robotics gods have blessed us and they're somehow equal do nothing
+        #just kidding, they'll never be equal because they're floats
+
+        return msg
+
+
+
     def get_depth(self):
         if gbl.debug:
             rospy.loginfo("Depth is none, but we are debugging, returning 0.0")
