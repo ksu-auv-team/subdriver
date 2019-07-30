@@ -17,9 +17,10 @@ class Start(Sub):
         rospy.loginfo("Run Start Time: " + str(gbl.run_start_time))
 
         # Set the run start depth and heading
-        while(gbl.depth is None or gbl.heading is None or gbl.init_depth is None or gbl.init_heading is None):
-            gbl.init_depth = gbl.depth
-            gbl.init_heading = gbl.heading
+        if not gbl.debug:
+            while(gbl.depth is None or gbl.heading is None or gbl.init_depth is None or gbl.init_heading is None):
+                gbl.init_depth = gbl.depth
+                gbl.init_heading = gbl.heading
 
         # Start the front network
         self.use_front_network(True)
