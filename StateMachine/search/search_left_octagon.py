@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 
 from StateMachine.sub import *
-from search_left import *
 
 '''
 Implements search turning left for the octagon/surfacing tasks
@@ -10,7 +9,7 @@ multiple objects, the coffin and the octagon
 '''
 
 # define state search_left
-class search_left_octagon(Sub):
+class Search_Left_Octagon(Sub):
     def __init__(self):
         smach.State.__init__(self, outcomes=['object_found','object_not_found'])
 

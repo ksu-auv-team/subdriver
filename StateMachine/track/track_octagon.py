@@ -26,7 +26,7 @@ class Track_Octagon(Sub):
     #we'll be pointed at it when we leave the state, and the Pixhawk will keep us steady after that.
     
     def __init__(self):
-        smach.State.__init__(self, outcomes=['Lost_Gate','Approached_Gate'])
+        smach.State.__init__(self, outcomes=['lost_octagon','approached_octagon'])
 
     def execute(self, userdata):
         self.init_state()

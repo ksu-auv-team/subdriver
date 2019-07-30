@@ -6,6 +6,7 @@ import smach
 #import literally all the states we will ever have:
 from StateMachine.interact.interact_gate import *
 from StateMachine.interact.interact_buoy import *
+from StateMachine.interact.interact_octagon import *
 
 from StateMachine.search.search_front import *
 from StateMachine.search.search_left import *
@@ -22,8 +23,14 @@ from StateMachine.search.search_left_buoy import *
 from StateMachine.search.search_right_buoy import *
 from StateMachine.search.search_recenter_buoy import *
 
+from StateMachine.search.search_front_octagon import *
+from StateMachine.search.search_left_octagon import *
+from StateMachine.search.search_right_octagon import *
+from StateMachine.search.search_recenter_octagon import *
+
 from StateMachine.track.track_gate import *
 from StateMachine.track.track_buoy import *
+from StateMachine.track.track_octagon import *
 
 from StateMachine.taskless.start import *
 from StateMachine.taskless.surface import *
@@ -67,10 +74,11 @@ def createStateMachine():
 
         #TODO: implement octagon search states
         with sm_oct_search:
-            smach.StateMachine.add('SEARCH_FRONT_OCTAGON', Search_Front_Octagon(), transitions={'object_found':'TRACK_OCTAGON', 'object_not_found':'SEARCH_LEFT_OCTAGON'})
-            smach.StateMachine.add('SEARCH_LEFT_OCTAGON', Search_Left_Octagon(), transitions={'object_found':'TRACK_OCTAGON', 'object_not_found':'SEARCH_RIGHT_OCTAGON'})
-            smach.StateMachine.add('SEARCH_RIGHT_OCTAGON', Search_Right_Octagon(), transitions={'object_found':'TRACK_OCTAGON', 'object_not_found':'SEARCH_RECENTER_OCTAGON'})
-            smach.StateMachine.add('SEARCH_RECENTER_OCTAGON', Search_Recenter_Octagon(), transitions={'object_found':'TRACK_OCTAGON', 'object_not_found':'SEARCH_FRONT_OCTAGON'})
+            smach.StateMachine.add('SEARCH_FRONT_OCTAGON', Search_Front_Octagon(), transitions={'object_found':'search_found', 'object_not_found':'SEARCH_LEFT_OCTAGON'})
+            smach.StateMachine.add('SEARCH_LEFT_OCTAGON', Search_Left_Octagon(), transitions={'object_found':'search_found', 'object_not_found':'SEARCH_RIGHT_OCTAGON'})
+            smach.StateMachine.add('SEARCH_RIGHT_OCTAGON', Search_Right_Octagon(), transitions={'object_found':'search_found', 'object_not_found':'SEARCH_RECENTER_OCTAGON'})
+            smach.StateMachine.add('SEARCH_RECENTER_OCTAGON', Search_Recenter_Octagon(), transitions={'object_found':'search_found', 'object_not_found':'SEARCH_FRONT_OCTAGON'})
+        
         smach.StateMachine.add('SEARCH_OCTAGON', sm_oct_search, transitions={'search_found':'TRACK_OCTAGON'})
         smach.StateMachine.add('TRACK_OCTAGON', Track_Octagon(), transitions={'approached_octagon':'SEARCH_OCTAGON','lost_octagon':'INTERACT_OCTAGON'})
         smach.StateMachine.add('INTERACT_OCTAGON', Interact_Octagon(), transitions={'surfaced':'finished_run'})

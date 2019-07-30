@@ -250,6 +250,12 @@ class Sub(smach.State):
         return msg
 
     def get_depth(self):
+        if gbl.debug:
+            rospy.loginfo("Depth is none, but we are debugging, returning 0.0")
+            return 0.0
+        elif (gbl.depth is None or gbl.init_depth is None):
+            rospy.logerror("init depth or current depth is NONE")
+            return None
         return gbl.depth - gbl.init_depth
 
     def get_heading(self):
@@ -379,8 +385,11 @@ class Sub(smach.State):
 
         #msg['frontback'] = msg['frontback'] * 0.9
 
+        if gbl.debug:
+            pass
+
         #limit depth
-        if (not gbl.surfacing and self.get_depth() < 0.5 and msg.axes[const.AXES['vertical']] > 0):
+        elif (not gbl.surfacing and self.get_depth() < 0.5 and msg.axes[const.AXES['vertical']] > 0):
             msg.axes[const.AXES['vertical']] = 0
 
         #changes go here
