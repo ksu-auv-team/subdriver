@@ -42,7 +42,7 @@ class Interact_Pole(Sub):
             init_heading = self.get_heading()
 
         #keep going until we're within 10 degrees of the opposite of the initial heading
-        while (abs(init_heading - self.get_heading()) < 170 and abs(init_heading - self.get_heading()) > 190):
+        while (abs(init_heading - self.get_heading()) < 170 or abs(init_heading - self.get_heading()) > 190):
             detection = self.get_box_of_class(gbl.detections_front, gbl.current_target)
             center = self.get_center(detection.box)
             msg = self.init_joy_msg()
@@ -62,7 +62,7 @@ class Interact_Pole(Sub):
                 return 'Lost_Pole' # Transitions to SEARCH_POLE (I think)
 
             #strafe right
-            msg.axes[const.AXES['leftright']] = 0.15
+            msg.axes[const.AXES['leftright']] = 0.15  #rename to 'strafe'
 
             #keep the pole centered by rotating
             #these are fast, but I'm assuming we want to make sure rotation keeps up so the circle stays tight.
@@ -80,7 +80,7 @@ class Interact_Pole(Sub):
 
             #hold depth
             #if we can see the ends of the pole (i.e. the bounding box doesn't end at the edge of the screen), center on it
-            if detection.box[1] > 0.1 and detection.box[3] < 0.9:
+            if detection.box[1] > 0.1 and detection.box[3] < 0.9: #box 1 and 3 are the X-coordinates
                 if (center[1]) < 0.45:
                     msg.axes[const.AXES['vertical']] = 0.1
                 elif center[1] > 0.55:

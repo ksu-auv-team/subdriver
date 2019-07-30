@@ -9,13 +9,11 @@ from enum import Enum
 # define state interact_buoy
 
 # Known Information:
-    # Buoy Dimensions:  24 in. wide by 48 in. tall
-    # Buoy will rotate 1-5 RPM
-    # There is a two sided buoy with a Jiangshi on it. Do not target it
-    # There is a three sided  buoy with draugr, vetalas, and aswang on it.
-        # We choose which one we will target and we will get 600 pts for hitting the one we chose
-        # And 300 pts if we hit one of the other two.
-    # Target Face of buoy: Since it is arbitrary, we will be targetting the draugr
+    # This won't rotate. Instead the point of the triangle will be pointing toward the gate.
+    # The order for each side (and who is next to whom) will be specified.
+    # You will get points for touching any of the sides
+    # You will get more points for touching the Vampire that you called at the start of your run
+    # You will get even more points for touching the Vampire on the backside of the triangle (farthest from the gate, if you specified that Vampire)
 
 # Calculated Information:
     # When to move forward
@@ -30,196 +28,132 @@ from enum import Enum
     # Logitech web cam C930e
 
 
+# define state interact_buoy
 class Interact_Buoy(Sub):
+    #setting to none indicates that we haven't seen it yet
+    init_size = None
+
     def __init__(self):
-        smach.State.__init__(self, outcomes=['clear_of_buoy'])
-        self.rotationOrder = -1
-        self.targetFace = BuoyFaces.draugr
-        self.maxAcceleration = 20
+        smach.State.__init__(self, outcomes=['around_buoy','lost_buoy'])
+
     def execute(self, userdata):
-        """ We will attempt to bump into the draugr face of the buoy """
-        rospy.loginfo('Executing state INTERACT_BUOY')
-        # At this point, the sub is stationary and facing the Buoy
+        #initialization
         self.init_state()
-        msg = self.init_joy_msg()
-        
-        # Determine Ideal move speed
-        
-        
-        
-        buoyRotationSpeed = self.determineRotationSpeed()
-        rospy.loginfo("Found Rotation Speed.")
+        self.last_seen = rospy.get_time()
+        self.maxAcceleration(20)
+        init_heading = self.get_heading()
 
-        # T = rotations/minute * 2pi rad/1 rotation * 60 seconds/1 minute
-        period = buoyRotationSpeed * 2 * math.pi * 60
+        # Start the front network
+        self.use_front_network(True)
 
-        # Move towards buoy
-        rospy.loginfo("Preparing to move forward.")
-        while self.findFace() != BuoyFaces.draugr:
-            rospy.sleep(period/6)
-            startTime=rospy.Time.now()
-            rospy.loginfo("Moving forward for 10 seconds")
-        
-        while rospy.Time.now() < startTime + 10000: # Move for 10 seconds
-            msg.axes[const.AXES['forward']] = 1
-            self.publish(msg)
+        #get initial heading
+        while not init_heading:
             rospy.sleep(const.SLEEP_TIME)
-        
-        msg.axes[const.AXES['forward']] = 0
-        rospy.loginfo("Done moving")
-        gbl.current_target = None
-        return 'clear_of_buoy'
+            init_heading = self.get_heading()
 
-    #TODO: replace with sub getBoxOfClasses
-    def findBox(self):
-        # Returns the index in gbl.boxes that the buoy is in
-        for i in range(0, len(boxes)):
-            if(boxes[i][1] == BuoyFaces.draugr or boxes[i][1] == BuoyFaces.aswang or boxes[i][1] == BuoyFaces.vetalas):
-                return i[1]
-        return -1 # Face was not found
+        #keep going until we're within 10 degrees of the opposite of the initial heading
+        while (abs(init_heading - self.get_heading()) < 170 or abs(init_heading - self.get_heading()) > 190):
+            detection = self.get_box_of_class(gbl.detections_front, gbl.current_target)
+            center = self.get_center(detection.box)
+            msg = self.init_joy_msg()
 
-    #TODO: either remove if getBoxOfClasses makes it redundant or
-    # make more sophisticated (use confidence values)
-    def findFace(self):
-        # returns the face of the buoy that is currently visible
-        box = self.findBox()
-        if(box<0):
-            return -1
-        return boxes[box][1]
+            if detection != None:  # If the box is good
+                #update values
+                if self.init_size == None:
+                    self.init_size = self.get_distance_from_box(detection.box)
+                self.last_seen = rospy.get_time()
+            elif (rospy.get_time - self.last_seen) <= 5:
+                #stay still and look around to see if we can pick it back up
+                msg.axes[const.AXES['rotate']] = -0.1 * random.randint(-1, 1)
+                self.publish_joy(msg)
+                rospy.sleep(const.SLEEP_TIME)
+                continue
+            else: #if last seen more than 5 seconds ago
+                return 'Lost_Buoy' # Transitions to SEARCH_BUOY (I think)
 
-    def determineRotationSpeed(self):
-        """ returns rotation speed in RPM,
-        or Returns -1 if unable to find order, but that doesn't necessarily mean that the 
-        buoy is lost."""
-        # Find first face
-        # Skip the first face found, because it could be found halfway through the time spent on that face.
-        if(self.buoyIsLost()):
-            rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
-            return -1
-        startingFace = self.findFace()
+            #strafe right
+            msg.axes[const.AXES['leftright']] = 0.15  #rename to 'strafe'
+
+            #keep the buoy centered by rotating
+            #these are fast, but I'm assuming we want to make sure rotation keeps up so the circle stays tight.
+            #Worst-case is probably that we get jumps of fast rotation followed by nothing.
+            if center[0] < 0.45:
+                msg.axes[const.AXES['rotate']] = 0.1
+            elif center[0] > 0.55:
+                msg.axes[const.AXES['rotate']] = -0.1
+
+            #maintain distance
+            if self.get_distance_from_box(detection.box) > 1.2 * self.init_size:
+                msg.axes[const.AXES['frontback']] = -0.2
+            elif self.get_distance_from_box(detection.box) < 0.8 * self.init_size:
+                msg.axes[const.AXES['frontback']] = 0.2
+
+            #hold depth
+            #if we can see the ends of the buoy (i.e. the bounding box doesn't end at the edge of the screen), center on it
+            if detection.box[1] > 0.1 and detection.box[3] < 0.9: #box 1 and 3 are the Y-coordinates
+                if (center[1]) < 0.45:
+                    msg.axes[const.AXES['vertical']] = 0.1
+                elif center[1] > 0.55:
+                    msg.axes[const.AXES['vertical']] = -0.1
+            #otherwise no change
+
+            self.publish_joy(msg)  
+        #end while
+
+        #Hit the buoy
+        while(self.get_distance_from_box(detection.box) != 0):
+            msg.axes[const.AXES['frontback']] = 0.2
+            if detection.box[1] > 0.1 and detection.box[3] < 0.9:
+                if (center[1]) < 0.45:
+                    msg.axes[const.AXES['vertical']] = 0.1
+                elif center[1] > 0.55:
+                    msg.axes[const.AXES['vertical']] = -0.1
+            if detection.box[0] > 0.1 and detection.box[2] < 0.9:
+                if (center[0]) < 0.45:
+                    msg.axes[const.AXES['leftright']] = -0.1
+                elif center[0] > 0.55:
+                    msg.axes[const.AXES['leftright']] = 0.1
+
+            if detection == None:  # If the box is gone
+                if a == None:
+                    a = rospy.get_time
+                elif (rospy.get_time-a) <= 5:
+                    rospy.sleep(2)
+                    
+
+                #update values
+                self.last_seen = rospy.get_time()
+            elif (rospy.get_time - self.last_seen) <= 5:
+                #stay still and look around to see if we can pick it back up
+                msg.axes[const.AXES['rotate']] = -0.1 * random.randint(-1, 1)
+                self.publish_joy(msg)
+                rospy.sleep(const.SLEEP_TIME)
+                continue
+            else: #if last seen more than 5 seconds ago
+                return 'Lost_Buoy' # Transitions to SEARCH_BUOY (I think)
+        #end while
+
+
         
-        while(self.findFace() == startingFace):
-            continue
-        
-        if(self.buoyIsLost()):
-            rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
-            return -1
-        
-        firstFaceFoundTime = rospy.Time.now()
-        
-        firstFace = self.findFace()
-        # Find second face
-        while(self.findFace() == firstFace):
-            continue
-        
-        if(self.buoyIsLost()):
-            rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
-            return -1
-        secondFaceFoundTime = rospy.Time.now()
-        secondFace = self.findFace()
-        
-        if(firstFace == secondFace):
-            return -1
-        # Determine Order by waiting for a face to appear, then waiting until the next face appears
-        
-        if(firstFace == BuoyFaces.draugr): #draugr
-            
-            if(secondFace == BuoyFaces.aswang):
-                self.rotationOrder = BuoyRotationOrder.DAV
-                return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
-        
-            elif(secondFace == BuoyFaces.vetalas):
-                self.rotationOrder = BuoyRotationOrder.VAD
-                return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
-        
+
+
+        #move out of the buoy's way
+        #keep strafing without rotating until the buoy is to our side
+        #exact position is only a guess and will probably need to be modified
+        while(True):
+            detection = self.get_box_of_class(gbl.detections_front, gbl.current_target)
+            center = self.get_center(detection.box)
+            if (center[0] > 0.2 and center[0] < 0.8):
+                msg = self.init_joy_msg()
+                msg.axes[const.AXES['leftright']] = 0.15
+                self.publish_joy(msg)
             else:
-                return -1
+                break
         
-        elif(firstFace == BuoyFaces.aswang): #aswang
-            
-            if(secondFace == BuoyFaces.draugr):
-                self.rotationOrder = BuoyRotationOrder.VAD
-                return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
-            
-            elif(secondFace == BuoyFaces.vetalas):
-                self.rotationOrder = BuoyRotationOrder.DAV
-                return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
-            
-            else:
-                return -1
-        
-        elif(firstFace == BuoyFaces.vetalas): #vetalas
-            if(secondFace == BuoyFaces.aswang):
-                self.rotationOrder = BuoyRotationOrder.VAD
-                return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
-            elif(secondFace == BuoyFaces.draugr):
-                self.rotationOrder = BuoyRotationOrder.DAV
-                return (secondFaceFoundTime - firstFaceFoundTime) * 3 * 60
-            else:
-                return -1
-        else:
-            return -1
+        gbl.current_target = const.CLASSES['start_gate']
 
-    def buoyIsLost(self):
-        # Waits a while until it sees the buoy. Returns true if buoy is lost.
-        """ Wait up to 30 seconds to see if the buoy any of the monsters on the 3 sided buoy are 
-        found. If none are found, then the buoy is assumed to be lost. """
-        start = rospy.Time.now()
-        while(rospy.Time.now()<start+30):
-            if(self.findFace()>=0):
-                return False
-        return True
-           
-    def nextFace(self, face):
-        # Given a buoy face, method will return the next face in the order
-        if(face == BuoyFaces.draugr):
-            if(self.rotationOrder == BuoyRotationOrder.DAV):
-                return BuoyFaces.aswang
-            else:
-                return BuoyFaces.vetalas
-        
-        elif(face == BuoyFaces.aswang):
-            if(self.rotationOrder == BuoyRotationOrder.DAV):
-                return BuoyFaces.vetalas
-            else:
-                return BuoyFaces.draugr
-        
-        elif(face == BuoyFaces.vetalas):
-            if(self.rotationOrder == BuoyRotationOrder.DAV):
-                return BuoyFaces.draugr
-            else:
-                return BuoyFaces.aswang
-
-    def getThirdAtTime(self, period, startTime, currentTime):
-        # Finds out what face will be showing at a certain time
-        # The reason for a startime parameter is because the state does not start at time 0.
-        # T = 2pi/w
-        # Formula for a sinusodal function: y = ASin(wt + phaseShift)
-        w = 2*math.pi/period
-        x =  math.cos(w(currentTime-startTime))
-        y = math.sin(w(currentTime-startTime))
-        if(-1/2 < x and x < 1): # 1st or 3rd third
-            if(y>0):
-                return 1
-            else:
-                return 3
-        else: # 2nd Third
-            return 2
-
-
-class BuoyFaces(Enum): # Numbers will need to be changed to a proper class_id
-    draugr = 0
-    aswang = 1
-    vetalas = 2
-
-class BuoyRotationOrder(Enum):
-    """Enumeration for if the rotation order is:
-     draugr, aswang, vetalas (DAV)
-     or vetalas, aswang, draugr (VAD)
-    """
-    DAV = 0
-    VAD = 1
-    Unknown = 3
+        #headed home
+        return 'Around_Bouy' # Transitions to SEARCH_FRONT_GATE
 
 
 
