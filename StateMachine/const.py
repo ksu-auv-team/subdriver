@@ -60,11 +60,10 @@ BUTTONS = {'a': 0,
                 'lstickpress': 9,
                 'rstickpress': 10}
 
-#TODO: update for this year's tasks
 CLASSES = {'background': 0,
                 'buoy_aswang': 1,
                 'buoy_draugr': 2,
-                'buoy_jiangshi': 3
+                'buoy_jiangshi': 3,
                 'buoy_vetalas': 4,
                 'coffin': 5,
                 'dracula': 6,
@@ -87,6 +86,14 @@ CLASSES = {'background': 0,
                 # 'dieX': 23,
                 # 'g_funnel': 24,
                 # 'pole':25}
+
+#matches CLASSES
+BUOY_FACES = [
+  CLASSES['buoy_aswang'],
+  CLASSES['buoy_draugr'],
+  CLASSES['buoy_jiangshi'],
+  CLASSES['buoy_vetalas']
+]
 
 
 # Joystick Messages function map constants

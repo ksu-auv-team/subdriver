@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+from StateMachine.gbl import *
+from StateMachine.const import *
+from StateMachine.sub import *
+import rospy
+
+'''
+State inheriting from sub that will move forward to bump the buoy, then move back to get away from it
+
+Very dumb, all it does is drive forward and backward. We don't even look.
+'''
+
+class Bump_Buoy(Sub):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['bumped_buoy'])
+
+    def execute(self, userdata):
+        rospy.loginfo('Executing state Bump_Buoy')
+        # At this point, the sub is stationary and facing the Buoy
+        self.init_state()
+        
+        msg = self.init_joy_msg()
+       
+        while (rospy.get_time() < self.current_state_start_time + 2):
+            #RAMMING SPEED
+            msg.axes[const.AXES['frontback']] = 0.15 #I think this is slow enough?
+            self.publish_joy(msg)
+
+        bump_time = rospy.get_time()
+
+        while (rospy.get_time() < bump_time + 2):
+            #get away from the buoy
+            msg.axes[const.AXES['frontback']] = -0.15
+            self.publish_joy(msg)            
+
+        rospy.loginfo("Done bumping")
+        gbl.current_target = None
+        return 'bumped_buoy'
+
+
+
+
+

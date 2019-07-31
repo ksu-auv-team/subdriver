@@ -30,12 +30,9 @@ from enum import Enum
     # Logitech web cam C930e
 
 
-class Interact_Buoy(Sub):
+class Bump_Buoy(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['clear_of_buoy'])
-        self.rotationOrder = -1
-        self.targetFace = BuoyFaces.draugr
-        self.maxAcceleration = 20
+        smach.State.__init__(self, outcomes=['bumped_buoy'])
     def execute(self, userdata):
         """ We will attempt to bump into the draugr face of the buoy """
         rospy.loginfo('Executing state INTERACT_BUOY')
@@ -69,23 +66,6 @@ class Interact_Buoy(Sub):
         rospy.loginfo("Done moving")
         gbl.current_target = None
         return 'clear_of_buoy'
-
-    #TODO: replace with sub getBoxOfClasses
-    def findBox(self):
-        # Returns the index in gbl.boxes that the buoy is in
-        for i in range(0, len(boxes)):
-            if(boxes[i][1] == BuoyFaces.draugr or boxes[i][1] == BuoyFaces.aswang or boxes[i][1] == BuoyFaces.vetalas):
-                return i[1]
-        return -1 # Face was not found
-
-    #TODO: either remove if getBoxOfClasses makes it redundant or
-    # make more sophisticated (use confidence values)
-    def findFace(self):
-        # returns the face of the buoy that is currently visible
-        box = self.findBox()
-        if(box<0):
-            return -1
-        return boxes[box][1]
 
     def determineRotationSpeed(self):
         """ returns rotation speed in RPM,
