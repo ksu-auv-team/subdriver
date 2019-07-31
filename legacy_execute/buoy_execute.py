@@ -40,7 +40,7 @@ class_dict = {"background":0, "path_marker":1, "start_gate":2,
             'r_ball_tray':16, 'g_ball_tray':17, 'floating_area':18, 'r_funnel':19,
             'y_funnel':20, 'g_chip_dispenser':21, 'g_chip_plate':22, 'dieX':23, 'g_funnel':24}
 
-axes_dict = {'rotate': 0, 'vertical' : 1, 'lt' : 2, 'leftright' : 3, 'frontback' : 4, 'rt' : 5, 'dpad_h' : 6, 'dpad_v' : 7}
+axes_dict = {'rotate': 0, 'vertical' : 1, 'lt' : 2, 'strafe' : 3, 'frontback' : 4, 'rt' : 5, 'dpad_h' : 6, 'dpad_v' : 7}
 buttons_dict = {'a' : 0, 'b' : 1, 'x' : 2, 'y' : 3, 'lb' : 4, 'rb' : 5, 'back' : 6, 'start' : 7, 'xbox' : 8, 'lstickpress' : 9, 'rstickpress' : 10}
 
 altitude = 0
@@ -238,12 +238,12 @@ def find_buoy(boxes):
         # proportional control:
         lr_err = center[0] - 0.5
         lr_signal = (-lr_err + 0) * 2 # signal inverted to match joystick
-        msg.axes[axes_dict['leftright']] = max(min(lr_signal, 1), -1)
+        msg.axes[axes_dict['strafe']] = max(min(lr_signal, 1), -1)
 
         if center[0] < .45:
             msg.axes[axes_dict['rotate']] = 0.1
         elif center[0] > .55:
-            msg.axes[axes_dict['leftright']] = -0.1
+            msg.axes[axes_dict['strafe']] = -0.1
 
         vert_err = center[1] - 0.5
         vert_signal = (-vert_err + -.45) * 2 # signal inverted because image coordinates
@@ -273,7 +273,7 @@ def find_buoy(boxes):
     # random < (tangent of 10 degrees)*2:
     #    move left at 1/2 the speed of moving forward
     if random.random() < (0.1763269807*2) and not completed['buoy_found']:
-        msg.axes[axes_dict['leftright']] = .2 # this is left
+        msg.axes[axes_dict['strafe']] = .2 # this is left
 
     msg.axes[axes_dict['frontback']] = .4
     return msg

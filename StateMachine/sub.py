@@ -97,7 +97,7 @@ class Sub(smach.State):
 
 
     def move_distance(self, distance, direction):
-      """ Direcion will be something like: 'leftright', 'vertical', or 'rotate' 
+      """ Direcion will be something like: 'strafe', 'vertical', or 'rotate' 
       This function will be fully implemented once data on acceleration is measured in pool tests """
       pass
 
@@ -180,7 +180,7 @@ class Sub(smach.State):
             a Joystick message to center the sub around the center of a bounding box with
             offsets relative to percentages of the boxes dimensions.
         """
-        STRAFE_LEFTRIGHT_SPEED = 0.3
+        STRAFE_SPEED = 0.3
         VERTICAL_SPEED = 0.3
         # screenWidth = 1.0
         # screenHeight = 1.0
@@ -190,18 +190,18 @@ class Sub(smach.State):
 
         # Horizontal
         if(offsetX > center[0]): # Box is to the left of targetX
-            msg.axes[const.AXES['leftright']] = STRAFE_LEFTRIGHT_SPEED # Move Right
+            msg.axes[const.AXES['strafe']] = STRAFE_SPEED # Move Right
 
         elif(offsetX < center[0]): # Box is to the right of targetX
-            msg.axes[const.AXES['leftright']] = -1 * STRAFE_LEFTRIGHT_SPEED # Move Left
+            msg.axes[const.AXES['strafe']] = -1 * STRAFE_SPEED # Move Left
         
         
         # Vertical
         if(offsetY > center[1]): # Box is below targetY
-            msg.axes[const.AXES['vertical']] = STRAFE_LEFTRIGHT_SPEED # Move Up
+            msg.axes[const.AXES['vertical']] = STRAFE_SPEED # Move Up
 
         elif(offsetY < center[1]): # Box is above targetY
-            msg.axes[const.AXES['vertical']] = -1 * STRAFE_LEFTRIGHT_SPEED # Move Down
+            msg.axes[const.AXES['vertical']] = -1 * STRAFE_SPEED # Move Down
         
         return msg
 
@@ -219,7 +219,7 @@ class Sub(smach.State):
             a Joystick message to center the sub around the center of a bounding box with
             offsets relative to percentages of the boxes dimensions.
         """
-        STRAFE_LEFTRIGHT_SPEED = 0.3
+        STRAFE_SPEED = 0.3
         VERTICAL_SPEED = 0.3
 
 
@@ -235,9 +235,9 @@ class Sub(smach.State):
         if(relativeX != 0.5):
 
             if(relativeX > 0.5): # Target Position is to the right
-                msg.axes[const.AXES['leftright']] = STRAFE_LEFTRIGHT_SPEED
+                msg.axes[const.AXES['strafe']] = STRAFE_SPEED
             elif(relativeX < 0.5): # Target Position is to the left
-                msg.axes[const.AXES['leftright']] = -1 * STRAFE_LEFTRIGHT_SPEED
+                msg.axes[const.AXES['strafe']] = -1 * STRAFE_SPEED
         
         # Vertical
         if(relativeY != 0.5):
@@ -249,7 +249,7 @@ class Sub(smach.State):
         
         return msg
 
-    def center_on_heading(self, target, msg = []):
+    def center_on_heading(self, target, msg = [], min_thrust=0.1, max_thrust=0.4):
         '''
         Center the sub on the target heading target.
         Will end up bobbing back and forth around the center, but it should work well enough
@@ -257,22 +257,21 @@ class Sub(smach.State):
         Args:
             target - heading in degrees (0-360)
             msg - joy_msg to modify (default is init_joy_msg)
+            min_thrust - minumum thrust amount. Must be positive and less than max_thrust.
+            max_thrust - maximum thrust amount. Must be positive and greater than min_thrust
         Returns:
             msg, modified to point the sub to target
         '''
 
-        ROTATION_THRUST = 0.3 #this is fairly slow because precision is more important than speed for this
+        mid_thrust = (max_thrust + min_thrust) / 2 #default is .25
+        factor = (max_thrust - min_thrust) / 90
 
         if not msg:
             msg = self.init_joy_msg()
 
-        if self.angle_diff(target, gbl.heading) < 0:
-            msg.axes[const.AXES['rotate']] = ROTATION_THRUST
-        elif self.angle_diff(target, gbl.heading) > 0:
-            msg.axes[const.AXES['rotate']] = -ROTATION_THRUST
-
-        #if the robotics gods have blessed us and they're somehow equal do nothing
-        #just kidding, they'll never be equal because they're floats
+        diff = self.angle_diff(target, gbl.heading)
+        
+        msg.axes[const.AXES['rotate']] = min_thrust + (diff * factor)
 
         return msg
 
@@ -352,13 +351,21 @@ class Sub(smach.State):
             return None
 
         rospy.loginfo('Detections:\n')
-        for det in detections:
-            for class_num in classes:
-                if det.class_id == class_num and det.score > threshold:
-                    found_detections.append(det)
-                    rospy.loginfo('\tclass: %s\tconf: %s', str(det.class_id), str(det.score))        
+        for class_num in classes:
+            best_confidence = threshold
+            best_det = None
+            for det in detections:
+                if det.class_id == class_num and det.score > best_confidence:
+                    best_det = det
+                    best_confidence = det.score
 
-        return found_detections
+            if (best_det):
+                found_detections.append(best_det)
+                rospy.loginfo('\tclass: %s\tconf: %s', str(det.class_id), str(det.score))   
+        
+        return found_detections     
+
+
         
     def set_active_launcher(self):
         '''Changes active launcher. 
@@ -385,7 +392,7 @@ class Sub(smach.State):
 
         #mirror run
         if (const.FLIP_RUN):
-            msg.axes["leftright"] = msg.axes["leftright"] * -1
+            msg.axes["strafe"] = msg.axes["strafe"] * -1
             msg.axes["rotate"] = msg.axes["rotate"] * -1
 
         #publish message
