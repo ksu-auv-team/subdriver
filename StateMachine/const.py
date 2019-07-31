@@ -62,14 +62,14 @@ BUTTONS = {'a': 0,
 
 #TODO: update for this year's tasks
 CLASSES = {'background': 0,
-                'start_gate': 1,
-                'pole': 2,
-                'path_marker': 3}
-                # 'claw': 4,
-                # 'die1': 5,
-                # 'die2': 6,
-                # 'die5': 7,
-                # 'die6': 8,
+                'buoy_aswang': 1,
+                'buoy_draugr': 2,
+                'buoy_jiangshi': 3
+                'buoy_vetalas': 4,
+                'coffin': 5,
+                'dracula': 6,
+                'path_marker': 7,
+                'start_gate': 8}
                 # 'roulette_wheel': 9,
                 # 'red_wheel_side': 10,
                 # 'black_wheel_side': 11,
