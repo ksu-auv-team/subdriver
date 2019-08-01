@@ -18,7 +18,7 @@ Will get the sub to the center of the face first
 
 class Center_On_Buoy(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['centered_on_buoy', 'lost_buoy'])
+        smach.State.__init__(self, outcomes=['centered_first_buoy', 'centered_second_buoy', 'lost_buoy'])
 
     def execute(self, userdata):
         rospy.loginfo('Executing state Center_On_Buoy')

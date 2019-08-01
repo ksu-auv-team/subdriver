@@ -16,8 +16,9 @@ from StateMachine.search.search_recenter_buoy import *
 
 from StateMachine.track.track_buoy import *
 
-from StateMachine.interact.bumped_buoy import *
-from StateMachine.interact.center_on_buoy import *
+from StateMachine.interact.buoy.bump_buoy import *
+from StateMachine.interact.buoy.center_on_buoy import *
+from StateMachine.interact.buoy.shift_buoy import *
 
 from StateMachine.taskless.start import *
 from StateMachine.taskless.surface import *
@@ -29,7 +30,7 @@ def createStateMachine():
     # Create the top level SMACH state machine
     sm_AUV = smach.StateMachine(outcomes=['Finished_Run'])
     sm_buoy_search = smach.StateMachine(outcomes=['search_found'])
-    sm_buoy_interact = smach.StateMachine(outcomes=['lost_buoy', 'bumped_all_buoys'])
+    sm_buoy_interact = smach.StateMachine(outcomes=['lost_buoy', 'clear_of_buoys'])
 
     # Open the container
     with sm_AUV:
@@ -48,9 +49,11 @@ def createStateMachine():
         smach.StateMachine.add('TRACK_BUOY', Track_Buoy(), transitions={'lost_buoy':'SEARCH_BUOY','locked_onto_buoy':'INTERACT_BUOY'})
 
         with sm_buoy_interact:
-            smach.StateMachine.add('INTERACT_BUOY_BUMP', Interact_Buoy_Bump(), transitions={'bumped_buoy':'RETREAT'})            
+            smach.StateMachine.add('INTERACT_BUOY_CENTER', Center_On_Buoy(), transitions={'centered_first_buoy':'INTERACT_BUOY_BUMP', 'centered_second_buoy':'INTERACT_BUOY_BUMP', 'lost_buoy':'lost_buoy'})            
+            smach.StateMachine.add('INTERACT_BUOY_BUMP', Bump_Buoy(), transitions={'bumped_first_buoy':'INTERACT_BUOY_SHIFT', 'bumped_second_buoy':'clear_of_buoys'})
+            smach.StateMachine.add('INTERACT_BUOY_SHIFT', Shift_Buoy(), transitions={'finished_shifting':'INTERACT_BUOY_BUMP'})                        
 
-        smach.StateMachine.add('INTERACT_BUOY', sm_buoy_interact, transitions={'clear_of_buoy':'SURFACE'})        
+        smach.StateMachine.add('INTERACT_BUOY', sm_buoy_interact, transitions={'clear_of_buoys':'SURFACE','lost_buoy':'SEARCH_BUOY'})        
 
         smach.StateMachine.add('SURFACE', Surface(), transitions={'surfaced':'Finished_Run'})
 

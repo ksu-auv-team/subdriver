@@ -12,7 +12,7 @@ Very dumb, all it does is drive forward and backward. We don't even look.
 
 class Bump_Buoy(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['bumped_buoy'])
+        smach.State.__init__(self, outcomes=['bumped_first_buoy','bumped_second_buoy'])
 
     def execute(self, userdata):
         rospy.loginfo('Executing state Bump_Buoy')

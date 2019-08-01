@@ -25,7 +25,7 @@ class Track_Buoy(Sub):
 
         msg = self.init_joy_msg()
 
-        if not self.get_boxes_of_classes(gbl.detections_front, const.CLASS_GROUPS['buoy'])[0]:
+        if not self.get_boxes_of_classes(gbl.detections_front, const.BUOY_FACES)[0]:
             return "lost_buoy"
 
 
