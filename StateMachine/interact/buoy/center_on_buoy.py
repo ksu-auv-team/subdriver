@@ -21,12 +21,9 @@ class Center_On_Buoy(Sub):
         smach.State.__init__(self, outcomes=['centered_first_buoy', 'centered_second_buoy', 'lost_buoy'])
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state Center_On_Buoy')
+        rospy.loginfo('Executing state CENTER_ON_BUOY')
         self.init_state()
-        msg = self.init_joy_msg()
-        
-        
-        
+        msg = self.init_joy_msg()     
         
         buoyRotationSpeed = self.determineRotationSpeed()
         rospy.loginfo("Found Rotation Speed.")

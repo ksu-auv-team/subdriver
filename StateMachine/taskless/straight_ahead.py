@@ -16,10 +16,11 @@ class Straight_Ahead(Sub):
 
         rospy.loginfo('Charging forward for 40 seconds')
         
-        while rospy.get_time() < (self.current_state_start_time + 40):
-            msg.axes[const.AXES['frontback']] = 0.4
-            self.publish(msg)
-            rospy.sleep(const.SLEEP_TIME)
+        if not gbl.debug:
+            while rospy.get_time() < (self.current_state_start_time + 40):
+                msg.axes[const.AXES['frontback']] = 0.4
+                self.publish(msg)
+                rospy.sleep(const.SLEEP_TIME)
 
         rospy.loginfo('done')
 
