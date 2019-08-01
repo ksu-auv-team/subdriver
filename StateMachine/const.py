@@ -64,7 +64,7 @@ BUTTONS = {'a': 0,
 CLASSES = {'background': 0,
                 'buoy_aswang': 1,
                 'buoy_draugr': 2,
-                'buoy_jiangshi': 3
+                'buoy_jiangshi': 3,
                 'buoy_vetalas': 4,
                 'coffin': 5,
                 'dracula': 6,
