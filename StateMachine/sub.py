@@ -263,15 +263,23 @@ class Sub(smach.State):
             msg, modified to point the sub to target
         '''
 
-        mid_thrust = (max_thrust + min_thrust) / 2 #default is .25
-        factor = (max_thrust - min_thrust) / 90
+	factor = 0.005
 
         if not msg:
             msg = self.init_joy_msg()
 
-        diff = self.angle_diff(target, gbl.heading)
+        diff = self.angle_diff(gbl.heading, target)
         
-        msg.axes[const.AXES['rotate']] = min_thrust + (diff * factor)
+	val = diff * factor
+
+        if val > 0:
+            val = max(val, min_thrust)
+            val = min(val, max_thrust)
+        elif val < 0:
+            val = min(val, max_thrust * -1)
+            val = max(val, min_thrust * -1)
+
+        msg.axes[const.AXES['rotate']] = val * -1
 
         return msg
 
@@ -388,7 +396,6 @@ class Sub(smach.State):
         '''
 
         #modifiers go here
-
 
         #mirror run
         if (const.FLIP_RUN):
