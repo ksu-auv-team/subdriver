@@ -4,6 +4,7 @@ import rospy
 import StateMachine.machines.BaseStateMachine as base
 import StateMachine.machines.PrequalifyMachine as prequal
 import StateMachine.machines.TestSpinMachine as testspin
+import StateMachine.machines.QualifyStraightMachine as dumbqualify
 import argparse
 import StateMachine.gbl as gbl
 
@@ -16,6 +17,7 @@ states = {
     'BaseStateMachine': base.createStateMachine,
     'PrequalifyMachine': prequal.createStateMachine,
     'TestSpinMachine': testspin.createStateMachine,
+    'QualifyStraightMachine': dumbqualify.createStateMachine,
     'to_show_the_concept': 3,
 }
 
