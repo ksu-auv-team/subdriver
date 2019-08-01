@@ -6,41 +6,25 @@ from StateMachine.controllers import PID
 import math
 from enum import Enum
 
-# define state interact_buoy
+'''
+Defines substate of Sub that will center us on a buoy.
+It's designed to use current_target so we can use it on multiple faces.
+Expects to start near enough to the buoys that we can see them, but not, like, super close?
+Ideally we'd be able to see both.
 
-# Known Information:
-    # Buoy Dimensions:  24 in. wide by 48 in. tall
-    # Buoy will rotate 1-5 RPM
-    # There is a two sided buoy with a Jiangshi on it. Do not target it
-    # There is a three sided  buoy with draugr, vetalas, and aswang on it.
-        # We choose which one we will target and we will get 600 pts for hitting the one we chose
-        # And 300 pts if we hit one of the other two.
-    # Target Face of buoy: Since it is arbitrary, we will be targetting the draugr
-
-# Calculated Information:
-    # When to move forward
-    # Rotation speed of buoy 
-    # Current face on buoy
-    # Order of faces (determined by which direction that the buoy is spinnning)
-
-# Needed information:
-
-#Python execute_withState
-#logitech camera 1920 x 1080p camera:
-    # Logitech web cam C930e
+Will get the sub to the center of the face first
+'''
 
 
-class Bump_Buoy(Sub):
+class Center_On_Buoy(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['bumped_buoy'])
+        smach.State.__init__(self, outcomes=['centered_on_buoy', 'lost_buoy'])
+
     def execute(self, userdata):
-        """ We will attempt to bump into the draugr face of the buoy """
-        rospy.loginfo('Executing state INTERACT_BUOY')
-        # At this point, the sub is stationary and facing the Buoy
+        rospy.loginfo('Executing state Center_On_Buoy')
         self.init_state()
         msg = self.init_joy_msg()
         
-        # Determine Ideal move speed
         
         
         
@@ -76,10 +60,7 @@ class Bump_Buoy(Sub):
         if(self.buoyIsLost()):
             rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
             return -1
-        startingFace = self.findFace()
         
-        while(self.findFace() == startingFace):
-            continue
         
         if(self.buoyIsLost()):
             rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
@@ -95,8 +76,6 @@ class Bump_Buoy(Sub):
         if(self.buoyIsLost()):
             rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
             return -1
-        secondFaceFoundTime = rospy.Time.now()
-        secondFace = self.findFace()
         
         if(firstFace == secondFace):
             return -1
