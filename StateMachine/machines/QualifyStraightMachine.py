@@ -28,7 +28,7 @@ def createStateMachine():
     # Open the container
     with sm_AUV:
 
-        smach.StateMachine.add('START', Start(), transitions={'Not_Found_Gate':'SEARCH_FRONT_GATE', 'Found_Gate':'TRACK_GATE'})
+        smach.StateMachine.add('START', Start(), transitions={'not_found_gate':'STRAIGHT_AHEAD', 'found_gate':'STRAIGHT_AHEAD'})
 
         with sm_gate_search:
             smach.StateMachine.add('SEARCH_FRONT_GATE', Search_Front_Gate(), transitions={'object_found':'SEARCH_LEFT_GATE', 'object_not_found':'SEARCH_LEFT_GATE'})
@@ -38,7 +38,7 @@ def createStateMachine():
 
         smach.StateMachine.add('SEARCH_GATE', sm_gate_search, transitions={'search_found':'STRAIGHT_AHEAD'})
         smach.StateMachine.add('STRAIGHT_AHEAD', Straight_Ahead(), transitions={'through_gate':'SURFACE'})
-        smach.StateMachine.add('SURFACE', Surface(), transitions={'Surfaced':'Finished_Run'})
+        smach.StateMachine.add('SURFACE', Surface(), transitions={'surfaced':'Finished_Run'})
 
         # Execute SMACH plan
     outcome = sm_AUV.execute()

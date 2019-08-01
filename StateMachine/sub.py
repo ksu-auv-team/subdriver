@@ -396,7 +396,6 @@ class Sub(smach.State):
         '''
 
         #modifiers go here
-        msg.axes[const.AXES["frontback"]] = 0
 
         #mirror run
         if (const.FLIP_RUN):
