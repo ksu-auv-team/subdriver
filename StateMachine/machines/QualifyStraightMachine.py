@@ -16,7 +16,8 @@ from StateMachine.search.search_recenter_buoy import *
 
 from StateMachine.track.track_buoy import *
 
-from StateMachine.interact.interact_buoy import *
+from StateMachine.interact.bumped_buoy import *
+from StateMachine.interact.center_on_buoy import *
 
 from StateMachine.taskless.start import *
 from StateMachine.taskless.surface import *
