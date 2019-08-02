@@ -70,7 +70,7 @@ class Track_Buoy(Sub):
 
             if self.is_close:
                 self.is_close = False
-                return "approached_buoy" # Transitions to INTERACT_GATE
+                return "approached_buoy" 
             elif (rospy.get_time() - self.last_seen) > 2:
                 msg.axes[const.AXES['frontback']] = 0
                 self.publish_joy(msg)
@@ -79,7 +79,7 @@ class Track_Buoy(Sub):
                 if(gbl.debug):
                     return "approached_buoy" # DEBUG Porpoises Only!
                 
-                return "lost_buoy" # Transitions to SEARCH_FRONT_GATE
+                return "lost_buoy"
 
             self.publish_joy(msg)
 

@@ -61,6 +61,10 @@ class SpinToWin(Sub):
             rospy.sleep(const.SLEEP_TIME)
 
         curr_depth = self.get_depth()
+
+        if gbl.debug:
+            return 'found_buoy'
+
         #turn right 
         while self.get_depth() > curr_depth - 1 and abs(self.angle_diff(gbl.heading, gbl.state_heading + 15) > 4):
             msg = self.init_joy_msg()
@@ -71,10 +75,10 @@ class SpinToWin(Sub):
                 self.center_on_heading(gbl.state_heading + 15, msg)
             self.publish_joy(msg)
 
-        if (self.get_box_of_class(gbl.detections_front, const.CLASSES['buoy_jiangshi'])):
-            return 'found_buoy'
-        else:
-            return 'through_gate'
+            if (self.get_box_of_class(gbl.detections_front, const.CLASSES['buoy_jiangshi'])):
+                return 'found_buoy'
+        
+        return 'through_gate'
 
 
     def log(self):

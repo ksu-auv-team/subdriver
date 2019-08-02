@@ -35,7 +35,7 @@ class Bump_Buoy(Sub):
 
         rospy.loginfo("Done bumping")
         gbl.current_target = None
-        return 'bumped_buoy'
+        return 'bumped_first_buoy'
 
 
 
