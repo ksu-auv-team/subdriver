@@ -23,31 +23,33 @@ class SpinToWin(Sub):
         rospy.loginfo('720noscope')
         degrees_spun = 0
 
-        last_heading = gbl.state_heading
-        while (degrees_spun < 585):
-            msg.axes[const.AXES['frontback']] = 0   
-            msg.axes[const.AXES['rotate']] = -0.3
-            degrees_spun += self.angle_diff(last_heading, gbl.heading)
-            last_heading = gbl.heading
-            self.publish_joy(msg)
-            
+        if not gbl.debug:
+            last_heading = gbl.state_heading
+            while (degrees_spun < 585):
+                msg.axes[const.AXES['frontback']] = 0   
+                msg.axes[const.AXES['rotate']] = -0.3
+                degrees_spun += self.angle_diff(last_heading, gbl.heading)
+                last_heading = gbl.heading
+                self.publish_joy(msg)
             
         msg = self.init_joy_msg()
         heading_held_time = 0.0
 
-        while (abs(self.angle_diff(gbl.heading, gbl.state_heading)) > 3):
-            msg.axes[const.AXES['frontback']] = 0
-            msg = self.center_on_heading(gbl.state_heading, msg)
-            self.publish_joy(msg)
+        if not gbl.debug:
+            while (abs(self.angle_diff(gbl.heading, gbl.state_heading)) > 3):
+                msg.axes[const.AXES['frontback']] = 0
+                msg = self.center_on_heading(gbl.state_heading, msg)
+                self.publish_joy(msg)
         
         msg = self.init_joy_msg()
         heading_held_time = rospy.get_time()
 
-        while rospy.get_time() - heading_held_time < 1:
-            if abs(self.angle_diff(gbl.heading, gbl.state_heading)) > 3:
-                heading_held_time = rospy.get_time()
-            msg = self.center_on_heading(gbl.state_heading, msg, min_thrust=0.05, max_thrust=0.2)
-            self.publish_joy(msg)
+        if not gbl.debug:
+            while rospy.get_time() - heading_held_time < 1:
+                if abs(self.angle_diff(gbl.heading, gbl.state_heading)) > 3:
+                    heading_held_time = rospy.get_time()
+                msg = self.center_on_heading(gbl.state_heading, msg, min_thrust=0.05, max_thrust=0.2)
+                self.publish_joy(msg)
             
         msg = self.init_joy_msg()
 
