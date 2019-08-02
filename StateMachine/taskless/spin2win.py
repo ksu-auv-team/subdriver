@@ -26,6 +26,7 @@ class SpinToWin(Sub):
         while (degrees_spun < 585):
             msg.axes[const.AXES['frontback']] = 0
             msg.axes[const.AXES['rotate']] = -0.4
+            degrees_spun += self.angle_diff(gbl.state_heading, gbl.heading)
 
         while (abs(self.angle_diff(gbl.state_heading, gbl.init_heading)) < 2):
             msg.axes[const.AXES['frontback']] = 0
