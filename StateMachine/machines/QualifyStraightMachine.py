@@ -23,6 +23,7 @@ from StateMachine.interact.buoy.shift_buoy import *
 from StateMachine.taskless.start import *
 from StateMachine.taskless.surface import *
 from StateMachine.taskless.straight_ahead import *
+from StateMachine.taskless.spin2win import *
 
 def createStateMachine():
     rospy.init_node('AUV_StateMachine')
@@ -37,7 +38,9 @@ def createStateMachine():
 
         smach.StateMachine.add('START', Start(), transitions={'not_found_gate':'STRAIGHT_AHEAD', 'found_gate':'STRAIGHT_AHEAD'})
 
-        smach.StateMachine.add('STRAIGHT_AHEAD', Straight_Ahead(), transitions={'through_gate':'SEARCH_BUOY'})
+        smach.StateMachine.add('STRAIGHT_AHEAD', Straight_Ahead(), transitions={'through_gate':'SPIN_2_WIN'})
+        
+        smach.StateMachine.add('SPIN_2_WIN', SpinToWin(), transitions={'through_gate':'SEARCH_BUOY'})
 
         with sm_buoy_search:
             smach.StateMachine.add('SEARCH_FRONT_BUOY', Search_Front_Buoy(), transitions={'object_found':'search_found', 'object_not_found':'SEARCH_LEFT_BUOY'})

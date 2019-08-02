@@ -30,13 +30,13 @@ class SpinToWin(Sub):
             degrees_spun += self.angle_diff(last_heading, gbl.heading)
             last_heading = gbl.heading
             self.publish_joy(msg)
-
-
-       msg = self.init_joy_msg()
-        heading_hold_time = 0.0
+            
+            
+        msg = self.init_joy_msg()
+        heading_held_time = 0.0
 
         while (abs(self.angle_diff(gbl.heading, gbl.state_heading)) > 3):
-	        msg.axes[const.AXES['frontback']] = 0
+            msg.axes[const.AXES['frontback']] = 0
             msg = self.center_on_heading(gbl.state_heading, msg)
             self.publish_joy(msg)
         
@@ -45,21 +45,21 @@ class SpinToWin(Sub):
 
         while rospy.get_time() - heading_held_time < 1:
             if abs(self.angle_diff(gbl.heading, gbl.state_heading)) > 3:
-            heading_head_time = rospy.get_time()
+                heading_held_time = rospy.get_time()
             msg = self.center_on_heading(gbl.state_heading, msg, min_thrust=0.05, max_thrust=0.2)
             self.publish_joy(msg)
-
-	msg = self.init_joy_msg()
+            
+        msg = self.init_joy_msg()
 
         second_start_time = rospy.get_time()
         rospy.loginfo('Charging forward for three more seconds')
         while rospy.get_time() < (second_start_time + 3):
             msg.axes[const.AXES['frontback']] = 0.15
-	    self.publish(msg)
+            self.publish(msg)
             rospy.sleep(const.SLEEP_TIME)
 
         return 'through_gate'
 
 
     def log(self):
-        rospy.loginfo('Executing state INTERACT_GATE')
+        rospy.loginfo('Executing state SPIN_2_WIN')
