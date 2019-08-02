@@ -18,7 +18,7 @@ class Straight_Ahead(Sub):
         
         if not gbl.debug:
             #leave 3 seconds for spin2win
-            while rospy.get_time() < (self.current_state_start_time + 37):
+            while rospy.get_time() < (self.current_state_start_time + 27):
                 msg.axes[const.AXES['frontback']] = 0.4
                 self.publish(msg)
                 rospy.sleep(const.SLEEP_TIME)
