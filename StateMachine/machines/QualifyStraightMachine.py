@@ -49,15 +49,15 @@ def createStateMachine():
             smach.StateMachine.add('SEARCH_RECENTER_BUOY', Search_Recenter_Buoy(), transitions={'object_found':'search_found', 'object_not_found':'SEARCH_FRONT_BUOY'})
 
         smach.StateMachine.add('SEARCH_BUOY', sm_buoy_search, transitions={'search_found':'TRACK_BUOY'})
-        smach.StateMachine.add('TRACK_BUOY', Track_Buoy(), transitions={'lost_buoy':'SEARCH_BUOY','approached_buoy':'BUMP_BUOY'})
-        smach.StateMachine.add('BUMP_BUOY', Bump_Buoy(), transitions={'bumped_first_buoy':'SURFACE', 'bumped_second_buoy':'SURFACE'})
+        smach.StateMachine.add('TRACK_BUOY', Track_Buoy(), transitions={'lost_buoy':'SEARCH_BUOY','approached_buoy':'INTERACT_BUOY'})
+        #smach.StateMachine.add('BUMP_BUOY', Bump_Buoy(), transitions={'bumped_first_buoy':'SURFACE', 'bumped_second_buoy':'SURFACE'})
 
-        # with sm_buoy_interact:
-        #     smach.StateMachine.add('INTERACT_BUOY_CENTER', Center_On_Buoy(), transitions={'centered_first_buoy':'INTERACT_BUOY_BUMP', 'centered_second_buoy':'INTERACT_BUOY_BUMP', 'lost_buoy':'lost_buoy'})            
-        #     smach.StateMachine.add('INTERACT_BUOY_BUMP', Bump_Buoy(), transitions={'bumped_first_buoy':'INTERACT_BUOY_SHIFT', 'bumped_second_buoy':'clear_of_buoys'})
-        #     smach.StateMachine.add('INTERACT_BUOY_SHIFT', Shift_Buoy(), transitions={'finished_shifting':'INTERACT_BUOY_BUMP'})                        
+        with sm_buoy_interact:
+            smach.StateMachine.add('INTERACT_BUOY_CENTER', Center_On_Buoy(), transitions={'centered_first_buoy':'INTERACT_BUOY_BUMP', 'centered_second_buoy':'INTERACT_BUOY_BUMP', 'lost_buoy':'lost_buoy'})            
+            smach.StateMachine.add('INTERACT_BUOY_BUMP', Bump_Buoy(), transitions={'bumped_first_buoy':'INTERACT_BUOY_SHIFT', 'bumped_second_buoy':'clear_of_buoys'})
+            smach.StateMachine.add('INTERACT_BUOY_SHIFT', Shift_Buoy(), transitions={'finished_shifting':'INTERACT_BUOY_BUMP'})                        
 
-        # smach.StateMachine.add('INTERACT_BUOY', sm_buoy_interact, transitions={'clear_of_buoys':'SURFACE','lost_buoy':'SEARCH_BUOY'})        
+        smach.StateMachine.add('INTERACT_BUOY', sm_buoy_interact, transitions={'clear_of_buoys':'SURFACE','lost_buoy':'SEARCH_BUOY'})        
 
         smach.StateMachine.add('SURFACE', Surface(), transitions={'surfaced':'Finished_Run'})
 
