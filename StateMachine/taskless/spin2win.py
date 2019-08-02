@@ -5,7 +5,7 @@ from StateMachine.sub import *
 # define state interact_gate
 class SpinToWin(Sub):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['through_gate'])
+        smach.State.__init__(self, outcomes=['through_gate', 'found_buoy'])
 
     def execute(self, userdata):
         self.init_state()
@@ -14,7 +14,7 @@ class SpinToWin(Sub):
         msg = self.init_joy_msg()
         msg.axes[const.AXES['frontback']] = 0.5     
 
-        rospy.loginfo('Charging forward for FORWARD_DIST seconds')
+        rospy.loginfo('Readying SPIN OF POWER FOR MAXIMUM STYLE')
  
         while rospy.get_time() < (self.current_state_start_time + 3):
             self.publish(msg)
@@ -52,13 +52,27 @@ class SpinToWin(Sub):
         msg = self.init_joy_msg()
 
         second_start_time = rospy.get_time()
-        rospy.loginfo('Charging forward for three more seconds')
-        while rospy.get_time() < (second_start_time + 3):
-            msg.axes[const.AXES['frontback']] = 0.15
+        rospy.loginfo('Charging forward for four more seconds')
+        while rospy.get_time() < (second_start_time + 4):
+            msg.axes[const.AXES['frontback']] = 0.4
             self.publish(msg)
             rospy.sleep(const.SLEEP_TIME)
 
-        return 'through_gate'
+        curr_depth = self.get_depth()
+        #turn right 
+        while self.get_depth() > curr_depth - 1 and abs(self.angle_diff(gbl.heading, gbl.state_heading + 15) > 4):
+            msg = self.init_joy_msg()
+
+            if self.get_depth() > curr_depth - 1:
+                msg.axes[const.AXES['vertical']] = -0.2
+            if abs(self.angle_diff(gbl.heading, gbl.state_heading + 15)) > 4:
+                self.center_on_heading(gbl.state_heading + 15, msg)
+            self.publish_joy(msg)
+
+        if (self.get_box_of_class(gbl.detections_front, const.CLASSES['buoy_jiangshi'])):
+            return 'found_buoy'
+        else:
+            return 'through_gate'
 
 
     def log(self):

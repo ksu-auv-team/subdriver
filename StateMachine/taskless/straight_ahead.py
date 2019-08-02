@@ -14,10 +14,11 @@ class Straight_Ahead(Sub):
         msg = self.init_joy_msg()
         msg.axes[const.AXES['frontback']] = 0.6     
 
-        rospy.loginfo('Charging forward for 40 seconds')
+        rospy.loginfo('Charging forward for 40ish seconds')
         
         if not gbl.debug:
-            while rospy.get_time() < (self.current_state_start_time + 40):
+            #leave 3 seconds for spin2win
+            while rospy.get_time() < (self.current_state_start_time + 37):
                 msg.axes[const.AXES['frontback']] = 0.4
                 self.publish(msg)
                 rospy.sleep(const.SLEEP_TIME)

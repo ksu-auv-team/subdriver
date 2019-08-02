@@ -40,7 +40,7 @@ def createStateMachine():
 
         smach.StateMachine.add('STRAIGHT_AHEAD', Straight_Ahead(), transitions={'through_gate':'SPIN_2_WIN'})
         
-        smach.StateMachine.add('SPIN_2_WIN', SpinToWin(), transitions={'through_gate':'SEARCH_BUOY'})
+        smach.StateMachine.add('SPIN_2_WIN', SpinToWin(), transitions={'through_gate':'SEARCH_BUOY', 'found_buoy':'TRACK_BUOY'})
 
         with sm_buoy_search:
             smach.StateMachine.add('SEARCH_FRONT_BUOY', Search_Front_Buoy(), transitions={'object_found':'search_found', 'object_not_found':'SEARCH_LEFT_BUOY'})

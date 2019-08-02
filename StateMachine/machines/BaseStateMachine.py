@@ -69,7 +69,7 @@ def createStateMachine():
             smach.StateMachine.add('SEARCH_RECENTER_BUOY', Search_Recenter_Buoy(), transitions={'object_found':'search_found', 'object_not_found':'SEARCH_FRONT_BUOY'})
 
         smach.StateMachine.add('SEARCH_BUOY', sm_buoy_search, transitions={'search_found':'TRACK_BUOY'})
-        smach.StateMachine.add('TRACK_BUOY', Track_Buoy(), transitions={'lost_buoy':'SEARCH_BUOY','locked_onto_buoy':'INTERACT_BUOY'})
+        smach.StateMachine.add('TRACK_BUOY', Track_Buoy(), transitions={'lost_buoy':'SEARCH_BUOY','approached_buoy':'INTERACT_BUOY'})
         # smach.StateMachine.add('INTERACT_BUOY', Interact_Buoy(), transitions={'clear_of_buoy':'SURFACE'})
 
         #TODO: implement octagon search states
