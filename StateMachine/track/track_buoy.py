@@ -59,7 +59,7 @@ class Track_Buoy(Sub):
                         self.is_close = True
 
                 #stay within 35 degrees of state initial heading
-                #we'll always start pointed at the gate, so we'll never want more than that unless something goes wrong.
+                #we'll always start pointed at the buoy, so we'll never want more than that unless something goes wrong.
                 if self.angle_diff(gbl.heading, gbl.state_heading) > 35:
                     #go left
                     msg.axes[const.AXES['rotate']] = 0.2

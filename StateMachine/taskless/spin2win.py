@@ -12,11 +12,9 @@ class SpinToWin(Sub):
         gbl.state_heading = gbl.heading
 
         msg = self.init_joy_msg()
-        msg.axes[const.AXES['frontback']] = 0.3     
+        msg.axes[const.AXES['frontback']] = 0.5     
 
-        rospy.loginfo('Charging forward for 3 seconds')
-	print('init heading')
-        print(gbl.state_heading)       
+        rospy.loginfo('Charging forward for FORWARD_DIST seconds')
  
         while rospy.get_time() < (self.current_state_start_time + 3):
             self.publish(msg)
@@ -32,30 +30,24 @@ class SpinToWin(Sub):
             degrees_spun += self.angle_diff(last_heading, gbl.heading)
             last_heading = gbl.heading
             self.publish_joy(msg)
-            print(degrees_spun)
 
-        print('spun 585')
 
-	msg = self.init_joy_msg()
+       msg = self.init_joy_msg()
         heading_hold_time = 0.0
 
         while (abs(self.angle_diff(gbl.heading, gbl.state_heading)) > 3):
-            print(abs(self.angle_diff(gbl.heading, gbl.state_heading)))
-	    msg.axes[const.AXES['frontback']] = 0
+	        msg.axes[const.AXES['frontback']] = 0
             msg = self.center_on_heading(gbl.state_heading, msg)
             self.publish_joy(msg)
         
         msg = self.init_joy_msg()
-	heading_held_time = rospy.get_time()
+        heading_held_time = rospy.get_time()
 
-	rospy.loginfo('holding heading')
         while rospy.get_time() - heading_held_time < 1:
-	    if abs(self.angle_diff(gbl.heading, gbl.state_heading)) > 3:
-		heading_head_time = rospy.get_time()
-		rospy.loginfo('lost heading hold, diff is')
-		print(self.angle_diff(gbl.heading, gbl.state_heading))
-	    msg = self.center_on_heading(gbl.state_heading, msg, min_thrust=0.05, max_thrust=0.2)
-	    self.publish_joy(msg)
+            if abs(self.angle_diff(gbl.heading, gbl.state_heading)) > 3:
+            heading_head_time = rospy.get_time()
+            msg = self.center_on_heading(gbl.state_heading, msg, min_thrust=0.05, max_thrust=0.2)
+            self.publish_joy(msg)
 
 	msg = self.init_joy_msg()
 
