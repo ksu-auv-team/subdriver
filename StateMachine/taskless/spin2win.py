@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#/usr/bin/env python2
 
 from StateMachine.sub import *
 
@@ -12,10 +12,12 @@ class SpinToWin(Sub):
         gbl.state_heading = gbl.heading
 
         msg = self.init_joy_msg()
-        msg.axes[const.AXES['frontback']] = 0.6     
+        msg.axes[const.AXES['frontback']] = 0.3     
 
         rospy.loginfo('Charging forward for 3 seconds')
-        
+	print('init heading')
+        print(gbl.state_heading)       
+ 
         while rospy.get_time() < (self.current_state_start_time + 3):
             self.publish(msg)
             rospy.sleep(const.SLEEP_TIME)
@@ -26,18 +28,42 @@ class SpinToWin(Sub):
         last_heading = gbl.state_heading
         while (degrees_spun < 585):
             msg.axes[const.AXES['frontback']] = 0   
-            msg.axes[const.AXES['rotate']] = -0.4
+            msg.axes[const.AXES['rotate']] = -0.3
             degrees_spun += self.angle_diff(last_heading, gbl.heading)
+            last_heading = gbl.heading
+            self.publish_joy(msg)
+            print(degrees_spun)
 
-        while (abs(self.angle_diff(gbl.state_heading, gbl.init_heading)) < 2):
-            msg.axes[const.AXES['frontback']] = 0
+        print('spun 585')
+
+	msg = self.init_joy_msg()
+        heading_hold_time = 0.0
+
+        while (abs(self.angle_diff(gbl.heading, gbl.state_heading)) > 3):
+            print(abs(self.angle_diff(gbl.heading, gbl.state_heading)))
+	    msg.axes[const.AXES['frontback']] = 0
             msg = self.center_on_heading(gbl.state_heading, msg)
-
+            self.publish_joy(msg)
         
+        msg = self.init_joy_msg()
+	heading_held_time = rospy.get_time()
+
+	rospy.loginfo('holding heading')
+        while rospy.get_time() - heading_held_time < 1:
+	    if abs(self.angle_diff(gbl.heading, gbl.state_heading)) > 3:
+		heading_head_time = rospy.get_time()
+		rospy.loginfo('lost heading hold, diff is')
+		print(self.angle_diff(gbl.heading, gbl.state_heading))
+	    msg = self.center_on_heading(gbl.state_heading, msg, min_thrust=0.05, max_thrust=0.2)
+	    self.publish_joy(msg)
+
+	msg = self.init_joy_msg()
+
         second_start_time = rospy.get_time()
         rospy.loginfo('Charging forward for three more seconds')
         while rospy.get_time() < (second_start_time + 3):
-            self.publish(msg)
+            msg.axes[const.AXES['frontback']] = 0.15
+	    self.publish(msg)
             rospy.sleep(const.SLEEP_TIME)
 
         return 'through_gate'
