@@ -5,7 +5,7 @@ import smach
 
 #import literally all the states we will ever have:
 from StateMachine.interact.interact_gate import *
-from StateMachine.interact.interact_buoy import *
+# from StateMachine.interact.interact_buoy import *
 from StateMachine.interact.interact_octagon import *
 
 from StateMachine.search.search_front import *
@@ -70,7 +70,7 @@ def createStateMachine():
 
         smach.StateMachine.add('SEARCH_BUOY', sm_buoy_search, transitions={'search_found':'TRACK_BUOY'})
         smach.StateMachine.add('TRACK_BUOY', Track_Buoy(), transitions={'lost_buoy':'SEARCH_BUOY','locked_onto_buoy':'INTERACT_BUOY'})
-        smach.StateMachine.add('INTERACT_BUOY', Interact_Buoy(), transitions={'clear_of_buoy':'SURFACE'})
+        # smach.StateMachine.add('INTERACT_BUOY', Interact_Buoy(), transitions={'clear_of_buoy':'SURFACE'})
 
         #TODO: implement octagon search states
         with sm_oct_search:

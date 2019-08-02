@@ -21,14 +21,14 @@ class Bump_Buoy(Sub):
         
         msg = self.init_joy_msg()
        
-        while (rospy.get_time() < self.current_state_start_time + 2):
+        while (rospy.get_time() < self.current_state_start_time + 5):
             #RAMMING SPEED
             msg.axes[const.AXES['frontback']] = 0.15 #I think this is slow enough?
             self.publish_joy(msg)
 
         bump_time = rospy.get_time()
 
-        while (rospy.get_time() < bump_time + 2):
+        while (rospy.get_time() < bump_time + 5):
             #get away from the buoy
             msg.axes[const.AXES['frontback']] = -0.15
             self.publish_joy(msg)            
