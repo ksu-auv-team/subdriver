@@ -53,7 +53,7 @@ class Track_Buoy(Sub):
                 if detection:
                     if self.get_distance(detection.box[0], detection.box[1], detection.box[2], detection.box[3]) > 0.9 or detection.box[3] - detection.box[1] > 0.8:
                         self.is_close = True
-
+                '''
                 #stay within 35 degrees of state initial heading
                 #we'll always start pointed at the buoy, so we'll never want more than that unless something goes wrong.
                 if self.angle_diff(gbl.heading, gbl.state_heading) > 35:
@@ -62,7 +62,7 @@ class Track_Buoy(Sub):
                 elif self.angle_diff(gbl.heading, gbl.state_heading) < -35:
                     #go right
                     msg.axes[const.AXES['rotate']] = -0.2
-
+                '''
 
             if self.is_close:
                 self.is_close = False

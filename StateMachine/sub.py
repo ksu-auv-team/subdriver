@@ -46,6 +46,9 @@ def vfr_hud_callback(msg):
     gbl.heading = msg.heading
 
 def bbox_callback_front(msg):
+    if not msg:
+        return
+
     gbl.detections_front = []
     gbl.num_detections_front = msg.detected[0]
 
@@ -54,6 +57,9 @@ def bbox_callback_front(msg):
         gbl.detections_front.append(detection)
 
 def bbox_callback_bottom(msg):
+    if not msg:
+        return
+
     gbl.detections_bottom = []
     gbl.num_detections_bottom = msg.detected[0]
 

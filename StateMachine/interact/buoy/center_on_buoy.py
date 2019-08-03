@@ -28,18 +28,17 @@ class Center_On_Buoy(Sub):
 
         while True:
             curr_det = self.get_box_of_class(gbl.detections_front, gbl.current_target)
-            self.publish_joy(msg)
 
             # If the detection is good, center on it
             if curr_det:
-                msg = self.align_with_screen(curr_det)
+                msg = self.align_with_screen(curr_det.box)
                 self.last_seen = rospy.get_time()
 
-                if(rospy.get_time() - self.curr_state_start_time) > 3 and gbl.buoy_num is 1:
+                if(rospy.get_time() - self.current_state_start_time) > 1 and gbl.buoy_num is 1:
                     gbl.buoy_num = 2
                     return 'centered_first_buoy'
 
-                elif (rospy.get_time() - self.curr_state_start_time) > 3 and gbl.buoy_num is 2:
+                elif (rospy.get_time() - self.current_state_start_time) > 1 and gbl.buoy_num is 2:
                     return 'centered_second_buoy'
 
             # If the detection is bad, stop moving
