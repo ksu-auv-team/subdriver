@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 
 from StateMachine.sub import *
-from StateMachine import controllers
-
-#TODO: clean up - this needs more work than I'm willing to do right now (while merging stuff)
-# add a buoy class group, and reference PID() and msg correctly
 
 # define state track_buoy
 class Track_Buoy(Sub):
@@ -71,10 +67,10 @@ class Track_Buoy(Sub):
             if self.is_close:
                 self.is_close = False
                 return "approached_buoy" 
-            elif (rospy.get_time() - self.last_seen) > 2:
+            elif (rospy.get_time() - self.last_seen) > 4:
                 msg.axes[const.AXES['frontback']] = 0
                 self.publish_joy(msg)
-                rospy.logwarn("Lost tracking the buoys for more than 2 seconds")
+                rospy.logwarn("Lost tracking the buoys for more than 4 seconds")
                 
                 if(gbl.debug):
                     return "approached_buoy" # DEBUG Porpoises Only!

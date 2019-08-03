@@ -41,6 +41,9 @@ Variables:
 
     debug
         Are we currently in debug mode?
+
+    buoy_num
+        What number buoy are we looking for
 '''
 
 #Global Variables:
@@ -57,3 +60,4 @@ num_detections_bottom = 0 #why would we not just use len(detections)?
 current_target = None #the current object being targeted TODO: allow multiple targets
 surfacing = False
 debug = False
+buoy_num = 1

@@ -15,7 +15,7 @@ class Bump_Buoy(Sub):
         smach.State.__init__(self, outcomes=['bumped_first_buoy','bumped_second_buoy'])
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state Bump_Buoy')
+        rospy.loginfo('Executing state BUMP_BUOY')
         # At this point, the sub is stationary and facing the Buoy
         self.init_state()
         
@@ -31,11 +31,15 @@ class Bump_Buoy(Sub):
         while (rospy.get_time() < bump_time + 5):
             #get away from the buoy
             msg.axes[const.AXES['frontback']] = -0.15
-            self.publish_joy(msg)            
+            self.publish_joy(msg)
 
         rospy.loginfo("Done bumping")
         gbl.current_target = None
-        return 'bumped_first_buoy'
+
+        if gbl.buoy_num is 1:
+            return 'bumped_first_buoy'
+        elif gbl.buoy_num is 2:
+            return 'bumped_second_buoy'
 
 
 
