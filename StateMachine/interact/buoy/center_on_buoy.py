@@ -49,12 +49,14 @@ class Center_On_Buoy(Sub):
             # If the detection is bad for a while, search
             if (rospy.get_time() - self.last_seen) > 4:
                 rospy.logwarn("Lost tracking for more than 4 seconds")
+                
                 if gbl.debug:
                     if gbl.buoy_num is 1:
                         gbl.buoy_num = 2
                         return 'centered_first_buoy'
                     if gbl.buoy_num is 2:
                         return 'centered_second_buoy'
+                        
                 return 'lost_buoy'
 
             self.publish_joy(msg)

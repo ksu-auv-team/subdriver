@@ -37,6 +37,7 @@ class Bump_Buoy(Sub):
         gbl.current_target = None
 
         if gbl.buoy_num is 1:
+            gbl.current_target = const.CLASSES['buoy_draugr']
             return 'bumped_first_buoy'
         elif gbl.buoy_num is 2:
             return 'bumped_second_buoy'
