@@ -66,7 +66,7 @@ class SpinToWin(Sub):
             return 'found_buoy'
 
         #turn right 
-        while self.get_depth() > curr_depth - 1 and abs(self.angle_diff(gbl.heading, (gbl.state_heading + 15) % 360) > 4):
+        while self.get_depth() > curr_depth - 1 and abs(self.angle_diff(gbl.heading, (gbl.state_heading + 10) % 360) > 4):
             msg = self.init_joy_msg()
 
             if self.get_depth() > curr_depth - 1:

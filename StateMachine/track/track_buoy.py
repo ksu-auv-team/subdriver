@@ -48,11 +48,14 @@ class Track_Buoy(Sub):
                 #     msg.axes[const.AXES['vertical']] = -0.2
 
                 msg = self.align_with_box(detection.box)                
-                msg.axes[const.AXES['frontback']] = 0.3
                 
                 if detection:
                     if self.get_distance(detection.box[0], detection.box[1], detection.box[2], detection.box[3]) > 0.9 or detection.box[3] - detection.box[1] > 0.8:
                         self.is_close = True
+                    msg.axes[const.AXES['frontback']] = 0.3
+                else:
+                    msg.axes[const.AXES['frontback']] = 0.0
+
                 '''
                 #stay within 35 degrees of state initial heading
                 #we'll always start pointed at the buoy, so we'll never want more than that unless something goes wrong.

@@ -23,10 +23,11 @@ class Straight_Ahead(Sub):
                 self.publish(msg)
                 rospy.sleep(const.SLEEP_TIME)
 
-            #turn to buoy
-            while(abs(self.angle_diff(gbl.heading, gbl.state_heading + 10)) < 2):
-                msg = self.center_on_heading(gbl.state_heading + 10, msg)
-                self.search_frames_seen = 0
+            #turn to buoy - left
+            #don't turn - that's spin2win's job
+            # while(abs(self.angle_diff(gbl.heading, gbl.state_heading + 10)) < 2):
+            #     msg = self.center_on_heading(gbl.state_heading + 10, msg)
+            #     self.search_frames_seen = 0
 
         #set current target
         gbl.current_target = const.CLASSES['buoy_jiangshi']
