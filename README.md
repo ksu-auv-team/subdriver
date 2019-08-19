@@ -1,4 +1,4 @@
-# Main high-level objective executer for 2018
+# State Machine Executor
 
 Now in Python! Start with execute.py.
 
