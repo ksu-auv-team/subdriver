@@ -27,11 +27,11 @@ class Search_Right_Octagon(Sub):
                 if self.search_frames_seen <= 2:
                     self.search_frames_seen += 1
                 else:
-                    return "object_found" # Transitions to track_octagon
+                    return "object_found"
 
             elif (self.angle_diff(gbl.heading, gbl.state_heading + 45)) > -5:
                 self.search_frames_seen = 0
-                return "object_not_found" # Transitions to search_recenter_octagon
+                return "object_not_found"
 
             else:
                 self.search_frames_seen = 0

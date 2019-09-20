@@ -59,7 +59,7 @@ class Interact_Pole(Sub):
                 rospy.sleep(const.SLEEP_TIME)
                 continue
             else: #if last seen more than 5 seconds ago
-                return 'Lost_Pole' # Transitions to SEARCH_POLE (I think)
+                return 'Lost_Pole'
 
             #strafe right
             msg.axes[const.AXES['strafe']] = 0.15
@@ -106,4 +106,4 @@ class Interact_Pole(Sub):
         gbl.current_target = const.CLASSES['start_gate']
 
         #headed home, motherfuckers
-        return 'Around_Pole' # Transitions to SEARCH_FRONT_GATE
+        return 'Around_Pole'

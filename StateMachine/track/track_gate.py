@@ -58,7 +58,7 @@ class Track_Gate(Sub):
 
             if self.is_close:
                 self.is_close = False
-                return "approached_gate" # Transitions to INTERACT_GATE
+                return "approached_gate"
             elif (rospy.get_time() - self.last_seen) > 2:
                 msg.axes[const.AXES['frontback']] = 0
                 self.publish_joy(msg)
@@ -67,7 +67,7 @@ class Track_Gate(Sub):
                 if(gbl.debug):
                     return "approached_gate" # DEBUG Purposes Only!
                 
-                return "lost_gate" # Transitions to SEARCH_FRONT_GATE
+                return "lost_gate"
 
             self.publish_joy(msg)
 

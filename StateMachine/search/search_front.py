@@ -23,11 +23,11 @@ class Search_Front(Sub):
                     self.search_frames_seen += 1
                 else:
                     self.search_frames_seen = 0
-                    return "object_found" # Transitions to TRACK_GATE
+                    return "object_found"
 
             elif (rospy.get_time() - self.current_state_start_time) > 5:
                 self.search_frames_seen = 0
-                return "object_not_found" # Transitions to SEARCH_LEFT_GATE
+                return "object_not_found"
 
             else:
                 self.search_frames_seen = 0

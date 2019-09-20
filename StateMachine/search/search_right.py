@@ -25,11 +25,11 @@ class Search_Right(Sub):
                     self.search_frames_seen += 1
                 else:
                     self.search_frames_seen = 0
-                    return "object_found" # Transitions to TRACK_GATE
+                    return "object_found"
 
             elif abs(self.angle_diff(gbl.heading, gbl.state_heading + 45)) < 2:
                 self.search_frames_seen = 0
-                return "object_not_found" # Transitions to SEARCH_RECENTER_GATE
+                return "object_not_found"
 
             else:
                 msg = self.center_on_heading(gbl.state_heading + 45, msg)

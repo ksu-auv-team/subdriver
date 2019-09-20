@@ -27,11 +27,11 @@ class Search_Front_Octagon(Sub):
                 if self.search_frames_seen <= 2:
                     self.search_frames_seen += 1
                 else:
-                    return "object_found" # Transitions to track_octagon
+                    return "object_found" 
 
             elif (rospy.get_time() - self.current_state_start_time) > 5:
                 self.search_frames_seen = 0
-                return "object_not_found" # Transitions to search_left_octagon
+                return "object_not_found"
 
             else:
                 self.search_frames_seen = 0

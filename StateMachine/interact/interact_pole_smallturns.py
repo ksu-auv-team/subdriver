@@ -121,4 +121,4 @@ class Interact_Pole_Small_Turns(Sub):
         gbl.current_target = const.CLASSES['start_gate']
 
         #headed home, motherfuckers
-        return 'Around_Pole' # Transitions to SEARCH_FRONT_GATE
+        return 'Around_Pole'

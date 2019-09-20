@@ -46,7 +46,7 @@ class Track_Pole(Sub):
 
             if self.is_close:
                 self.is_close = False
-                return "approached_pole" # Transitions to INTERACT_POLE
+                return "approached_pole"
             elif (rospy.get_time() - self.last_seen) > 2:
                 msg.axes[const.AXES['frontback']] = 0
                 self.publish_joy(msg)
@@ -55,7 +55,7 @@ class Track_Pole(Sub):
                 if(gbl.debug):
                     return "approached_pole" # DEBUG Purposes Only!
                 
-                return "lost_pole" # Transitions to SEARCH_FRONT_POLE
+                return "lost_pole"
 
             self.publish_joy(msg)
 
