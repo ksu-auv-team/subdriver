@@ -54,7 +54,7 @@ By making your own state machines, you are able to test that the behavior of you
 
 ## How to Write a State
 
-TODO: Information on how to write a state
+TODO: Information on how to write a state for tutroial purposes
 
 ## How to Write a StateMachine
 
