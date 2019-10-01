@@ -1,11 +1,5 @@
 # State Machine Executor
 
-TODO: add in environment setup suggestions; where to get/install rospy for local development, and other library deps. maybe even an env setup script (in a containerized python env, for consistency in dev experience).
-
-TODO: Talk about ROS_MASTER_URI and networking stuff
-
-TODO: Show example running stuff
-
 ## Install
 The most up to date information will be in the super repo for this repo [sub-utilities](https://github.com/ksu-auv-team/sub_utilities). You should check there under the **subdriver** section for instalation notes.
 
@@ -47,5 +41,21 @@ export ROS_HOSTNAME=<your-static-ip-address>
 export ROS_MASTER_URI=http://<ip-address-of-sub>/:11311
 ```
 
+I tend to put both of these things in my `.bashrc` and comment out one of them. After commenting out one, remember to `source ~/.bashrc` in each open terminal so that change takes effect.
 
+## Running the State Machine
 
+So you wanna run the state machine, huh?
+
+Well, that's done through the `execute_withState.py` script. if you run a `python execute_withState.py -h` it will show a list of all the available commands that you can run.
+Typically we want to pass in the value for whatever state machine we want to run, for example `python execute_withState.py -m BaseStateMachine` but by default the main state machine is run. 
+
+By making your own state machines, you are able to test that the behavior of your new code behaves in the way that you expect it to. For example, if you're working on a new torpedo machine, you can wire up a state that lines you up with the torpedo board, then another state that fires a torpedo, then a final state that leaves the torpedo board. And all of this you can do in simulation, allowing you to check most of the functionality of your code without ever having to run it on the actual sub. 
+
+## How to Write a State
+
+TODO: Information on how to write a state
+
+## How to Write a StateMachine
+
+TODO: Information on how to write a statemachine

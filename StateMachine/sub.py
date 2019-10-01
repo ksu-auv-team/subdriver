@@ -457,8 +457,8 @@ class Sub(smach.State):
     init_distance = 0
 
     joy_pub = rospy.Publisher('joy', Joy, queue_size=2)
-    front_network_enable_pub = rospy.Publisher('enable_front_network', Bool)
-    bottom_network_enable_pub = rospy.Publisher('enable_bottom_network', Bool)
+    front_network_enable_pub = rospy.Publisher('enable_front_network', Bool, queue_size=1)
+    bottom_network_enable_pub = rospy.Publisher('enable_bottom_network', Bool, queue_size=1)
     front_network_sub = rospy.Subscriber('front_network_output', Detections, bbox_callback_front, queue_size=1)
     bottom_network_sub = rospy.Subscriber('bottom_network_output', Detections, bbox_callback_bottom, queue_size=1)
     vfr_hud_sub = rospy.Subscriber('/mavros/vfr_hud', VFR_HUD, vfr_hud_callback) #provides depth and heading
