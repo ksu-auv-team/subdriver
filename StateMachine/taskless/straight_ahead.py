@@ -14,7 +14,7 @@ class Straight_Ahead(Sub):
         msg = self.init_joy_msg()
         msg.axes[const.AXES['frontback']] = 0.6     
 
-        rospy.loginfo('Charging forward for 20 seconds')
+        rospy.loginfo('Charging forward for 40 seconds')
         
         while rospy.get_time() < (self.current_state_start_time + 40):
             msg.axes[const.AXES['frontback']] = 0.4
