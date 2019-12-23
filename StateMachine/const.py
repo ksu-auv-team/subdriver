@@ -22,7 +22,7 @@ Usage:
     from StateMachine import Sub
 
     jmsg = Sub.init_joy_msg()
-    jmsg[AXES['frontback']] = 255
+    jmsg[AXES['frontback']] = 1.0
     Sub.joy_pub.publish(jmsg)
 
   2) Pressing a button:
@@ -38,12 +38,12 @@ Usage:
 
 
 '''
-#TODO: verify and annotate input ranges for these fields.
-AXES = {'rotate': 0,
-             'vertical': 1,
+
+AXES = {'rotate': 0, # -1.0 (rotates right) to 1.0 (rotates left) - I know this one is weird, but this is correct
+             'vertical': 1, # -1.0 (sinks) to 1.0 (ascends)
              'lt': 2,
-             'strafe': 3,
-             'frontback': 4,
+             'strafe': 3, # -1.0 (strafe right) to 1.0 (strafe left) - This one is also weird, but is correct
+             'frontback': 4, # -1.0 (backwards) to 1.0 (forwards)
              'rt': 5,
              'dpad_h': 6,
              'dpad_v': 7}
@@ -60,7 +60,6 @@ BUTTONS = {'a': 0,
                 'lstickpress': 9,
                 'rstickpress': 10}
 
-#TODO: update for this year's tasks
 CLASSES = {'background': 0,
                 'buoy_aswang': 1,
                 'buoy_draugr': 2,
