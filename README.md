@@ -130,4 +130,35 @@ When it comes down to implementation, it's more art than science, but here's som
 
 ## How to Write a good StateMachine
 
-TODO: Information on how to write a statemachine
+So, now that we've talked about how to write individual states, it's time to wire them all together and make a brand new State Machine! If you want the official documentation tutorial, check out the [Smach Ros wiki](http://wiki.ros.org/smach/Tutorials/Simple%20State%20Machine).
+
+The first thing to know is where to put your new state machine. Typically we put them in [subdriver/tree/master/StateMachine/machines](https://github.com/ksu-auv-team/subdriver/tree/master/StateMachine/machines) with all of them listed at `TutorialMachine.py` or whatever they are called. 
+
+After you have your brand new file, you will need to start wiring it up with all the states you care about, which is not too difficult. Here's an example of a few simple lines:
+
+```python
+sm_AUV = smach.StateMachine(outcomes=['finished_run'])
+
+with sm_AUV:
+    smach.StateMachine.add('START', Start(), transitions={'not_found_gate':'SEARCH_GATE', 'found_gate':'TRACK_GATE'})
+    smach.StateMachine.add('SEARCH_GATE', Search_Gate(), transitions={'search_found':'TRACK_GATE'})
+    smach.StateMachine.add('TRACK_GATE', Track_Gate(), transitions={'lost_gate':'SEARCH_GATE', 'approached_gate':'INTERACT_GATE'})
+    smach.StateMachine.add('INTERACT_GATE', Interact_Gate(), transitions={'through_gate':'SURFACE'})
+    smach.StateMachine.add('SURFACE', Surface(), transitions={'surfaced':'finished_run'})
+
+outcome = sm_AUV.execute()
+```
+While the meat is in the middle, there are some surrounding lines that are more logistical than anything else. `sm_AUV` is a new `smach.StateMachine` container with 1 possible outcome. We also create a new variable `outcome` that holds whatever the outcome from `sm_AUV.execute()` returns (which should always be 'finished_run').
+
+
+The middle five lines makeup a very simple state machine comprised of five individual states. The goal of this particular state machine would be to search for the start gate, track and approach it, then, once through, surface. 
+
+All the commands are basically the same, so I will disect one as an example for all the rest, in this case, the `TRACK_GATE` state addition:
+
+* `smach.StateMachine.add` - This is python calling the `smach` package, which holds a `StateMachine` object with member `add`.
+* `TRACK_GATE` - This is what we, as state machine designers have arbitrarily decided to call the new state I'm adding. By convention, new states we add are in all caps. However, it could have also been called `TrAcK_gAtE` if we wanted.
+* `Track_Gate()` - This coresponds to the file that we import at the top of the state machine file. Something like `from StateMachine.track.track_gate import *`. Inside the `StateMachine/track/track_gate.py` file the name of the class is what we care about: `class Track_Gate(Sub):`. What this line is doing is it is matching the name we gave it before `TRACK_GATE` to the name of this python class `Track_Gate`.
+* `transitions={'lost_gate':'SEARCH_GATE', 'approached_gate':'INTERACT_GATE'}` - Finally, this is where we define where the state machine is allowed to transition into after its current state of `TRACK_GATE`. This has to match exactly with what is in the `__init__` of `StateMachine/track/track_gate.py`. What we are telling the state machine here is that if `TRACK_GATE` returns `lost_gate`, then transition into `SEARCH_GATE`. However, if `TRACK_GATE` returns `approached_gate` then transition into `INTERACT_GATE`. 
+
+In addition to following the format above, take a look at one of the machines inside of `StateMachine/machines` to get a better feel for the format of what's going on.
+
