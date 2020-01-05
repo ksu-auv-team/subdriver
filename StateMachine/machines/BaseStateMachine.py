@@ -72,25 +72,8 @@ def createStateMachine():
         smach.StateMachine.add('TRACK_BUOY', Track_Buoy(), transitions={'lost_buoy':'SEARCH_BUOY','locked_onto_buoy':'INTERACT_BUOY'})
         smach.StateMachine.add('INTERACT_BUOY', Interact_Buoy(), transitions={'clear_of_buoy':'SURFACE'})
 
-        #TODO: implement octagon search states
-        with sm_oct_search:
-            smach.StateMachine.add('SEARCH_FRONT_OCTAGON', Search_Front_Octagon(), transitions={'object_found':'search_found', 'object_not_found':'SEARCH_LEFT_OCTAGON'})
-            smach.StateMachine.add('SEARCH_LEFT_OCTAGON', Search_Left_Octagon(), transitions={'object_found':'search_found', 'object_not_found':'SEARCH_RIGHT_OCTAGON'})
-            smach.StateMachine.add('SEARCH_RIGHT_OCTAGON', Search_Right_Octagon(), transitions={'object_found':'search_found', 'object_not_found':'SEARCH_RECENTER_OCTAGON'})
-            smach.StateMachine.add('SEARCH_RECENTER_OCTAGON', Search_Recenter_Octagon(), transitions={'object_found':'search_found', 'object_not_found':'SEARCH_FRONT_OCTAGON'})
-        
-        smach.StateMachine.add('SEARCH_OCTAGON', sm_oct_search, transitions={'search_found':'TRACK_OCTAGON'})
-        smach.StateMachine.add('TRACK_OCTAGON', Track_Octagon(), transitions={'approached_octagon':'SEARCH_OCTAGON','lost_octagon':'INTERACT_OCTAGON'})
-        smach.StateMachine.add('INTERACT_OCTAGON', Interact_Octagon(), transitions={'surfaced':'finished_run'})
-
-
-        #old
         smach.StateMachine.add('SURFACE', Surface(), transitions={'surfaced':'finished_run'})
 
-        #TODO(travis): Integrate the torpedo actions in appropriate transition points (depends upon target acquition and tracking states).
-        #smach.StateMachine.add('INTERACT_TORPEDO', interact_torpedo(), transitions={'torpedo_launched':'SUCCESS_STATE','torpedo_failed':'FAILURE_STATE'})
-
-        #Octagon
 
     # Execute SMACH plan
     outcome = sm_AUV.execute()

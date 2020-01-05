@@ -3,7 +3,7 @@
 import rospy
 import smach
 
-from StateMachine.taskless.start import *
+from StateMachine.taskless.dumb_start import *
 from StateMachine.taskless.surface import *
 
 from StateMachine.taskless.spin2win import *
@@ -17,7 +17,7 @@ def createStateMachine():
     # Open the container
     with sm_AUV:
 
-        smach.StateMachine.add('START', Start(), transitions={'not_found_gate':'SPIN_TO_WIN', 'found_gate':'SPIN_TO_WIN'})
+        smach.StateMachine.add('DUMB_START', Dumb_Start(), transitions={'setup_complete':'SPIN_TO_WIN'})
 
         smach.StateMachine.add('SPIN_TO_WIN', SpinToWin(), transitions={'through_gate':'SURFACE'})
 

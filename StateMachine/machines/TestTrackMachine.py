@@ -3,7 +3,7 @@
 import rospy
 import smach
 
-from StateMachine.taskless.start import *
+from StateMachine.taskless.dumb_start import *
 from StateMachine.taskless.surface import *
 
 from StateMachine.track.track_gate import *
@@ -17,7 +17,7 @@ def createStateMachine():
     # Open the container
     with sm_AUV:
 
-        smach.StateMachine.add('START', Start(), transitions={'not_found_gate':'TRACK_GATE', 'found_gate':'TRACK_GATE'})
+        smach.StateMachine.add('DUMB_START', Dumb_Start(), transitions={'setup_complete':'TRACK_GATE'})
 
         smach.StateMachine.add('TRACK_GATE', Track_Gate(), transitions={'lost_gate':'TRACK_GATE', 'approached_gate':'TRACK_GATE'})
 

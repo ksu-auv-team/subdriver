@@ -14,7 +14,7 @@ from StateMachine.search.search_left_gate import *
 from StateMachine.search.search_right_gate import *
 from StateMachine.search.search_recenter_gate import *
 
-from StateMachine.taskless.start import *
+from StateMachine.taskless.dumb_start import *
 from StateMachine.taskless.surface import *
 from StateMachine.taskless.straight_ahead import *
 
@@ -28,7 +28,7 @@ def createStateMachine():
     # Open the container
     with sm_AUV:
 
-        smach.StateMachine.add('START', Start(), transitions={'not_found_gate':'STRAIGHT_AHEAD', 'found_gate':'STRAIGHT_AHEAD'})
+        smach.StateMachine.add('DUBM_START', Dumb_Start(), transitions={'setup_complete':'STRAIGHT_AHEAD'})
 
         with sm_gate_search:
             smach.StateMachine.add('SEARCH_FRONT_GATE', Search_Front_Gate(), transitions={'object_found':'SEARCH_LEFT_GATE', 'object_not_found':'SEARCH_LEFT_GATE'})
