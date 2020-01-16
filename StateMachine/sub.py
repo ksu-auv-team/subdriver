@@ -263,14 +263,13 @@ class Sub(smach.State):
             msg, modified to point the sub to target
         '''
 
-	factor = 0.005
-
+        factor = 0.005
         if not msg:
             msg = self.init_joy_msg()
 
         diff = self.angle_diff(gbl.heading, target)
         
-	val = diff * factor
+        val = diff * factor
 
         if val > 0:
             val = max(val, min_thrust)
