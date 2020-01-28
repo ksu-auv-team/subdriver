@@ -28,7 +28,7 @@ def createStateMachine():
     # Open the container
     with sm_AUV:
 
-        smach.StateMachine.add('DUBM_START', Dumb_Start(), transitions={'setup_complete':'STRAIGHT_AHEAD'})
+        smach.StateMachine.add('DUMB_START', Dumb_Start(), transitions={'setup_complete':'STRAIGHT_AHEAD'})
 
         with sm_gate_search:
             smach.StateMachine.add('SEARCH_FRONT_GATE', Search_Front_Gate(), transitions={'object_found':'SEARCH_LEFT_GATE', 'object_not_found':'SEARCH_LEFT_GATE'})
