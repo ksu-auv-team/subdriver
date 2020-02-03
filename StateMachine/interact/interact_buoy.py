@@ -38,7 +38,7 @@ class Interact_Buoy(Sub):
         self.maxAcceleration = 20
     def execute(self, userdata):
         """ We will attempt to bump into the draugr face of the buoy """
-        rospy.loginfo('Executing state INTERACT_BUOY')
+        print('Executing state INTERACT_BUOY')
         # At this point, the sub is stationary and facing the Buoy
         self.init_state()
         msg = self.init_joy_msg()
@@ -48,17 +48,17 @@ class Interact_Buoy(Sub):
         
         
         buoyRotationSpeed = self.determineRotationSpeed()
-        rospy.loginfo("Found Rotation Speed.")
+        print("Found Rotation Speed.")
 
         # T = rotations/minute * 2pi rad/1 rotation * 60 seconds/1 minute
         period = buoyRotationSpeed * 2 * math.pi * 60
 
         # Move towards buoy
-        rospy.loginfo("Preparing to move forward.")
+        print("Preparing to move forward.")
         while self.findFace() != BuoyFaces.draugr:
             rospy.sleep(period/6)
             startTime=rospy.Time.now()
-            rospy.loginfo("Moving forward for 10 seconds")
+            print("Moving forward for 10 seconds")
         
         while rospy.Time.now() < startTime + 10000: # Move for 10 seconds
             msg.axes[const.AXES['forward']] = 1
@@ -66,7 +66,7 @@ class Interact_Buoy(Sub):
             rospy.sleep(const.SLEEP_TIME)
         
         msg.axes[const.AXES['forward']] = 0
-        rospy.loginfo("Done moving")
+        print("Done moving")
         gbl.current_target = None
         return 'clear_of_buoy'
 
@@ -94,7 +94,7 @@ class Interact_Buoy(Sub):
         # Find first face
         # Skip the first face found, because it could be found halfway through the time spent on that face.
         if(self.buoyIsLost()):
-            rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
+            print("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
             return -1
         startingFace = self.findFace()
         
@@ -102,7 +102,7 @@ class Interact_Buoy(Sub):
             continue
         
         if(self.buoyIsLost()):
-            rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
+            print("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
             return -1
         
         firstFaceFoundTime = rospy.Time.now()
@@ -113,7 +113,7 @@ class Interact_Buoy(Sub):
             continue
         
         if(self.buoyIsLost()):
-            rospy.loginfo("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
+            print("Buoy lost in def determineRotationSpeed(self) at time: ", rospy.Time.now())
             return -1
         secondFaceFoundTime = rospy.Time.now()
         secondFace = self.findFace()

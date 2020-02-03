@@ -14,7 +14,7 @@ class Interact_Gate(Sub):
         msg.axes[const.AXES['frontback']] = 0.7
         
 
-        rospy.loginfo("Charging forward for 5 seconds")
+        print("Charging forward for 5 seconds")
         
         while rospy.get_time() < (self.current_state_start_time + 5):
             self.publish(msg)
@@ -26,4 +26,4 @@ class Interact_Gate(Sub):
 
 
     def log(self):
-        rospy.loginfo('Executing state INTERACT_GATE')
+        print('Executing state INTERACT_GATE')

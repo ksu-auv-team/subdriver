@@ -8,4 +8,4 @@ class Search_Recenter_Buoy(Search_Recenter):
     
 
     def log(self):
-        rospy.loginfo('Executing state SEARCH_RECENTER_BUOY')
+        print('Executing state SEARCH_RECENTER_BUOY')

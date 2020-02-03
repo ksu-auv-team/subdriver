@@ -11,7 +11,7 @@ class Foo(smach.State):
 		self.counter = 0
 
 	def execute(self, userdata):
-		#rospy.loginfo('Executing state FOO')
+		#print('Executing state FOO')
 		if self.counter < 3:
 			self.counter += 1
 			return 'outcome1'
@@ -23,7 +23,7 @@ class Bar(smach.State):
 		smach.State.__init__(self, outcomes=['outcome1'])
 
 	def execute(self, userdata):
-		#rospy.loginfo('Executing state BAR')
+		#print('Executing state BAR')
 		return 'outcome1'
 
 

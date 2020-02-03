@@ -33,13 +33,13 @@ class Interact_Torpedo(Sub):
         #initialization
         self.init_state()
         self.last_seen = rospy.get_time()
-        rospy.loginfo('Executing state INTERACT_TORPEDO')
+        print('Executing state INTERACT_TORPEDO')
 
         # Start the front network
         self.use_front_network(True)
 
         if not self.active_launcher:
-            rospy.loginfo('[INTERACT_TORPEDO] - %s' % ('No available launch tubes'))
+            print('[INTERACT_TORPEDO] - %s' % ('No available launch tubes'))
             return 'torpedo_failed'
         try:
           self.launch(self.active_launcher)
@@ -47,7 +47,7 @@ class Interact_Torpedo(Sub):
         except Launch_Error as e:
             #Issues with launchers themselves - failure to ready, failure to
             #fire, etc.
-            rospy.loginfo('[INTERACT_TORPEDO] - %s' % (e.message))
+            print('[INTERACT_TORPEDO] - %s' % (e.message))
             return 'torpedo_failed'
         except Exception as e:  
             #Some other thing is broken, likely this very code.

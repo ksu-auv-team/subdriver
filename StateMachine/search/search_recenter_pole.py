@@ -8,4 +8,4 @@ class Search_Recenter_Pole(Search_Recenter):
 
 
     def log(self):
-        rospy.loginfo('Executing state SEARCH_RECENTER_POLE')
+        print('Executing state SEARCH_RECENTER_POLE')

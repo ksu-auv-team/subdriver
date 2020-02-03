@@ -7,4 +7,4 @@ class Search_Left_Gate(Search_Left):
 	pass
 
 	def log(self):
-		rospy.loginfo('Executing state SEARCH_LEFT_GATE')
+		print('Executing state SEARCH_LEFT_GATE')

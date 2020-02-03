@@ -7,5 +7,5 @@ class Search_Front_Dice(Search_Front):
 	pass
 
 	def log(self):
-		rospy.loginfo('Executing state SEARCH_FRONT_DICE')
+		print('Executing state SEARCH_FRONT_DICE')
 		

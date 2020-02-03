@@ -30,7 +30,7 @@ def main():
             print(machine)
         return
 
-    rospy.loginfo("Running {}".format(args.machine))
+    print("Running {}".format(args.machine))
     try:
         states[args.machine]()
     except KeyError:

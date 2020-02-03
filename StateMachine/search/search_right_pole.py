@@ -7,4 +7,4 @@ class Search_Right_Pole(Search_Right):
 	pass
 
 	def log(self):
-		rospy.loginfo('Executing state SEARCH_RIGHT_POLE')
+		print('Executing state SEARCH_RIGHT_POLE')

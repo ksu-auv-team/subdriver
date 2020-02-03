@@ -182,4 +182,4 @@ class Track_Octagon(Sub):
             rospy.sleep(const.SLEEP_TIME)
 
     def log(self):
-      rospy.loginfo('Executing state TRACK_OCTAGON')
+      print('Executing state TRACK_OCTAGON')

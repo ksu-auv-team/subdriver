@@ -36,7 +36,7 @@ def signal_handler(signal, frame):
       signal: signal received from system
       frame: unused? assumed a state capture for diagnostic porpises.
     '''
-    rospy.loginfo("\nShutting Down Run...")
+    print("\nShutting Down Run...")
     sys.exit(0)
 
 #ROS callbacks
@@ -286,7 +286,7 @@ class Sub(smach.State):
 
     def get_depth(self):
         if gbl.debug:
-            rospy.loginfo("Depth is none, but we are debugging, returning 0.0")
+            print("Depth is none, but we are debugging, returning 0.0")
             return 0.0
         elif (gbl.depth is None or gbl.init_depth is None):
             rospy.logerr("init depth or current depth is NONE")
@@ -317,7 +317,7 @@ class Sub(smach.State):
         '''
 
         if detections == []:
-            rospy.loginfo('No detections in image at time: ' + str(rospy.get_time()))
+            print('No detections in image at time: ' + str(rospy.get_time()))
             return None
 
         found = None
@@ -328,7 +328,7 @@ class Sub(smach.State):
                 max_prob = detection.score
 
         if found:
-            rospy.loginfo('class: %s\tconf: %s', str(found.class_id), str(found.score))
+            print('class: %s\tconf: %s', str(found.class_id), str(found.score))
 
         #ignore ghosts
         if max_prob > threshold:
@@ -354,10 +354,10 @@ class Sub(smach.State):
 
         if detections == []:
             rospy.sleep(1)
-            rospy.loginfo('No boxes in image at time: ' + str(rospy.get_time()))
+            print('No boxes in image at time: ' + str(rospy.get_time()))
             return None
 
-        rospy.loginfo('Detections:\n')
+        print('Detections:\n')
         for class_num in classes:
             best_confidence = threshold
             best_det = None
@@ -368,7 +368,7 @@ class Sub(smach.State):
 
             if (best_det):
                 found_detections.append(best_det)
-                rospy.loginfo('\tclass: %s\tconf: %s', str(det.class_id), str(det.score))   
+                print('\tclass: %s\tconf: %s', str(det.class_id), str(det.score))   
         
         return found_detections     
 
