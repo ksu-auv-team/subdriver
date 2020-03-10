@@ -20,4 +20,4 @@ class Dive(Sub):
         self.thrust_start_time = rospy.get_time()
 
         gbl.diving = False
-		    return 'Dived'
+	return 'Dived'
