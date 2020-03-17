@@ -9,13 +9,10 @@ class Dive(Sub):
 
     def execute(self, userdata):
         rospy.loginfo('Executing state DIVE')
-        gbl.diving = True
-
         msg = self.init_joy_msg()
 
         while self.get_depth() > 0.2:
             msg.axes[const.AXES['vertical']] = -0.3
             self.publish_joy(msg)
 
-        gbl.diving = False
 	return 'dived'
