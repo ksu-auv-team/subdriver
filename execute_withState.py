@@ -6,6 +6,7 @@ import StateMachine.machines.PrequalifyMachine as prequal
 import StateMachine.machines.TestSpinMachine as testspin
 import StateMachine.machines.QualifyStraightMachine as dumbqualify
 import StateMachine.machines.TestTrackMachine as testtrack
+import StateMachine.machines.DiveMachine as dive
 import argparse
 import StateMachine.gbl as gbl
 
@@ -20,7 +21,8 @@ states = {
     'PrequalifyMachine': prequal.createStateMachine,
     'TestSpinMachine': testspin.createStateMachine,
     'QualifyStraightMachine': dumbqualify.createStateMachine,
-    'TestTrackMachine': testtrack.createStateMachine
+    'TestTrackMachine': testtrack.createStateMachine,
+    'DiveMachine': dive.createStateMachine
 }
 
 def main():
