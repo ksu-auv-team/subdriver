@@ -8,7 +8,7 @@ class Dive(Sub):
         smach.State.__init__(self, outcomes=['dived'])
 
     def execute(self, userdata):
-	self.init_state()
+        self.init_state()
 	
         rospy.loginfo('Executing state DIVE')
         msg = self.init_joy_msg()
@@ -16,5 +16,5 @@ class Dive(Sub):
         while self.get_depth() > 0.2:
             msg.axes[const.AXES['vertical']] = -0.3
             self.publish_joy(msg)
-	    break
-    return 'dived'
+        break
+     return 'dived'
