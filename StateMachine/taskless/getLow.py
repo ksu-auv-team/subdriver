@@ -17,7 +17,5 @@ class Dive(Sub):
             msg.axes[const.AXES['vertical']] = -0.3
             self.publish_joy(msg)
 
-        self.thrust_start_time = rospy.get_time()
-
         gbl.diving = False
-	return 'Dived'
+	return 'dived'
