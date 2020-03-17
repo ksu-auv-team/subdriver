@@ -10,7 +10,7 @@ class Dive(Sub):
     def execute(self, userdata):
         self.init_state()
 	
-        rospy.loginfo('Executing state DIVE')
+        print('Executing state DIVE')
         msg = self.init_joy_msg()
 
         while self.get_depth() > 0.2:
