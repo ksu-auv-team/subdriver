@@ -12,7 +12,6 @@ import rospy
 import smach
 import math
 
-import numpy as np
 import sys, signal
 
 #messages
