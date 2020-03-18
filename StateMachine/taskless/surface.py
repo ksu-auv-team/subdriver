@@ -16,6 +16,9 @@ class Surface(Sub):
         while self.get_depth() < 0.2:
             msg.axes[const.AXES['vertical']] = 0.2
             self.publish_joy(msg)
+            rospy.sleep(const.SLEEP_TIME)
+            if gbl.debug:
+                break
 
         self.thrust_start_time = rospy.get_time()
 
@@ -23,6 +26,9 @@ class Surface(Sub):
         while(rospy.get_time() < self.thrust_start_time + 1):
             msg.axes[const.AXES['vertical']] = 0.2
             self.publish_joy(msg)
+            rospy.sleep(const.SLEEP_TIME)
+            if gbl.debug:
+                break
 
         gbl.surfacing = False
-        return 'Surfaced'
+        return 'surfaced'
