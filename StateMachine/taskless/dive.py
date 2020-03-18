@@ -12,9 +12,9 @@ class Dive(Sub):
 	
         print('Executing state DIVE')
         msg = self.init_joy_msg()
+        msg.axes[const.AXES['vertical']] = -0.3
 
         while self.get_depth() >= 0.0:
-            msg.axes[const.AXES['vertical']] = -0.3
             self.publish_joy(msg)
             break
         return 'dived'
