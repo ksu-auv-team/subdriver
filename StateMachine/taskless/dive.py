@@ -16,5 +16,5 @@ class Dive(Sub):
         while self.get_depth() >= 0.0:
             msg.axes[const.AXES['vertical']] = -0.3
             self.publish_joy(msg)
-        break
-     return 'dived'
+            break
+        return 'dived'
