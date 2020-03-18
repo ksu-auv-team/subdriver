@@ -66,6 +66,18 @@ A quick side note, you will need to open up a second terminal and run `roscore` 
 
 By making your own state machines, you are able to test that the behavior of your new code behaves in the way that you expect it to. For example, if you're working on a new torpedo machine, you can wire up a state that lines you up with the torpedo board, then another state that fires a torpedo, then a final state that leaves the torpedo board. And all of this you can do in simulation, allowing you to check most of the functionality of your code without ever having to run it on the actual sub. 
 
+### Using the --arbitrary Flag  
+One really nice thing about the state machine is that we have the ability to test a single state without the need to create an individual state machine for it. To do this, we use the `--arbitrary` flag when running `python execute_withState.py`. The `--arbitrary` flag requires you to pass in the module path and class name to the state you want to use. For example, if you created a new state that had the following path `subdriver/StateMachine/interact/my_cool_state.py` and the name of the class was `My_Cool_State(Sub)` you would pass it in as following:
+```bash
+python execute_withState.py --arbitrary StateMachine.interact.my_cool_state.My_Cool_State
+```
+And the state machine would run through three states. 
+ 1. Dumb_Start (Sinks the sub for a few seconds to get it underwater and moves forward slightly)
+ 2. My_Cool_State (Does whatever you programmed it to do)
+ 3. Surface (Brings the sub back up to the surface)
+
+This allows us to test individual states in the pool without having to write special state machines for each one.
+
 ## How to Write a State
 
 We use a ROS package called [SMACH](http://wiki.ros.org/smach) that organizes our state machine into smaller pieces. This helps us abstract the individual pieces of the way we run the sub, meaning we can re-use pieces previously coded super easily. All a new user has to do is re-wire a new state machine (described below) from a whole bunch of little 'states' as described here.
