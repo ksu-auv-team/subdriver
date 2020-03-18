@@ -42,4 +42,4 @@ class SpinToWin(Sub):
 
 
     def log(self):
-        print('Executing state INTERACT_GATE')
+        print('Executing state SPIN2WIN')
