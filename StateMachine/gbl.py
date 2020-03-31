@@ -57,3 +57,4 @@ num_detections_bottom = 0 #why would we not just use len(detections)?
 current_target = None #the current object being targeted TODO: allow multiple targets
 surfacing = False
 debug = False
+gui = False
