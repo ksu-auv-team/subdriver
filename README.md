@@ -63,6 +63,7 @@ Well, that's done through the `execute_withState.py` script. if you run a `pytho
 Typically we want to pass in the value for whatever state machine we want to run, for example `python execute_withState.py -m BaseStateMachine` but by default the main state machine is run. 
 
 A quick side note, you will need to open up a second terminal and run `roscore` to start the ROS master node.  
+You can just leave `roscore` running in a separate terminal for the whole time. It's what's connecting all the nodes in the background.
 
 By making your own state machines, you are able to test that the behavior of your new code behaves in the way that you expect it to. For example, if you're working on a new torpedo machine, you can wire up a state that lines you up with the torpedo board, then another state that fires a torpedo, then a final state that leaves the torpedo board. And all of this you can do in simulation, allowing you to check most of the functionality of your code without ever having to run it on the actual sub. 
 
