@@ -7,4 +7,4 @@ class Search_Left_Buoy(Search_Left):
 	pass
 
 	def log(self):
-		print('Executing state SEARCH_LEFT_BUOY')
+		rospy.loginfo('Executing state SEARCH_LEFT_BUOY')

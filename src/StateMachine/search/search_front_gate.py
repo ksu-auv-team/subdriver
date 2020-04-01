@@ -7,4 +7,4 @@ class Search_Front_Gate(Search_Front):
 	pass
 
 	def log(self):
-		print('Executing state SEARCH_FRONT_GATE')
+		rospy.loginfo('Executing state SEARCH_FRONT_GATE')

@@ -14,7 +14,7 @@ class Start(Sub):
 
         # Initialize the current state
         self.init_state()
-        print("Run Start Time: " + str(gbl.run_start_time))
+        rospy.loginfo("Run Start Time: " + str(gbl.run_start_time))
 
         # Set the run start depth and heading
         if not gbl.debug:

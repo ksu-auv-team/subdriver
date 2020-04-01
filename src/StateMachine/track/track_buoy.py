@@ -16,7 +16,7 @@ class Track_Buoy(Sub):
         smach.State.__init__(self, outcomes=['lost_buoy','locked_onto_buoy'])
 
     def execute(self, userdata):
-        print('Executing state TRACK_BUOY')
+        rospy.loginfo('Executing state TRACK_BUOY')
         """ We will attempt to bump into the Drauger face of the buoy """
         self.init_state()
 
@@ -43,7 +43,7 @@ class Track_Buoy(Sub):
         return 'locked_onto_buoy'
 
     def matchBuoyDepth(self):
-        print("matchBuoyDepth: Adjusting depth")
+        rospy.loginfo("matchBuoyDepth: Adjusting depth")
         
         msg.axes[const.AXES['vertical']] = PID().update(self.get_center(gbl.detections_front[self.findBoxNumber()])[1])
         self.publish(msg)
@@ -51,7 +51,7 @@ class Track_Buoy(Sub):
         self.publish(msg)
 
     def matchBuoyStrafe(self):
-        print("matchBuoyStrafe: Adjusting left to right")
+        rospy.loginfo("matchBuoyStrafe: Adjusting left to right")
         msg.axes[const.AXES['strafe']] = PID().update(self.get_center(gbl.boxes[self.findBoxNumber()])[0])
         self.publish(msg)
         rospy.sleep(const.SLEEP_TIME)
@@ -60,10 +60,10 @@ class Track_Buoy(Sub):
         self.publish(msg)
     
     def moveCloseToBuoy(self):
-        print("moveCloseToBuoy: Moving close to buoy")# While the image width of buoy is less than 0.75
+        rospy.loginfo("moveCloseToBuoy: Moving close to buoy")# While the image width of buoy is less than 0.75
         msg.axes[const.AXES['forward']] = 0.3
         rospy.sleep(const.SLEEP_TIME)
         msg.axes[const.AXES['forward']] = 0
-        print("Done adjusting distance")
+        rospy.loginfo("Done adjusting distance")
 
         

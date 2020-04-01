@@ -14,13 +14,13 @@ class SpinToWin(Sub):
         msg = self.init_joy_msg()
         msg.axes[const.AXES['frontback']] = 0.6     
 
-        print('Charging forward for 3 seconds')
+        rospy.loginfo('Charging forward for 3 seconds')
         
         while rospy.get_time() < (self.current_state_start_time + 3):
             self.publish(msg)
             rospy.sleep(const.SLEEP_TIME)
 
-        print('720noscope')
+        rospy.loginfo('720noscope')
         degrees_spun = 0
 
         while (degrees_spun < 585):
@@ -33,7 +33,7 @@ class SpinToWin(Sub):
 
         
         second_start_time = rospy.get_time()
-        print('Charging forward for three more seconds')
+        rospy.loginfo('Charging forward for three more seconds')
         while rospy.get_time() < (second_start_time + 3):
             self.publish(msg)
             rospy.sleep(const.SLEEP_TIME)
@@ -42,4 +42,4 @@ class SpinToWin(Sub):
 
 
     def log(self):
-        print('Executing state SPIN2WIN')
+        rospy.loginfo('Executing state SPIN2WIN')

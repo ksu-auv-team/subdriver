@@ -8,4 +8,4 @@ class Search_Recenter_Gate(Search_Recenter):
 
 
     def log(self):
-        print('Executing state SEARCH_RECENTER_GATE')
+        rospy.loginfo('Executing state SEARCH_RECENTER_GATE')

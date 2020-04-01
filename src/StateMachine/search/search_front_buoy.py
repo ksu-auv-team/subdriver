@@ -9,5 +9,5 @@ class Search_Front_Buoy(Search_Front):
 	#	smach.State.__init__(self, outcomes = 'buoy_found', 'buoy_hit')
 
 	def log(self):
-		print('Executing state SEARCH_FRONT_BUOY')
+		rospy.loginfo('Executing state SEARCH_FRONT_BUOY')
 		

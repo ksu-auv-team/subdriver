@@ -8,7 +8,7 @@ class Surface(Sub):
         smach.State.__init__(self, outcomes=['surfaced'])
 
     def execute(self, userdata):
-        print('Executing state SURFACE')
+        rospy.loginfo('Executing state SURFACE')
         gbl.surfacing = True
 
         msg = self.init_joy_msg()

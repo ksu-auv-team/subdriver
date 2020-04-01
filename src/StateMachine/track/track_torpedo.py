@@ -51,4 +51,4 @@ class Track_Torpedo(Sub):
 
 
     def log(self):
-        print('Executing state TRACK_TORPEDO')
+        rospy.loginfo('Executing state TRACK_TORPEDO')

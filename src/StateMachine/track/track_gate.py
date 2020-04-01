@@ -74,4 +74,4 @@ class Track_Gate(Sub):
             rospy.sleep(const.SLEEP_TIME)
 
     def log(self):
-        print('Executing state TRACK_GATE')
+        rospy.loginfo('Executing state TRACK_GATE')

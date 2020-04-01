@@ -62,4 +62,4 @@ class Track_Pole(Sub):
             rospy.sleep(const.SLEEP_TIME)
 
     def log(self):
-      print('Executing state TRACK_POLE')
+      rospy.loginfo('Executing state TRACK_POLE')

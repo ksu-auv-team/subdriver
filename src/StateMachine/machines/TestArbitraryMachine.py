@@ -7,11 +7,11 @@ from StateMachine.taskless.dumb_start import *
 from StateMachine.taskless.surface import *
 
 def createStateMachine(arbitrary_state=None):
-    if arbitrary_state is None:
-        print("Please provide the state you want to run.")
-        return
-    
     rospy.init_node('AUV_StateMachine')
+    
+    if arbitrary_state is None:
+        rospy.loginfo("Please provide the state you want to run.")
+        return
 
     # Create the top level SMACH state machine
     sm_AUV = smach.StateMachine(outcomes=['finished_run'])
