@@ -2,8 +2,8 @@ import sys
 import rospy
 from submarine_msgs_srvs.msg import Detections
 from submarine_msgs_srvs.msg import Sub_status
-sys.path.append('./StateMachine/')
-import gbl
+#sys.path.append('./StateMachine/')
+import StateMachine.gbl as gbl
 
 
 def talker():
@@ -13,7 +13,10 @@ def talker():
     status_pub = rospy.Publisher('sub_gbl', Sub_status, queue_size = 1)
     rate = rospy.Rate(5)
     while not rospy.is_shutdown():
-        run_start_time = None
+        # if gbl.run_start_time is not None:
+        #     status.run_start_time = str(gbl.run_start_time
+        # else:
+        #     status.run_start_time = 'poop'
         status.depth = gbl.depth #current depth in meters
         status.init_depth = gbl.init_depth #depth at beginning of run - should be near 0
         status.heading = gbl.heading #current compass heading in degrees from 0-360
@@ -27,7 +30,7 @@ def talker():
         status.surfacing = gbl.surfacing
         status.debug = gbl.debug
         
-	gbl.depth = gbl.depth + 0.1
+        gbl.depth = gbl.depth + 0.1
         status_pub.publish(status)
         rate.sleep()
         

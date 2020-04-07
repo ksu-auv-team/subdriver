@@ -14,6 +14,10 @@ import math
 
 import sys, signal
 
+import subprocess
+import os
+
+
 #messages
 from std_msgs.msg import Float32MultiArray
 from std_msgs.msg import Bool
@@ -442,6 +446,14 @@ class Sub(smach.State):
         #changes go here
         self.joy_pub.publish(msg) 
 
+    def launch_gui():
+
+	script_dir =  os.path.dirname(os.path.realpath(__file__)) + '/../'
+	gui_proc_string = 'python ' + script_dir + 'pub_gbl.py'
+	gui_proc_command = gui_proc_string.split()
+	gui_proc = subprocess.Popen(gui_proc_command)
+
+
     # These get set at the start of each state, allowing the user to call them as needed
     current_state_start_time = None
     current_state_start_depth = None
@@ -463,4 +475,6 @@ class Sub(smach.State):
 
     active_launcher = 'LAUNCHER_LEFT'
     active_launcher_offset = const.LAUNCHER_LEFT_OFFSET
+    # if gbl.gui:
+    launch_gui()
 

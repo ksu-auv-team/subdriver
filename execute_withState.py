@@ -13,7 +13,8 @@ import StateMachine.machines.TestArbitraryMachine as arb
 
 # Global values updated in real time
 import StateMachine.gbl as gbl
-
+import subprocess
+import os
 # extra imports
 import argparse
 from pydoc import locate
@@ -67,5 +68,13 @@ def main():
 if __name__ == '__main__':
     gbl.debug = args.debug
     gbl.gui = args.gui
+    # if args.gui:
+        
+    # 	script_dir = os.path.dirname(os.path.realpath(__file__)) + '/'
+    # 	gui_proc_string = 'python ' + script_dir + 'pub_gbl.py'
+    # 	gui_proc_command = gui_proc_string.split()
+    #     print('GUI set. Launching gbl publisher with command ' + gui_proc_string)
+    # 	gui_proc = subprocess.Popen(gui_proc_command)
+
     main()
 
