@@ -87,7 +87,7 @@ Firstly, let's get some logistics of the anatomy of a state out of the way. Ever
 
 Next, each one of these states has *hard* requirements, and some *soft* requirements. The two hard requirements are `__init__(self)` and `execute(self, userdata)`. These are two methods that SMACH requires of us to override when we make a new state. While fairly self-explainitory, init happens in the initialization of the state, while execute is the actual execution of the state. `__init__` requires you to define all the possible outcomes of the state, while `execute` requires that you return one of those defined outcomes. Alos, **an important note** `execute` only happens **once** so, if you want it to loop through some behavior, you need to have a loop inside of `execute`.
 
-Lastly, some of the soft requirements are just things that you should be doing in most states to initialize them for general helpfulness. The first of which is running `self.init_state()` in the beginning of your `execute` which logs some things internally. You can check out the `sub.py` class to see the specifics of what it's doing. Additionally, it's helpful to log some info to the terminal using `print('Your message here!')`
+Lastly, some of the soft requirements are just things that you should be doing in most states to initialize them for general helpfulness. The first of which is running `self.init_state()` in the beginning of your `execute` which logs some things internally. You can check out the `sub.py` class to see the specifics of what it's doing. Additionally, it's helpful to log some info to the terminal using `rospy.loginfo('Your message here!')`
 
 Now that that's out of the way, writing a new state is as easy as 1, 2, 3:
 
@@ -133,7 +133,7 @@ What this section of code is doing, is it's trying to decide if we have found th
 #### 3. Implementation  
 When it comes down to implementation, it's more art than science, but here's some very practical tips for you to get started with.
 
-1. Follow the above steps for all the logistical stuff: Inherit from sub, setup possible outcomes in `__init__`, run `self.init_state()` in execute, you will probably need a loop to run your code in inside of `execute`, use `print()` as much as is useful, return whatever outcome is applicable. 
+1. Follow the above steps for all the logistical stuff: Inherit from sub, setup possible outcomes in `__init__`, run `self.init_state()` in execute, you will probably need a loop to run your code in inside of `execute`, use `rospy.loginfo()` as much as is useful, return whatever outcome is applicable. 
 2. Try not to use system sleep delays or `rospy.sleep()`, but use the 'wait without delay' types of programming. If that doesn't make sense, take a look at [this arduino LED blink](https://www.arduino.cc/en/tutorial/BlinkWithoutDelay) as an example, or the above python example.
 3. Utilize the `sub.py` class as much as possible, it's got a lot of useful methods in it. 
 4. Take a look at `start.py` as a good example of how to write your first state. It shows you how to fill up a joystick message and write a control loop.
